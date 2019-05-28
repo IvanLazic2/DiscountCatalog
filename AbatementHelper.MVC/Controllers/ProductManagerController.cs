@@ -30,7 +30,6 @@ namespace AbatementHelper.MVC.Controllers
                 ViewBag.Message = "Product Saved";
             else
                 ViewBag.Message = "Product Not Saved";
-
             return View();
         }
     }

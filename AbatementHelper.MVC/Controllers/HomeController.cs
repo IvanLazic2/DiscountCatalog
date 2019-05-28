@@ -26,10 +26,5 @@ namespace AbatementHelper.MVC.Controllers
 
             return View();
         }
-
-        public ActionResult RegisterProduct()
-        {
-            return View();
-        }
     }
 }
