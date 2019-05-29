@@ -2,7 +2,10 @@ using System.Web.Http;
 using WebActivatorEx;
 using AbatementHelper.WebAPI;
 using Swashbuckle.Application;
+using AbatementHelper.WebAPI.App_Start;
 
+
+//comment the line below to disable swagger
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
 namespace AbatementHelper.WebAPI
@@ -16,6 +19,9 @@ namespace AbatementHelper.WebAPI
             GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
+                        c.DocumentFilter<AuthTokenOperation>();
+                        c.OperationFilter<AuthorizationOperationFilter>();
+
                         // By default, the service root url is inferred from the request used to access the docs.
                         // However, there may be situations (e.g. proxy and load-balanced environments) where this does not
                         // resolve correctly. You can workaround this by providing your own code to determine the root URL.
@@ -36,7 +42,7 @@ namespace AbatementHelper.WebAPI
 
                         // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                         //
-                        //c.PrettyPrint();
+                        c.PrettyPrint();
 
                         // If your API has multiple versions, use "MultipleApiVersions" instead of "SingleApiVersion".
                         // In this case, you must provide a lambda that tells Swashbuckle which actions should be
@@ -143,7 +149,7 @@ namespace AbatementHelper.WebAPI
                         // enum type. Swashbuckle will honor this change out-of-the-box. However, if you use a different
                         // approach to serialize enums as strings, you can also force Swashbuckle to describe them as strings.
                         //
-                        //c.DescribeAllEnumsAsStrings();
+                        c.DescribeAllEnumsAsStrings();
 
                         // Similar to Schema filters, Swashbuckle also supports Operation and Document filters:
                         //
