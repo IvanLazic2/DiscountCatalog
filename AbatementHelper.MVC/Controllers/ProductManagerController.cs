@@ -19,7 +19,7 @@ namespace AbatementHelper.MVC.Controllers
                 CompanyName = "test2",
                 ProductOldPrice = "test3",
                 ProductNewPrice = "test4",
-                ProductAbatementDateBegin = "2000-01-01",
+                ProductAbatementDateBegin = "2000-01-01a",
                 ProductAbatementDateEnd = "2000-01-01",
                 ProductNote = "test7"
             };
@@ -30,6 +30,7 @@ namespace AbatementHelper.MVC.Controllers
                 ViewBag.Message = "Product Saved";
             else
                 ViewBag.Message = "Product Not Saved";
+
             return View();
         }
     }

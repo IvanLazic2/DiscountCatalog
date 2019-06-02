@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace AbatementHelper.MVC.Repositories
+namespace AbatementHelper.MVC.Repositeories
 {
     public class ProductManagerRepository
     {

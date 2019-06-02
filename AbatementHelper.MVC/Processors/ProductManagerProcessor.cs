@@ -1,5 +1,5 @@
 ﻿using AbatementHelper.Classes.Models;
-using AbatementHelper.MVC.Repositories;
+using AbatementHelper.MVC.Repositeories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

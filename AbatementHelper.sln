@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.Classes", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.WebAPI", "AbatementHelper.WebAPI\AbatementHelper.WebAPI.csproj", "{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.MVC", "AbatementHelper.MVC\AbatementHelper.MVC.csproj", "{04B46FE8-0364-47E8-9675-672E9C5EB379}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.MVC", "AbatementHelper.MVC\AbatementHelper.MVC.csproj", "{AA43863B-49B1-4747-9C83-DB851C70C298}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04B46FE8-0364-47E8-9675-672E9C5EB379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04B46FE8-0364-47E8-9675-672E9C5EB379}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04B46FE8-0364-47E8-9675-672E9C5EB379}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04B46FE8-0364-47E8-9675-672E9C5EB379}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA43863B-49B1-4747-9C83-DB851C70C298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA43863B-49B1-4747-9C83-DB851C70C298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA43863B-49B1-4747-9C83-DB851C70C298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA43863B-49B1-4747-9C83-DB851C70C298}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
