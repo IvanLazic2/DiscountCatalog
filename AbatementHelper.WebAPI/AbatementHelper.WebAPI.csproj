@@ -230,6 +230,23 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906041746013_FirstName.cs" />
+    <Compile Include="Migrations\201906041746013_FirstName.Designer.cs">
+      <DependentUpon>201906041746013_FirstName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906041757148_LastName.cs" />
+    <Compile Include="Migrations\201906041757148_LastName.Designer.cs">
+      <DependentUpon>201906041757148_LastName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906041802260_BirthDate.cs" />
+    <Compile Include="Migrations\201906041802260_BirthDate.Designer.cs">
+      <DependentUpon>201906041802260_BirthDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906041807462_PhoneNumber.cs" />
+    <Compile Include="Migrations\201906041807462_PhoneNumber.Designer.cs">
+      <DependentUpon>201906041807462_PhoneNumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -326,6 +343,20 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201906041746013_FirstName.resx">
+      <DependentUpon>201906041746013_FirstName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906041757148_LastName.resx">
+      <DependentUpon>201906041757148_LastName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906041802260_BirthDate.resx">
+      <DependentUpon>201906041802260_BirthDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906041807462_PhoneNumber.resx">
+      <DependentUpon>201906041807462_PhoneNumber.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

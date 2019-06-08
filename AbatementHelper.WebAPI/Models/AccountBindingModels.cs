@@ -34,9 +34,28 @@ namespace AbatementHelper.WebAPI.Models
 
     public class RegisterBindingModel
     {
-        [Required]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "First name is required")]
+        [Display(Name = "First name")]
+        public string FirstName { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Last name is required")]
+        [Display(Name = "Last name")]
+        public string LastName { get; set; }
+
+        [Display(Name = "Date of birth")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
+        public DateTime BirthDate { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
         [Display(Name = "Email")]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        [Display(Name = "Phone number")]
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
