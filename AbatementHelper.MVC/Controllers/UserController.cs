@@ -24,7 +24,11 @@ namespace AbatementHelper.MVC.Controllers
         {
             ApiManagerRepository register = new ApiManagerRepository();
 
-            await register.Register(user);
+            ViewBag.Status = "";
+
+            var result = await register.Register(user);
+
+            ViewBag.Status = result;
 
             return View(user);
         }
@@ -44,7 +48,9 @@ namespace AbatementHelper.MVC.Controllers
         {
             ApiManagerRepository authenticate = new ApiManagerRepository();
 
-            await authenticate.Authenticate(user.Email, user.Password);
+            var result = await authenticate.Authenticate(user.Email, user.Password);
+
+            ViewBag.Message = result;
 
             return View(user);
         }

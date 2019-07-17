@@ -1,14 +1,20 @@
 ﻿using AbatementHelper.Classes.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.ModelBinding;
 
 namespace AbatementHelper.MVC.Repositories
 {
@@ -44,19 +50,14 @@ namespace AbatementHelper.MVC.Repositories
             HttpResponseMessage response;
 
             response = await apiClient.PostAsync("/token", data);
+      
+            var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return new AuthenticatedUser();
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+            return result;
+                
         }
 
-        public async Task<bool> Register(object user)
+        public async Task<string> Register(object user)
         {
             //
             var jsonContent = JsonConvert.SerializeObject(user);
@@ -65,16 +66,25 @@ namespace AbatementHelper.MVC.Repositories
 
             HttpResponseMessage response;
 
-            response = await apiClient.PostAsync("/Account/Register", httpContent);
+            response = await apiClient.PostAsync("api/Account/Register", httpContent);
+
 
             if (response.IsSuccessStatusCode)
             {
-                return true;
+                var result = await response.Content.ReadAsStringAsync();
+
+                return result;
             }
             else
             {
-                return false;
+                var result = await response.Content.ReadAsAsync<ResponseError>();
+
+                return "";
             }
+
+            
+            
+
         }
     }
 }
