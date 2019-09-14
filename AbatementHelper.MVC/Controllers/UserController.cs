@@ -15,7 +15,7 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public ActionResult Registration()
         {
-            return View();
+            return View("~/Views/User/Registration.cshtml");
         }
         //Registration POST action
         [HttpPost]
@@ -30,7 +30,7 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.Status = result;
 
-            return View(user);
+            return View("~/Views/User/RegistrationVerification.cshtml", user);
         }
         //verify Email
 

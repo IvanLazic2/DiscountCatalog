@@ -5,9 +5,9 @@ using System.Web;
 
 namespace AbatementHelper.MVC.Models
 {
-    public class ResponseError
+    public class ResponseMessage
     {
         public string Message { get; set; }
-        public string ErrorDescription { get; set; }
+        public string ModelState { get; set; }
     }
 }

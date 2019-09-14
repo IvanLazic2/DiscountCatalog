@@ -1,4 +1,5 @@
 ﻿using AbatementHelper.Classes.Models;
+using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ServiceStack;
@@ -15,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.ModelBinding;
+using System.Web.Script.Serialization;
 
 namespace AbatementHelper.MVC.Repositories
 {
@@ -50,11 +52,11 @@ namespace AbatementHelper.MVC.Repositories
             HttpResponseMessage response;
 
             response = await apiClient.PostAsync("/token", data);
-      
+
             var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
 
             return result;
-                
+
         }
 
         public async Task<string> Register(object user)
@@ -69,21 +71,25 @@ namespace AbatementHelper.MVC.Repositories
             response = await apiClient.PostAsync("api/Account/Register", httpContent);
 
 
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
+            var result = response.Content.ReadAsStringAsync();
 
-                return result;
-            }
-            else
-            {
-                var result = await response.Content.ReadAsAsync<ResponseError>();
+            var serializer = new JavaScriptSerializer();
 
-                return "";
-            }
+            //List<ResponseMessage> objectList = (List<ResponseMessage>)serializer.Deserialize(result, typeof(List<ResponseMessage>));
 
-            
-            
+            return "";
+
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    return result;
+            //}
+            //else
+            //{
+            //    return result;
+            //}
+
+
+
 
         }
     }

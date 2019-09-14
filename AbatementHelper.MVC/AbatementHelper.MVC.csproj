@@ -174,7 +174,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Extended\User.cs" />
-    <Compile Include="Models\ResponseError.cs" />
+    <Compile Include="Models\ResponseMessage.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Processors\ProductManagerProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -224,6 +224,7 @@
     <Content Include="Views\AccountManager\Register.cshtml" />
     <Content Include="Views\User\Registration.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
+    <Content Include="Views\User\RegistrationVerification.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
