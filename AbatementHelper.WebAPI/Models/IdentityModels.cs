@@ -12,8 +12,8 @@ namespace AbatementHelper.WebAPI.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime BirthDate { get; set; }
-        public string PhoneNumber { get; set; }
+        public override string PhoneNumber { get; set; }
+        public bool IsStore { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {

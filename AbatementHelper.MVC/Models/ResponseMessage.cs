@@ -7,7 +7,9 @@ namespace AbatementHelper.MVC.Models
 {
     public class ResponseMessage
     {
-        public string Message { get; set; }
-        public string ModelState { get; set; }
+        public int Id { get; set; }
+        public string Status { get; set; }
+        public string Method { get; set; }
+        public string Result { get; set; }
     }
 }

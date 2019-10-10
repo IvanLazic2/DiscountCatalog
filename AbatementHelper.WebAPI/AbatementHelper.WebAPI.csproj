@@ -225,34 +225,36 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201906041746013_FirstName.cs" />
-    <Compile Include="Migrations\201906041746013_FirstName.Designer.cs">
-      <DependentUpon>201906041746013_FirstName.cs</DependentUpon>
+    <Compile Include="Migrations\201910101636065_Initial.cs" />
+    <Compile Include="Migrations\201910101636065_Initial.Designer.cs">
+      <DependentUpon>201910101636065_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201906041757148_LastName.cs" />
-    <Compile Include="Migrations\201906041757148_LastName.Designer.cs">
-      <DependentUpon>201906041757148_LastName.cs</DependentUpon>
+    <Compile Include="Migrations\201910101747061_IsStore.cs" />
+    <Compile Include="Migrations\201910101747061_IsStore.Designer.cs">
+      <DependentUpon>201910101747061_IsStore.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201906041802260_BirthDate.cs" />
-    <Compile Include="Migrations\201906041802260_BirthDate.Designer.cs">
-      <DependentUpon>201906041802260_BirthDate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201906041807462_PhoneNumber.cs" />
-    <Compile Include="Migrations\201906041807462_PhoneNumber.Designer.cs">
-      <DependentUpon>201906041807462_PhoneNumber.cs</DependentUpon>
+    <Compile Include="Migrations\201910101749129_IsStore1.cs" />
+    <Compile Include="Migrations\201910101749129_IsStore1.Designer.cs">
+      <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AuthenticatedUser.cs" />
+    <Compile Include="Models\AuthenticationModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LoggedInUser.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Repositories\AuthenticationManagerRepository.cs" />
+    <Compile Include="Repositories\DataBaseReader.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -314,6 +316,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -345,17 +348,14 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201906041746013_FirstName.resx">
-      <DependentUpon>201906041746013_FirstName.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201910101636065_Initial.resx">
+      <DependentUpon>201910101636065_Initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201906041757148_LastName.resx">
-      <DependentUpon>201906041757148_LastName.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201910101747061_IsStore.resx">
+      <DependentUpon>201910101747061_IsStore.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201906041802260_BirthDate.resx">
-      <DependentUpon>201906041802260_BirthDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201906041807462_PhoneNumber.resx">
-      <DependentUpon>201906041807462_PhoneNumber.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201910101749129_IsStore1.resx">
+      <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

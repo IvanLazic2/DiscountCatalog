@@ -176,6 +176,7 @@
     <Compile Include="Models\Extended\User.cs" />
     <Compile Include="Models\ResponseMessage.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserForAuthentication.cs" />
     <Compile Include="Processors\ProductManagerProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositeories\ApiManagerRepository.cs" />
@@ -225,6 +226,8 @@
     <Content Include="Views\User\Registration.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\RegistrationVerification.cshtml" />
+    <Content Include="Views\User\LoginVerification.cshtml" />
+    <Content Include="Views\User\AccountTypeSelection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

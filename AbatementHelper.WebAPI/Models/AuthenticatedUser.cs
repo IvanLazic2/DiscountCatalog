@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbatementHelper.Classes.Models
+namespace AbatementHelper.WebAPI.Models
 {
     public class AuthenticatedUser
     {

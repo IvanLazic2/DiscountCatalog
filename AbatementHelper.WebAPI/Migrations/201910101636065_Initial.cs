@@ -3,16 +3,18 @@ namespace AbatementHelper.WebAPI.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class BirthDate : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.AspNetUsers", "BirthDate", c => c.DateTime(nullable: false));
+            return;
+
+            DropColumn("dbo.AspNetUsers", "BirthDate");
         }
         
         public override void Down()
         {
-            DropColumn("dbo.AspNetUsers", "BirthDate");
+            AddColumn("dbo.AspNetUsers", "BirthDate", c => c.DateTime(nullable: false));
         }
     }
 }

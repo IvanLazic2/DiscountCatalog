@@ -23,10 +23,7 @@ namespace AbatementHelper.MVC.Models
         [Display(Name = "Last name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Date of birth")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
-        public DateTime BirthDate { get; set; }
+
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
         [Display(Name = "Email")]

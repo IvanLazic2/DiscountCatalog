@@ -328,7 +328,7 @@ namespace AbatementHelper.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser() { FirstName = model.FirstName, LastName = model.LastName, BirthDate = model.BirthDate, UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
+            var user = new ApplicationUser() { FirstName = model.FirstName, LastName = model.LastName, UserName = model.UserName, Email = model.Email, PhoneNumber = model.PhoneNumber, IsStore = model.IsStore };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 

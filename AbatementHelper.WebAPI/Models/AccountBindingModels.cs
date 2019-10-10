@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
@@ -42,10 +42,11 @@ namespace AbatementHelper.WebAPI.Models
         [Display(Name = "Last name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Date of birth")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
-        public DateTime BirthDate { get; set; }
+
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Username is required")]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
         [Display(Name = "Email")]
@@ -67,6 +68,9 @@ namespace AbatementHelper.WebAPI.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public bool IsStore { get; set; }
     }
 
     public class RegisterExternalBindingModel

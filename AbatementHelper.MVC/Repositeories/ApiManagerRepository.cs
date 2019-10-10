@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,9 @@ namespace AbatementHelper.MVC.Repositories
     public class ApiManagerRepository
     {
         private HttpClient apiClient;
+        public bool LoginSuccessful;
+        public bool RegisterSuccessful;
+        public string ResponseMessageText = null;
 
         public ApiManagerRepository()
         {
@@ -39,24 +44,28 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<AuthenticatedUser> Authenticate(string username, string password)
+        public async Task<bool> Authenticate(string email, string password)
         {
-            //
+            HttpResponseMessage request;
+
             var data = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", username),
-                new KeyValuePair<string, string>("password", password),
+                new KeyValuePair<string, string>("email", email),
+                new KeyValuePair<string, string>("password", password)
             });
 
-            HttpResponseMessage response;
+            request = await apiClient.PostAsync("/api/Login/EmailAuthentication", data);
 
-            response = await apiClient.PostAsync("/token", data);
+            var response = request.Content.ReadAsStringAsync();
 
-            var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
+            ResponseMessageText = (string)JSON.parse(await response);
 
-            return result;
+            if (request.IsSuccessStatusCode)
+            {
+                return true;
+            }
 
+            return false;
         }
 
         public async Task<string> Register(object user)
@@ -70,14 +79,11 @@ namespace AbatementHelper.MVC.Repositories
 
             response = await apiClient.PostAsync("api/Account/Register", httpContent);
 
+            RegisterSuccessful = response.IsSuccessStatusCode;
 
             var result = response.Content.ReadAsStringAsync();
 
-            var serializer = new JavaScriptSerializer();
-
-            //List<ResponseMessage> objectList = (List<ResponseMessage>)serializer.Deserialize(result, typeof(List<ResponseMessage>));
-
-            return "";
+            return await result;
 
             //if (response.IsSuccessStatusCode)
             //{
@@ -87,10 +93,6 @@ namespace AbatementHelper.MVC.Repositories
             //{
             //    return result;
             //}
-
-
-
-
         }
     }
 }
