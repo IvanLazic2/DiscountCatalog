@@ -4,9 +4,24 @@
     ViewBag.Title = "AccountTypeSelection";
 }
 
-<h2>AccountTypeSelection</h2>
+<link href="style.css" rel="stylesheet" />
 
-<form action="AccountTypeSelection" method="post">
-    <input type="submit" name="accountType" value="false" />
-    <input type="submit" name="accountType" value="true" />
-</form>
+<h2>Select a type of an account you want to register.</h2>
+
+<main>
+
+    <form action="AccountTypeSelection" method="post">
+        <div id="user-section">
+            <input id="submit-image-user" type="submit" name="accountType" value="false" />
+            <p class="bold">User</p>
+        </div>
+
+        <div id="store-section">
+            <input id="submit-image-store" type="submit" name="accountType" value="true" />
+            <p class="bold">Store</p>
+        </div>
+    </form>
+
+</main>
+
+

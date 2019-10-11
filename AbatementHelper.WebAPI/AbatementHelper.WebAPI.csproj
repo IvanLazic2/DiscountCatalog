@@ -243,6 +243,10 @@
     <Compile Include="Migrations\201910101749129_IsStore1.Designer.cs">
       <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201910110852450_NamesNotRequired.cs" />
+    <Compile Include="Migrations\201910110852450_NamesNotRequired.Designer.cs">
+      <DependentUpon>201910110852450_NamesNotRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -356,6 +360,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910101749129_IsStore1.resx">
       <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910110852450_NamesNotRequired.resx">
+      <DependentUpon>201910110852450_NamesNotRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -21,7 +21,7 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public ActionResult AccountTypeSelection(bool accountType)
         {
-            TempData["accountType"] = accountType;
+            Session["accountType"] = accountType;
             return RedirectToAction("Registration");
         }
 
@@ -29,14 +29,19 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public ActionResult Registration()
         {
-            return View("~/Views/User/Registration.cshtml");
+            if ((bool)Session["accountType"])
+            {
+                return View("~/Views/User/StoreRegistration.cshtml"); //treba dodat taj view
+            }
+
+            return View("~/Views/User/UserRegistration.cshtml");
         }
         //Registration POST action
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registration([Bind(Exclude = "EmailConfirmed, ActivationCode")] User user)
         {
-            user.IsStore = (bool)TempData["accountType"];
+            user.IsStore = (bool)Session["accountType"];
 
             ApiManagerRepository register = new ApiManagerRepository();
 
@@ -44,13 +49,13 @@ namespace AbatementHelper.MVC.Controllers
 
             if (register.RegisterSuccessful)
             {
-                TempData["Success"] = "Registration Successful!";
+                TempData["Success"] = "Registration Successful, please log in!";
                 return RedirectToAction("Login");
             }
             else
             {
                 ViewBag.Message = "Register Unsuccessful";
-                return View("~/Views/User/Registration.cshtml", user);
+                return View("~/Views/User/Registration.cshtml", user); //treba mijenjat
             }
 
             //return View("~/Views/User/RegistrationVerification.cshtml", user);
@@ -63,7 +68,11 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            
+            if (TempData["Success"] != null)
+            {
+                ViewBag.Message = (string)TempData["Success"];
+            }
+
             return View();
         }
         //Login POST
@@ -74,7 +83,7 @@ namespace AbatementHelper.MVC.Controllers
             var result = await authenticate.Authenticate(user.Email, user.Password);
 
 
-            if(result && authenticate.ResponseMessageText != null)
+            if (result && authenticate.ResponseMessageText != null)
             {
                 ViewBag.Message = authenticate.ResponseMessageText;
                 return View("~/Views/Home/Index.cshtml", user);
