@@ -42,13 +42,11 @@ namespace AbatementHelper.WebAPI.Repositories
 
             HttpResponseMessage response;
 
-            response = await apiClient.PostAsync("/token", data);
+            response = await apiClient.PostAsync("/Token", data);
 
             LoginSuccessful = response.IsSuccessStatusCode;
 
             var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
-
-
 
             return result;
 

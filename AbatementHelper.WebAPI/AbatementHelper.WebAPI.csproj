@@ -254,6 +254,7 @@
     <Compile Include="Models\AuthenticationModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoggedInUser.cs" />
+    <Compile Include="Models\Response.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />

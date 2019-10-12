@@ -28,6 +28,7 @@ namespace AbatementHelper.MVC.Repositories
         public bool LoginSuccessful;
         public bool RegisterSuccessful;
         public string ResponseMessageText = null;
+        public Response responseModel;
 
         public ApiManagerRepository()
         {
@@ -46,7 +47,7 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<bool> Authenticate(string email, string password)
         {
-            HttpResponseMessage request;
+            dynamic request;
 
             var data = new FormUrlEncodedContent(new[]
             {
@@ -58,7 +59,10 @@ namespace AbatementHelper.MVC.Repositories
 
             var response = request.Content.ReadAsStringAsync();
 
-            ResponseMessageText = (string)JSON.parse(await response);
+            string responseString = response.Result;
+
+            responseModel = JsonConvert.DeserializeObject<Response>(responseString);
+
 
             if (request.IsSuccessStatusCode)
             {
