@@ -63,8 +63,9 @@ namespace AbatementHelper.MVC.Repositories
 
             responseModel = JsonConvert.DeserializeObject<Response>(responseString);
 
+            ResponseMessageText = responseModel.ResponseMessage;
 
-            if (request.IsSuccessStatusCode)
+            if (responseModel.ResponseCode == 200)
             {
                 return true;
             }
