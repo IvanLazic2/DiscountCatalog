@@ -45,7 +45,7 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<bool> Authenticate(string email, string password)
+        public async Task<Response> Authenticate(string email, string password)
         {
             dynamic request;
 
@@ -65,12 +65,16 @@ namespace AbatementHelper.MVC.Repositories
 
             ResponseMessageText = responseModel.ResponseMessage;
 
-            if (responseModel.ResponseCode == 200)
+            if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
             {
-                return true;
+                LoginSuccessful = true;
+            }
+            else
+            {
+                LoginSuccessful = false;
             }
 
-            return false;
+            return responseModel;
         }
 
         public async Task<string> Register(object user)

@@ -83,8 +83,14 @@ namespace AbatementHelper.MVC.Controllers
             var result = await authenticate.Authenticate(user.Email, user.Password);
 
 
-            if (result && authenticate.ResponseMessageText != null)
+            if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
             {
+                //Response.Cookies.Add(new HttpCookie("Token")
+                //{
+                //    Value = result.User.Access_Token,
+                //    HttpOnly = true
+                //});
+
                 ViewBag.Message = authenticate.ResponseMessageText;
                 return View("~/Views/Home/Index.cshtml", user);
             }
