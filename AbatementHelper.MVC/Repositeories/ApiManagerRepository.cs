@@ -1,5 +1,5 @@
-﻿using AbatementHelper.Classes.Models;
-using AbatementHelper.MVC.Models;
+﻿using AbatementHelper.MVC.Models;
+using Hanssens.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ServiceStack;
@@ -47,15 +47,13 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<Response> Authenticate(string email, string password)
         {
-            dynamic request;
-
             var data = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("email", email),
                 new KeyValuePair<string, string>("password", password)
             });
 
-            request = await apiClient.PostAsync("/api/Login/EmailAuthentication", data);
+            var request = await apiClient.PostAsync("/api/Login/EmailAuthentication", data);
 
             var response = request.Content.ReadAsStringAsync();
 
@@ -67,6 +65,7 @@ namespace AbatementHelper.MVC.Repositories
 
             if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
             {
+
                 LoginSuccessful = true;
             }
             else
@@ -77,7 +76,7 @@ namespace AbatementHelper.MVC.Repositories
             return responseModel;
         }
 
-        public async Task<string> Register(object user)
+        public async Task<string> Register(User user)
         {
             //
             var jsonContent = JsonConvert.SerializeObject(user);
@@ -103,5 +102,6 @@ namespace AbatementHelper.MVC.Repositories
             //    return result;
             //}
         }
+
     }
 }

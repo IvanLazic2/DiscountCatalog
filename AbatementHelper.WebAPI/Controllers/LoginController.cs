@@ -19,7 +19,7 @@ namespace AbatementHelper.WebAPI.Controllers
     {
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("EmailAuthentication")]
-        public Response EmailAuthentication(AuthenticationModel model) //rijesit bez dynamic-a
+        public Response EmailAuthentication(AuthenticationModel model)
         {
             Response response = new Response();
 

@@ -1,4 +1,4 @@
-﻿using AbatementHelper.Classes.Models;
+﻿using AbatementHelper.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,16 +6,20 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Configuration;
 
-namespace AbatementHelper.Classes.Repositories
+namespace AbatementHelper.WebAPI.Repositories
 {
     public class ProductRepository
     {
+
+        private static string ConnectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+
         public static bool AddProductToDataBase(Product product)
         {
-            var connectionString = "Data Source=MyNameJeff;Initial Catalog=AbatementHelper.DataBase;Integrated Security=True";
+            
 
-            SqlConnection connection = new SqlConnection(connectionString);
+            SqlConnection connection = new SqlConnection(ConnectionString);
 
             SqlCommand command = new SqlCommand("AddProduct", connection);
 
@@ -29,8 +33,6 @@ namespace AbatementHelper.Classes.Repositories
             command.Parameters.AddWithValue("@ProductAbatementDateBegin", product.ProductAbatementDateBegin);
             command.Parameters.AddWithValue("@ProductAbatementDateEnd", product.ProductAbatementDateEnd);
             command.Parameters.AddWithValue("@ProductNote", product.ProductNote);
-
-
 
             try
             {

@@ -13,7 +13,15 @@ namespace AbatementHelper.WebAPI.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public override string PhoneNumber { get; set; }
-        public bool IsStore { get; set; }
+
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string PostalCode { get; set; }
+        public string Street { get; set; }
+
+        public string Role { get; set; }
+
+        public bool Approved { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {

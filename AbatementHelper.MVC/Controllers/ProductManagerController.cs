@@ -1,4 +1,4 @@
-﻿using AbatementHelper.Classes.Models;
+﻿using AbatementHelper.MVC.Models;
 using AbatementHelper.MVC.Processors;
 using System;
 using System.Collections.Generic;
@@ -17,11 +17,12 @@ namespace AbatementHelper.MVC.Controllers
             {
                 ProductName = "test1",
                 CompanyName = "test2",
-                ProductOldPrice = "test3",
-                ProductNewPrice = "test4",
-                ProductAbatementDateBegin = "2000-01-01a",
-                ProductAbatementDateEnd = "2000-01-01",
-                ProductNote = "test7"
+                StoreName = "test3",
+                ProductOldPrice = "test4",
+                ProductNewPrice = "test5",
+                ProductAbatementDateBegin = DateTime.Now,
+                ProductAbatementDateEnd = DateTime.Now,
+                ProductNote = "test6"
             };
 
             var success = await ProductManagerProcessor.ProcessProduct(product);

@@ -56,6 +56,12 @@ namespace AbatementHelper.WebAPI.Models
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 
+        //address section
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string PostalCode { get; set; }
+        public string Street { get; set; }
+
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
@@ -68,7 +74,10 @@ namespace AbatementHelper.WebAPI.Models
         public string ConfirmPassword { get; set; }
 
         [Required]
-        public bool IsStore { get; set; }
+        public string Role { get; set; }
+
+        [Required]
+        public bool Approved { get; set; }
     }
 
     public class RegisterExternalBindingModel

@@ -10,6 +10,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using AbatementHelper.WebAPI.Providers;
 using AbatementHelper.WebAPI.Models;
+using AbatementHelper.WebApi.Repositeories;
 
 namespace AbatementHelper.WebAPI
 {
@@ -42,6 +43,22 @@ namespace AbatementHelper.WebAPI
                 // In production mode set AllowInsecureHttp = false
                 AllowInsecureHttp = true
             };
+
+            //default role configuration
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
+
+            string[] roles = new string[] { "Admin", "User", "Store" };
+            foreach (var r in roles)
+            {
+                if (!DataBaseReader.ReadRole(r))
+                {
+                    var role = new IdentityRole();
+                    role.Name = r;
+                    roleManager.Create(role);
+                }
+
+            }
+
 
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);

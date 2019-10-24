@@ -1,4 +1,4 @@
-﻿using AbatementHelper.Classes.Models;
+﻿using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
+
 namespace AbatementHelper.MVC.Repositeories
 {
     public class ProductManagerRepository
@@ -15,6 +16,19 @@ namespace AbatementHelper.MVC.Repositeories
         public static async Task<bool> SaveProduct(Product product)
         {
             var client = new HttpClient();
+
+            var token = HttpContext.Current.Request.Cookies["Access_Token"];
+
+            var tokenString = token.ToString();
+
+            if (token != null)
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token.Value.ToString());
+            }
+            else
+            {
+                return false;
+            }
 
             var jsonContent = JsonConvert.SerializeObject(product);
 

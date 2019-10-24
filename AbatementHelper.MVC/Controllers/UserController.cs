@@ -6,7 +6,6 @@ using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Repositories;
 using System.Threading.Tasks;
-using AbatementHelper.Classes.Models;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -19,7 +18,7 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult AccountTypeSelection(bool accountType)
+        public ActionResult AccountTypeSelection(string accountType)
         {
             Session["accountType"] = accountType;
             return RedirectToAction("Registration");
@@ -29,19 +28,30 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public ActionResult Registration()
         {
-            if ((bool)Session["accountType"])
+            if ((string)Session["accountType"] == "Store")
             {
-                return View("~/Views/User/StoreRegistration.cshtml"); //treba dodat taj view
+                return View("~/Views/User/StoreRegistration.cshtml");
             }
-
-            return View("~/Views/User/UserRegistration.cshtml");
+            else if ((string)Session["accountType"] == "User")
+            {
+                return View("~/Views/User/UserRegistration.cshtml");
+            }
+            return View("~/Views/Shared/Error.cshtml");
         }
         //Registration POST action
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registration([Bind(Exclude = "EmailConfirmed, ActivationCode")] User user)
         {
-            user.IsStore = (bool)Session["accountType"];
+            user.Role = Session["accountType"].ToString();
+            if (user.Role == "Store")
+            {
+                user.Approved = false;
+            }
+            else
+            {
+                user.Approved = true;
+            }
 
             ApiManagerRepository register = new ApiManagerRepository();
 
@@ -55,7 +65,7 @@ namespace AbatementHelper.MVC.Controllers
             else
             {
                 ViewBag.Message = "Register Unsuccessful";
-                return View("~/Views/User/Registration.cshtml", user); //treba mijenjat
+                return View("~/Views/Shared/Error.cshtml", user); //treba mijenjat
             }
 
             //return View("~/Views/User/RegistrationVerification.cshtml", user);
@@ -79,20 +89,26 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public async Task<ActionResult> Login([Bind(Exclude = "FirstName, LastName, PhoneNumber, BirthDate, EmailConfirmed, ConfirmationCode")] User user)
         {
+            //Response.Cookies.Add(new HttpCookie("Access_Token")
+            //{
+            //    Value = null,
+            //    HttpOnly = true
+            //});
+
             ApiManagerRepository authenticate = new ApiManagerRepository();
             var result = await authenticate.Authenticate(user.Email, user.Password);
 
 
             if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
             {
-                //Response.Cookies.Add(new HttpCookie("Token")
-                //{
-                //    Value = result.User.Access_Token,
-                //    HttpOnly = true
-                //});
+                Response.Cookies.Add(new HttpCookie("Access_Token")
+                {
+                    Value = result.User.Access_Token,
+                    HttpOnly = true
+                });
 
                 ViewBag.Message = authenticate.ResponseMessageText;
-                return View("~/Views/Home/Index.cshtml", user);
+                return RedirectToAction("Index", "Home");
             }
             else
             {

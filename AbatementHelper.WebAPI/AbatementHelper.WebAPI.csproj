@@ -224,6 +224,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
@@ -231,35 +232,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201910101636065_Initial.cs" />
-    <Compile Include="Migrations\201910101636065_Initial.Designer.cs">
-      <DependentUpon>201910101636065_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201910101747061_IsStore.cs" />
-    <Compile Include="Migrations\201910101747061_IsStore.Designer.cs">
-      <DependentUpon>201910101747061_IsStore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201910101749129_IsStore1.cs" />
-    <Compile Include="Migrations\201910101749129_IsStore1.Designer.cs">
-      <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201910110852450_NamesNotRequired.cs" />
-    <Compile Include="Migrations\201910110852450_NamesNotRequired.Designer.cs">
-      <DependentUpon>201910110852450_NamesNotRequired.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\AuthenticationModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoggedInUser.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Repositories\AuthenticationManagerRepository.cs" />
     <Compile Include="Repositories\DataBaseReader.cs" />
+    <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -321,6 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Admin\" />
     <Folder Include="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
@@ -351,20 +338,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201910101636065_Initial.resx">
-      <DependentUpon>201910101636065_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201910101747061_IsStore.resx">
-      <DependentUpon>201910101747061_IsStore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201910101749129_IsStore1.resx">
-      <DependentUpon>201910101749129_IsStore1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201910110852450_NamesNotRequired.resx">
-      <DependentUpon>201910110852450_NamesNotRequired.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

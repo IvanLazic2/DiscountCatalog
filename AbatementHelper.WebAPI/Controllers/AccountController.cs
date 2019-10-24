@@ -125,7 +125,7 @@ namespace AbatementHelper.WebAPI.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -258,9 +258,9 @@ namespace AbatementHelper.WebAPI.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -328,17 +328,35 @@ namespace AbatementHelper.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser() { FirstName = model.FirstName, LastName = model.LastName, UserName = model.UserName, Email = model.Email, PhoneNumber = model.PhoneNumber, IsStore = model.IsStore };
+            var user = new ApplicationUser()
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                UserName = model.UserName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                Country = model.Country,
+                City = model.City,
+                PostalCode = model.PostalCode,
+                Street = model.Street,
+                Role = model.Role,
+                Approved = model.Approved
+            };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
+
             }
 
+            var roleResult = UserManager.AddToRole(user.Id, model.Role);
             return Ok();
         }
+
+
+
 
         // POST api/Account/RegisterExternal
         [OverrideAuthentication]
@@ -368,7 +386,7 @@ namespace AbatementHelper.WebAPI.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }

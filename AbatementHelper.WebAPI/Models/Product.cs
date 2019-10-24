@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbatementHelper.Classes.Models
+namespace AbatementHelper.WebAPI.Models
 {
     public class Product
     {
@@ -16,5 +16,7 @@ namespace AbatementHelper.Classes.Models
         public DateTime ProductAbatementDateBegin { get; set; }
         public DateTime ProductAbatementDateEnd { get; set; }
         public string ProductNote { get; set; }
+        public bool Expired { get; set; }
+        public bool Approved { get; set; }
     }
 }
