@@ -31,31 +31,39 @@ namespace AbatementHelper.WebAPI.Controllers
     {
         [HttpGet]
         [Route("GetAllUsers")]
-        public void GetAllUsers()
+        public DataBaseResultListOfUsers GetAllUsers()
         {
+            //List<DataBaseResultListOfUsers> users = new List<DataBaseResultListOfUsers>();
 
+            var users = DataBaseReader.ReadAllUsers();
+
+            return users;
         }
 
         [HttpPost]
         [Route("Approve")]
         public IHttpActionResult Approve(string email)
         {
-            if (DataBaseReader.UpdateDataBaseApproved(email, true))
+            var querry = DataBaseReader.UpdateDataBaseApproved(email, true);
+
+            if (querry.Success)
             {
-                return Ok();
+                return Ok(querry.Message);
             }
-            return BadRequest();
+            return BadRequest(querry.Message);
         }
 
         [HttpPost]
         [Route("Refuse")]
         public IHttpActionResult Refuse(string email)
         {
-            if (DataBaseReader.UpdateDataBaseApproved(email, false))
+            var querry = DataBaseReader.UpdateDataBaseApproved(email, false);
+
+            if (querry.Success)
             {
-                return Ok();
+                return Ok(querry.Message);
             }
-            return BadRequest();
+            return BadRequest(querry.Message);
         }
 
     }

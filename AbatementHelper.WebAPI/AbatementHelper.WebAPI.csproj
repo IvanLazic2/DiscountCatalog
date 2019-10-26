@@ -236,6 +236,8 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\AuthenticationModel.cs" />
+    <Compile Include="Models\DataBaseModels.cs" />
+    <Compile Include="Models\DataBaseUser.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoggedInUser.cs" />
     <Compile Include="Models\Product.cs" />

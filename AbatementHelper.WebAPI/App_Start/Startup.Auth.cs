@@ -50,7 +50,7 @@ namespace AbatementHelper.WebAPI
             string[] roles = new string[] { "Admin", "User", "Store" };
             foreach (var r in roles)
             {
-                if (!DataBaseReader.ReadRole(r))
+                if (!DataBaseReader.ReadRole(r).Success)
                 {
                     var role = new IdentityRole();
                     role.Name = r;

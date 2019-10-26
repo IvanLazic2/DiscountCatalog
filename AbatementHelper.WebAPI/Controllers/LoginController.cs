@@ -23,11 +23,11 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             Response response = new Response();
 
-            if (DataBaseReader.ReadEmail(model.Email))
+            if (DataBaseReader.ReadEmail(model.Email).Success)
             {
                 AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
 
-                var result = Task.Run(() => authenticate.Authenticate(model.Email, DataBaseReader.ReadUsername(model.Email), model.Password));
+                var result = Task.Run(() => authenticate.Authenticate(model.Email, DataBaseReader.ReadUsername(model.Email).Value, model.Password));
                 result.Wait();
 
                 response.User = result.Result;
@@ -61,6 +61,14 @@ namespace AbatementHelper.WebAPI.Controllers
 
             return response;
 
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("test")]
+        public string test()
+        {
+            
+            return DataBaseReader.ReadUsername("aaa@aaa.aaa").Value;
         }
 
     }

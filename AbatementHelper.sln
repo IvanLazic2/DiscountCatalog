@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.WebAPI", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.MVC", "AbatementHelper.MVC\AbatementHelper.MVC.csproj", "{AA43863B-49B1-4747-9C83-DB851C70C298}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.CommonModels", "AbatementHelper.CommonModels\AbatementHelper.CommonModels.csproj", "{A769336C-E076-404B-B29F-69618A7CEB3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{AA43863B-49B1-4747-9C83-DB851C70C298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA43863B-49B1-4747-9C83-DB851C70C298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA43863B-49B1-4747-9C83-DB851C70C298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A769336C-E076-404B-B29F-69618A7CEB3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A769336C-E076-404B-B29F-69618A7CEB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A769336C-E076-404B-B29F-69618A7CEB3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A769336C-E076-404B-B29F-69618A7CEB3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
