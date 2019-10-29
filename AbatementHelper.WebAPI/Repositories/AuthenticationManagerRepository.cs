@@ -1,4 +1,6 @@
-﻿using AbatementHelper.WebAPI.Models;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.WebApi.Repositeories;
+using AbatementHelper.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -42,11 +44,16 @@ namespace AbatementHelper.WebAPI.Repositories
 
             HttpResponseMessage response;
 
-            response = await apiClient.PostAsync("/Token", data);
+            response = await apiClient.PostAsync("/token", data);
 
             LoginSuccessful = response.IsSuccessStatusCode;
 
             var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
+
+            var dataBaseResult = DataBaseReader.ReadUserByUsername(result.UserName);
+
+            result.Email = dataBaseResult.Value.Email;
+            result.Role = dataBaseResult.Value.Role;
 
             return result;
 

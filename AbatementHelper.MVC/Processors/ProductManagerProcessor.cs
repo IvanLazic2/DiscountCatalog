@@ -1,4 +1,5 @@
-﻿using AbatementHelper.MVC.Models;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.MVC.Models;
 using AbatementHelper.MVC.Repositeories;
 using System;
 using System.Collections.Generic;

@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Repositories;
 using System.Threading.Tasks;
+using System.Web.Security;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -53,7 +54,7 @@ namespace AbatementHelper.MVC.Controllers
                 user.Approved = true;
             }
 
-            ApiManagerRepository register = new ApiManagerRepository();
+            AccountRepository register = new AccountRepository();
 
             var result = await register.Register(user);
 
@@ -95,8 +96,11 @@ namespace AbatementHelper.MVC.Controllers
             //    HttpOnly = true
             //});
 
-            ApiManagerRepository authenticate = new ApiManagerRepository();
-            var result = await authenticate.Authenticate(user.Email, user.Password);
+            AccountRepository authenticate = new AccountRepository();
+            var result = await authenticate.Login(user.Email, user.Password);
+
+
+            
 
 
             if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
@@ -106,6 +110,20 @@ namespace AbatementHelper.MVC.Controllers
                     Value = result.User.Access_Token,
                     HttpOnly = true
                 });
+
+                Response.Cookies.Add(new HttpCookie("Role")
+                {
+                    Value = result.User.Role,
+                    HttpOnly = true
+                });
+
+                Response.Cookies.Add(new HttpCookie("UserName")
+                {
+                    Value = result.User.UserName,
+                    HttpOnly = true
+                });
+
+
 
                 ViewBag.Message = authenticate.ResponseMessageText;
                 return RedirectToAction("Index", "Home");
@@ -117,5 +135,17 @@ namespace AbatementHelper.MVC.Controllers
             }
         }
         //Logout
+
+        public ActionResult Logout()
+        {
+            string[] myCookies = Request.Cookies.AllKeys;
+            foreach (string cookie in myCookies)
+            {
+                Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
+            }
+
+            return RedirectToAction("Login");
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using AbatementHelper.WebAPI.Models;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;

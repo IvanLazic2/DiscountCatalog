@@ -1,9 +1,10 @@
-﻿using System;
+﻿using AbatementHelper.CommonModels.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace AbatementHelper.MVC.Models
+namespace AbatementHelper.CommonModels.Models
 {
     public class Response
     {

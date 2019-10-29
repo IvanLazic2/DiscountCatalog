@@ -1,4 +1,5 @@
-﻿using AbatementHelper.MVC.Models;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

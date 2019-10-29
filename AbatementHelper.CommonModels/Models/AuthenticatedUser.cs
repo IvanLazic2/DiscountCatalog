@@ -5,11 +5,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbatementHelper.WebAPI.Models
+namespace AbatementHelper.CommonModels.Models
 {
     public class AuthenticatedUser
     {
         public string Access_Token { get; set; }
         public string UserName { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
     }
 }

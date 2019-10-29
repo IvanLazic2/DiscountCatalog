@@ -1,4 +1,5 @@
-﻿using AbatementHelper.WebApi.Repositeories;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Repositories;
 using System;
@@ -15,7 +16,7 @@ namespace AbatementHelper.WebAPI.Controllers
 {
 
     [System.Web.Http.RoutePrefix("api/Login")]
-    public class LoginController : System.Web.Http.ApiController
+    public class LoginController : ApiController
     {
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("EmailAuthentication")]

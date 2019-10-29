@@ -1,4 +1,5 @@
-﻿using AbatementHelper.MVC.Models;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.MVC.Models;
 using Hanssens.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,7 +23,7 @@ using System.Web.Script.Serialization;
 
 namespace AbatementHelper.MVC.Repositories
 {
-    public class ApiManagerRepository
+    public class AccountRepository
     {
         private HttpClient apiClient;
         public bool LoginSuccessful;
@@ -30,7 +31,7 @@ namespace AbatementHelper.MVC.Repositories
         public string ResponseMessageText = null;
         public Response responseModel;
 
-        public ApiManagerRepository()
+        public AccountRepository()
         {
             InitializeClient();
         }
@@ -45,7 +46,7 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<Response> Authenticate(string email, string password)
+        public async Task<Response> Login(string email, string password)
         {
             var data = new FormUrlEncodedContent(new[]
             {
@@ -93,15 +94,10 @@ namespace AbatementHelper.MVC.Repositories
 
             return await result;
 
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    return result;
-            //}
-            //else
-            //{
-            //    return result;
-            //}
+            
         }
+
+        
 
     }
 }

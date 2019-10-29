@@ -10,6 +10,8 @@ namespace AbatementHelper.MVC.Controllers
     {
         public ActionResult Index()
         {
+            //TempData["Role"] = 
+
             return View();
         }
 

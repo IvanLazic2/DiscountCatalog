@@ -1,4 +1,5 @@
-﻿using AbatementHelper.WebApi.Repositeories;
+﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Repositories;
 using System;
@@ -25,16 +26,14 @@ namespace AbatementHelper.WebAPI.Controllers
     //{
 
     //}
-
+    [Authorize(Roles = "Admin")]
     [RoutePrefix("api/Admin")]
-    public class AdminController : System.Web.Http.ApiController
+    public class AdminController : ApiController
     {
         [HttpGet]
         [Route("GetAllUsers")]
         public DataBaseResultListOfUsers GetAllUsers()
         {
-            //List<DataBaseResultListOfUsers> users = new List<DataBaseResultListOfUsers>();
-
             var users = DataBaseReader.ReadAllUsers();
 
             return users;
@@ -64,6 +63,35 @@ namespace AbatementHelper.WebAPI.Controllers
                 return Ok(querry.Message);
             }
             return BadRequest(querry.Message);
+        }
+
+        [HttpGet]
+        [Route("EditGet/{id}")]
+        public DataBaseUser EditGet(string id)
+        {
+            DataBaseUser user = new DataBaseUser();
+
+            user = DataBaseReader.ReadUserById(id).Value;
+
+            return user;
+        }
+
+        [HttpPut]
+        [Route("EditPost")]
+        public IHttpActionResult EditPost(DataBaseUser user)
+        {
+            DataBaseReader.EditUser(user);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("Delete/{id}")]
+        public IHttpActionResult Delete(string id)
+        {
+            DataBaseReader.Delete(id);
+
+            return Ok();
         }
 
     }
