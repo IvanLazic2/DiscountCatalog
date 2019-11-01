@@ -535,6 +535,46 @@ namespace AbatementHelper.WebApi.Repositeories
             connection.Close();
         }
 
+        public static void EditUserPersonal(DataBaseUser user)
+        {
+            List<DataBaseUser> users = new List<DataBaseUser>();
+
+            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
+
+            SqlConnection connection = new SqlConnection(ConnectionString);
+
+            SqlCommand sqlCommand = new SqlCommand();
+
+            var querry = "UPDATE AspNetUsers SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, Email = @Email, TwoFactorEnabled = @TwoFactorEnabled, UserName = @UserName WHERE Id = @Id";
+
+            connection.Open();
+
+            sqlCommand.Connection = connection;
+
+            sqlCommand.CommandType = System.Data.CommandType.Text;
+
+            sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, user.Id));
+            sqlCommand.Parameters.Add(ValueHandler("@FirstName", System.Data.SqlDbType.NVarChar, user.FirstName));
+            sqlCommand.Parameters.Add(ValueHandler("@LastName", System.Data.SqlDbType.NVarChar, user.LastName));
+            sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, user.PhoneNumber));
+            sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, user.Country));
+            sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, user.City));
+            sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, user.PostalCode));
+            sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, user.Street));
+            sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, user.Email));
+            sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, user.TwoFactorEnabled));
+            sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, user.UserName));
+
+
+            sqlCommand.CommandText = querry;
+
+            sqlCommand.ExecuteNonQuery();
+
+            sqlCommand.Parameters.Clear();
+
+            connection.Close();
+        }
+
         public static SqlParameter ValueHandler(string parameterName, System.Data.SqlDbType dbType, dynamic value)
         {
 

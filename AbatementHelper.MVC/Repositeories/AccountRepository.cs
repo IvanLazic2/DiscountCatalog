@@ -36,6 +36,16 @@ namespace AbatementHelper.MVC.Repositories
             InitializeClient();
         }
 
+        public void AddTokenToHeader()
+        {
+            var token = HttpContext.Current.Request.Cookies["Access_Token"];
+
+            if (token != null)
+            {
+                apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Value.ToString());
+            }
+        }
+
         private void InitializeClient()
         {
             string api = ConfigurationManager.AppSettings["api"];
@@ -93,11 +103,62 @@ namespace AbatementHelper.MVC.Repositories
             var result = response.Content.ReadAsStringAsync();
 
             return await result;
-
-            
         }
 
-        
+        public CommonModels.Models.DataBaseUser Edit()
+        {
+            DataBaseUser user = new DataBaseUser();
+
+            AddTokenToHeader();
+
+            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            var response = apiClient.GetAsync("api/Account/Edit/" + id);
+            response.Wait();
+
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<DataBaseUser>();
+                resultContent.Wait();
+
+                user = resultContent.Result;
+            }
+
+            return user;
+
+        }
+
+        public bool Edit(DataBaseUser user)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
+            response.Wait();
+
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Delete(string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.DeleteAsync("api/Account/Delete/" + id);
+            response.Wait();
+
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
 
     }
 }

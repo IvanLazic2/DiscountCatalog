@@ -29,16 +29,21 @@ namespace AbatementHelper.MVC.Repositeories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public DataBaseResultListOfUsers GetAllUsers()
+        public void AddTokenToHeader()
         {
-            DataBaseResultListOfUsers users = new DataBaseResultListOfUsers();
-
             var token = HttpContext.Current.Request.Cookies["Access_Token"];
 
             if (token != null)
             {
-                apiClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token.Value.ToString());
+                apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Value.ToString());
             }
+        }
+
+        public DataBaseResultListOfUsers GetAllUsers()
+        {
+            DataBaseResultListOfUsers users = new DataBaseResultListOfUsers();
+
+            AddTokenToHeader();
 
             var response = apiClient.GetAsync("api/Admin/GetAllUsers");
             response.Wait();
@@ -56,11 +61,13 @@ namespace AbatementHelper.MVC.Repositeories
             return users;
         }
 
-        public DataBaseUser EditGet(string id)
+        public DataBaseUser Edit(string id)
         {
             DataBaseUser user = new DataBaseUser();
 
-            var response = apiClient.GetAsync("api/Admin/EditGet/" + id);
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/Admin/Edit/" + id);
             response.Wait();
 
             var result = response.Result;
@@ -76,9 +83,11 @@ namespace AbatementHelper.MVC.Repositeories
 
         }
 
-        public bool EditPost(DataBaseUser user)
+        public bool Edit(DataBaseUser user)
         {
-            var response = apiClient.PutAsJsonAsync<DataBaseUser>("api/Admin/EditPost", user);
+            AddTokenToHeader();
+
+            var response = apiClient.PutAsJsonAsync<DataBaseUser>("api/Admin/Edit", user);
             response.Wait();
 
             var result = response.Result;
@@ -90,8 +99,32 @@ namespace AbatementHelper.MVC.Repositeories
             return false;
         }
 
-        public bool Delete(string id)
+        public DataBaseUser GetDelete(string id)
         {
+            DataBaseUser user = new DataBaseUser();
+
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/Admin/GetDelete/" + id);
+            response.Wait();
+
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<DataBaseUser>();
+                resultContent.Wait();
+
+                user = resultContent.Result;
+            }
+
+            return user;
+
+        }
+
+        public bool Delete(string id)
+        { 
+            AddTokenToHeader();
+
             var response = apiClient.DeleteAsync("api/Admin/Delete/" + id);
             response.Wait();
 

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\DataBaseModels.cs" />
+    <Compile Include="Models\DataBaseStore.cs" />
     <Compile Include="Models\DataBaseUser.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Response.cs" />

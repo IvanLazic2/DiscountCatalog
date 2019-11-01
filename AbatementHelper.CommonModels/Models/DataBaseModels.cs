@@ -25,4 +25,18 @@ namespace AbatementHelper.CommonModels.Models
         public string Message { get; set; }
         public bool Success { get; set; }
     }
+
+    public class DataBaseResultStore
+    {
+        public DataBaseStore Value { get; set; }
+        public string Message { get; set; }
+        public bool Success { get; set; }
+    }
+
+    public class DataBaseResultListOfStores
+    {
+        public List<DataBaseStore> Value { get; set; }
+        public string Messgae { get; set; }
+        public bool Success { get; set; }
+    }
 }

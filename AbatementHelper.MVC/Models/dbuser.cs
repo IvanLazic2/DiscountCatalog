@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace AbatementHelper.CommonModels.Models
+namespace AbatementHelper.MVC.Models
 {
-    public class DataBaseUser
+    public class dbuser
     {
         public string Id { get; set; }
         public string FirstName { get; set; }
@@ -19,8 +19,12 @@ namespace AbatementHelper.CommonModels.Models
         public bool Approved { get; set; }
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
+
+
         public bool PhoneNumberConfirmed { get; set; }
         public bool TwoFactorEnabled { get; set; }
+
+
         public int AccessFailedCount { get; set; }
         public string UserName { get; set; }
 

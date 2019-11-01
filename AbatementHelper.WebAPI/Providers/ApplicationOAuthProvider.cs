@@ -33,21 +33,60 @@ namespace AbatementHelper.WebAPI.Providers
 
             ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
 
-            if (user == null)
+            var storeManager = context.OwinContext.GetUserManager<ApplicationStoreManager>();
+
+            ApplicationStore store = await storeManager.FindAsync(context.UserName, context.Password);
+
+            if (user != null)
             {
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
-                return;
+                ClaimsIdentity oAuthIdentityUser = await user.GenerateUserIdentityAsync(userManager,
+                               OAuthDefaults.AuthenticationType);
+                ClaimsIdentity cookiesIdentityUser = await user.GenerateUserIdentityAsync(userManager,
+                    CookieAuthenticationDefaults.AuthenticationType);
+
+                List<Claim> rolesUser = oAuthIdentityUser.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
+                AuthenticationProperties propertiesUser = CreateProperties(user.Id, user.UserName, user.Email, user.Role);
+
+                AuthenticationTicket userTicket = new AuthenticationTicket(oAuthIdentityUser, propertiesUser);
+                context.Validated(userTicket);
+                context.Request.Context.Authentication.SignIn(cookiesIdentityUser);
             }
-
-            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
+            else if (store != null)
+            {
+                ClaimsIdentity oAuthIdentityStore = await store.GenerateUserIdentityAsync(storeManager,
                OAuthDefaults.AuthenticationType);
-            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
-                CookieAuthenticationDefaults.AuthenticationType);
+                ClaimsIdentity cookiesIdentityStore = await store.GenerateUserIdentityAsync(storeManager,
+                    CookieAuthenticationDefaults.AuthenticationType);
 
-            AuthenticationProperties properties = CreateProperties(user.UserName);
-            AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
-            context.Validated(ticket);
-            context.Request.Context.Authentication.SignIn(cookiesIdentity);
+                List<Claim> rolesStore = oAuthIdentityStore.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
+                AuthenticationProperties propertiesStore = CreateProperties(store.Id, store.UserName, store.Email, store.Role);
+
+                AuthenticationTicket storeTicket = new AuthenticationTicket(oAuthIdentityStore, propertiesStore);
+                context.Validated(storeTicket);
+                context.Request.Context.Authentication.SignIn(cookiesIdentityStore);
+            }
+            //if (user == null)
+            //{
+            //    context.SetError("invalid_grant", "The user name or password is incorrect.");
+            //    return;
+            //}
+
+
+
+            //
+
+
+            //if (store == null)
+            //{
+            //    context.SetError("invalid_grant", "The user name or password is incorrectt.");
+            //    return;
+            //}
+
+
+            //AuthenticationProperties properties = CreateProperties(user.UserName, user.Role);
+            
+
+            
         }
 
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)
@@ -86,11 +125,14 @@ namespace AbatementHelper.WebAPI.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(string id, string userName, string email, string role)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "Id", id },
+                { "userName", userName },
+                { "Email", email },
+                { "Role", role }
             };
             return new AuthenticationProperties(data);
         }

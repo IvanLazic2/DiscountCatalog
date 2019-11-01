@@ -1,6 +1,7 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Models;
+using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;
@@ -12,20 +13,6 @@ using System.Web.Http;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-
-    //[HttpPost]
-    //[Route("Approve")]
-    ////[Authorize(Roles = "Admin")]
-    //public static async void Approve()
-    //{
-    //    DataBaseReader.UpdateDataBaseApproved(false, "aaa@aaa.aaa");
-    //}
-
-    //[Authorize(Roles = "Admin")]
-    //public static void Disapprove()
-    //{
-
-    //}
     [Authorize(Roles = "Admin")]
     [RoutePrefix("api/Admin")]
     public class AdminController : ApiController
@@ -66,8 +53,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("EditGet/{id}")]
-        public DataBaseUser EditGet(string id)
+        [Route("Edit/{id}")]
+        public DataBaseUser Edit(string id)
         {
             DataBaseUser user = new DataBaseUser();
 
@@ -77,18 +64,28 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("EditPost")]
-        public IHttpActionResult EditPost(DataBaseUser user)
+        [Route("Edit")]
+        public IHttpActionResult Edit(DataBaseUser user)
         {
             DataBaseReader.EditUser(user);
 
             return Ok();
         }
 
+        [HttpGet]
+        [Route("GetDelete/{id}")]
+        public IHttpActionResult GetDelete(string id)
+        {
+            DataBaseUser user = DataBaseReader.ReadUserById(id).Value; 
+
+            return Ok(user);
+        }
+
         [HttpDelete]
-        [Route("Delete/{id}")]
+        [Route("Delete")]
         public IHttpActionResult Delete(string id)
         {
+
             DataBaseReader.Delete(id);
 
             return Ok();

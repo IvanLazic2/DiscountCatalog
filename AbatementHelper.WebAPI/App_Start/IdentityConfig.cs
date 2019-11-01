@@ -18,7 +18,7 @@ namespace AbatementHelper.WebAPI
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
-            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationUserDbContext>()));
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
@@ -38,6 +38,40 @@ namespace AbatementHelper.WebAPI
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+            }
+            return manager;
+        }
+    }
+
+    public class ApplicationStoreManager : UserManager<ApplicationStore>
+    {
+        public ApplicationStoreManager(IUserStore<ApplicationStore> store)
+            : base(store)
+        {
+        }
+
+        public static ApplicationStoreManager Create(IdentityFactoryOptions<ApplicationStoreManager> options, IOwinContext context)
+        {
+            var manager = new ApplicationStoreManager(new UserStore<ApplicationStore>(context.Get<ApplicationStoreDbContext>()));
+            // Configure validation logic for usernames
+            manager.UserValidator = new UserValidator<ApplicationStore>(manager)
+            {
+                AllowOnlyAlphanumericUserNames = false,
+                RequireUniqueEmail = false
+            };
+            // Configure validation logic for passwords
+            manager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 6,
+                RequireNonLetterOrDigit = false,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireUppercase = true,
+            };
+            var dataProtectionProvider = options.DataProtectionProvider;
+            if (dataProtectionProvider != null)
+            {
+                manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationStore>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
         }

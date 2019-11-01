@@ -52,9 +52,6 @@ namespace AbatementHelper.WebAPI.Repositories
 
             var dataBaseResult = DataBaseReader.ReadUserByUsername(result.UserName);
 
-            result.Email = dataBaseResult.Value.Email;
-            result.Role = dataBaseResult.Value.Role;
-
             return result;
 
         }

@@ -62,6 +62,11 @@ namespace AbatementHelper.WebAPI.Models
         public string PostalCode { get; set; }
         public string Street { get; set; }
 
+        //working hours section
+        public string WorkingHoursWeek { get; set; }
+        public string WorkingHoursWeekends { get; set; }
+        public string WorkingHoursHolidays { get; set; }
+
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
@@ -78,6 +83,13 @@ namespace AbatementHelper.WebAPI.Models
 
         [Required]
         public bool Approved { get; set; }
+
+        public string MasterStoreId { get; set; }
+    }
+
+    public class StoreBindingModel
+    {
+        
     }
 
     public class RegisterExternalBindingModel

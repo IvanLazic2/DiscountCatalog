@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using AbatementHelper.MVC.Repositories;
 using System.Threading.Tasks;
 using System.Web.Security;
+using AbatementHelper.CommonModels.Models;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -29,13 +30,17 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public ActionResult Registration()
         {
-            if ((string)Session["accountType"] == "Store")
+            if ((string)Session["accountType"] == "StoreAdmin")
             {
-                return View("~/Views/User/StoreRegistration.cshtml");
+                return View("~/Views/User/StoreAdminRegistration.cshtml");
             }
             else if ((string)Session["accountType"] == "User")
             {
                 return View("~/Views/User/UserRegistration.cshtml");
+            }
+            else if ((string)Session["accountType"] == "Store")
+            {
+                return View("~/Views/User/StoreRegistration.cshtml");
             }
             return View("~/Views/Shared/Error.cshtml");
         }
@@ -90,18 +95,8 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public async Task<ActionResult> Login([Bind(Exclude = "FirstName, LastName, PhoneNumber, BirthDate, EmailConfirmed, ConfirmationCode")] User user)
         {
-            //Response.Cookies.Add(new HttpCookie("Access_Token")
-            //{
-            //    Value = null,
-            //    HttpOnly = true
-            //});
-
             AccountRepository authenticate = new AccountRepository();
             var result = await authenticate.Login(user.Email, user.Password);
-
-
-            
-
 
             if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
             {
@@ -122,6 +117,11 @@ namespace AbatementHelper.MVC.Controllers
                     Value = result.User.UserName,
                     HttpOnly = true
                 });
+                Response.Cookies.Add(new HttpCookie("UserID")
+                {
+                    Value = result.User.Id,
+                    HttpOnly = true
+                });
 
 
 
@@ -134,6 +134,7 @@ namespace AbatementHelper.MVC.Controllers
                 return View("~/Views/User/Login.cshtml", user);
             }
         }
+
         //Logout
 
         public ActionResult Logout()
@@ -146,6 +147,57 @@ namespace AbatementHelper.MVC.Controllers
 
             return RedirectToAction("Login");
         }
+
+
+        //Details
+
+        //Edit GET
+
+        [HttpGet]
+        public ActionResult Edit(string id)
+        {
+            DataBaseUser user = new DataBaseUser();
+
+            AccountRepository account = new AccountRepository();
+
+            user = account.Edit();
+
+            return View(user);
+        }
+
+        //Edit POST
+
+        [HttpPost]
+        public ActionResult Edit(DataBaseUser user)
+        {
+            AccountRepository account = new AccountRepository();
+
+            if (account.Edit(user))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View("~/Views/Shared/Error.cshtml", user); //za sad
+        }
+
+        //Delete
+
+        [HttpGet]
+        public ActionResult Delete()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Delete(string id)
+        {
+            AccountRepository account = new AccountRepository();
+
+            account.Delete(id);
+
+            return View();
+        }
+
 
     }
 }

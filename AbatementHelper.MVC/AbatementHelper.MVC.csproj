@@ -176,11 +176,12 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductManagerController.cs" />
+    <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\DataBaseUser.cs" />
+    <Compile Include="Models\dbuser.cs" />
     <Compile Include="Models\Extended\Address.cs" />
     <Compile Include="Models\Extended\User.cs" />
     <Compile Include="Models\ResponseMessage.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Repositeories\AccountRepository.cs" />
     <Compile Include="Repositeories\AdminRepository.cs" />
     <Compile Include="Repositeories\ProductManagerRepository.cs" />
+    <Compile Include="Repositeories\StoreAdminRepository.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -239,18 +241,21 @@
     <Content Include="Views\User\LoginVerification.cshtml" />
     <Content Include="Views\User\AccountTypeSelection.cshtml" />
     <Content Include="Views\User\UserRegistration.cshtml" />
-    <Content Include="Views\User\StoreRegistration.cshtml" />
+    <Content Include="Views\User\StoreAdminRegistration.cshtml" />
     <Content Include="Views\Admin\GetAllUsers.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
     <Content Include="Views\Shared\_HeaderNavBar.cshtml" />
     <Content Include="Views\Shared\_Admin.cshtml" />
     <Content Include="Views\Shared\_Store.cshtml" />
     <Content Include="Views\Shared\_User.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\Admin\GetDelete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Files\" />
     <Folder Include="Views\Authentication\" />
+    <Folder Include="Views\StoreAdmin\" />
     <Folder Include="Views\Test\" />
   </ItemGroup>
   <ItemGroup>

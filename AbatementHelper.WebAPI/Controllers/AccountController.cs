@@ -16,24 +16,29 @@ using Microsoft.Owin.Security.OAuth;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Providers;
 using AbatementHelper.WebAPI.Results;
+using AbatementHelper.CommonModels.Models;
+using AbatementHelper.WebApi.Repositeories;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin, User, StoreAdmin, Store")]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
+        private ApplicationStoreManager _storeManager;
 
         public AccountController()
         {
         }
 
         public AccountController(ApplicationUserManager userManager,
+            ApplicationStoreManager storeManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
             UserManager = userManager;
+            StoreManager = storeManager;
             AccessTokenFormat = accessTokenFormat;
         }
 
@@ -46,6 +51,18 @@ namespace AbatementHelper.WebAPI.Controllers
             private set
             {
                 _userManager = value;
+            }
+        }
+
+        public ApplicationStoreManager StoreManager
+        {
+            get
+            {
+                return _storeManager ?? Request.GetOwinContext().GetUserManager<ApplicationStoreManager>();
+            }
+            private set
+            {
+                _storeManager = value;
             }
         }
 
@@ -264,7 +281,7 @@ namespace AbatementHelper.WebAPI.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.Id, user.UserName, user.Email, user.Role);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
@@ -328,7 +345,7 @@ namespace AbatementHelper.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser()
+            ApplicationUser user = new ApplicationUser()
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
@@ -343,6 +360,8 @@ namespace AbatementHelper.WebAPI.Controllers
                 Approved = model.Approved
             };
 
+            //IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -351,11 +370,49 @@ namespace AbatementHelper.WebAPI.Controllers
 
             }
 
-            var roleResult = UserManager.AddToRole(user.Id, model.Role);
+            var UserRoleResult = UserManager.AddToRole(user.Id, model.Role);
+
             return Ok();
         }
 
+        [Authorize(Roles = "Admin, StoreAdmin")]
+        [Route("RegisterStore")]
+        public async Task<IHttpActionResult> RegisterStore(RegisterBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            ApplicationStore store = new ApplicationStore()
+            {
+                Email = model.Email,
+                UserName = model.UserName,
+                PhoneNumber = model.PhoneNumber,
+                Country = model.Country,
+                City = model.City,
+                PostalCode = model.PostalCode,
+                Street = model.Street,
+                WorkingHoursWeek = model.WorkingHoursWeek,
+                WorkingHoursWeekends = model.WorkingHoursWeekends,
+                WorkingHoursHolidays = model.WorkingHoursHolidays,
+                Role = model.Role,
+                Approved = model.Approved,
+                MasterStoreID = model.MasterStoreId
+            };
+
+            IdentityResult result = await StoreManager.CreateAsync(store, model.Password);
+
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+
+            }
+
+            var StoreRoleResult = StoreManager.AddToRole(store.Id, model.Role);
+
+            return Ok();
+        }
 
 
         // POST api/Account/RegisterExternal
@@ -390,6 +447,49 @@ namespace AbatementHelper.WebAPI.Controllers
             }
             return Ok();
         }
+
+        public IHttpActionResult Details()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("Edit/{id}")]
+        public DataBaseUser Edit(string id)
+        {
+            DataBaseUser user = new DataBaseUser();
+
+            user = DataBaseReader.ReadUserById(id).Value;
+
+            return user;
+        }
+
+        [HttpPut]
+        [Route("Edit")]
+        public IHttpActionResult Edit(DataBaseUser user)
+        {
+            DataBaseReader.EditUserPersonal(user);
+
+            return Ok();
+        }
+
+        //[HttpGet]
+        //[Route("GetDelete/{id}")]
+        //public IHttpActionResult GetDelete(string id)
+        //{
+        //    return Ok();
+        //}
+
+        //[HttpDelete]
+        //[Route("Delete/{id}")]
+        //public IHttpActionResult Delete(DataBaseUser user)
+        //{
+        //    string id = 
+
+        //    DataBaseReader.Delete(id);
+
+        //    return Ok();
+        //}
 
         protected override void Dispose(bool disposing)
         {
