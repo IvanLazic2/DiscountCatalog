@@ -18,6 +18,7 @@ using AbatementHelper.WebAPI.Providers;
 using AbatementHelper.WebAPI.Results;
 using AbatementHelper.CommonModels.Models;
 using AbatementHelper.WebApi.Repositeories;
+using AbatementHelper.WebAPI.Repositories;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
@@ -25,20 +26,22 @@ namespace AbatementHelper.WebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        private ApplicationStoreManager _storeManager;
+        //private ApplicationStoreManager _storeManager;
 
         public AccountController()
         {
+
         }
 
         public AccountController(ApplicationUserManager userManager,
-            ApplicationStoreManager storeManager,
+            //ApplicationStoreManager storeManager,
             ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
             UserManager = userManager;
-            StoreManager = storeManager;
+            //StoreManager = storeManager;
             AccessTokenFormat = accessTokenFormat;
         }
 
@@ -54,17 +57,17 @@ namespace AbatementHelper.WebAPI.Controllers
             }
         }
 
-        public ApplicationStoreManager StoreManager
-        {
-            get
-            {
-                return _storeManager ?? Request.GetOwinContext().GetUserManager<ApplicationStoreManager>();
-            }
-            private set
-            {
-                _storeManager = value;
-            }
-        }
+        //public ApplicationStoreManager StoreManager
+        //{
+        //    get
+        //    {
+        //        return _storeManager ?? Request.GetOwinContext().GetUserManager<ApplicationStoreManager>();
+        //    }
+        //    private set
+        //    {
+        //        _storeManager = value;
+        //    }
+        //}
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
@@ -219,6 +222,8 @@ namespace AbatementHelper.WebAPI.Controllers
 
             IdentityResult result;
 
+
+
             if (model.LoginProvider == LocalLoginProvider)
             {
                 result = await UserManager.RemovePasswordAsync(User.Identity.GetUserId());
@@ -281,7 +286,9 @@ namespace AbatementHelper.WebAPI.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.Id, user.UserName, user.Email, user.Role);
+                string userRole = await entityReader.ReadRole(user.Id);
+
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.Id, user.UserName, user.Email, userRole);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
@@ -335,6 +342,18 @@ namespace AbatementHelper.WebAPI.Controllers
             return logins;
         }
 
+        [AllowAnonymous]
+        [Route("Test")]
+        public async Task<IHttpActionResult> Test(string id)
+        {
+            DataBaseEntityRepository dbe = new DataBaseEntityRepository();
+
+            string role = await dbe.ReadRole(id);
+
+            return Ok();
+        }
+
+
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
@@ -345,74 +364,120 @@ namespace AbatementHelper.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            ApplicationUser user = new ApplicationUser()
+            if (model.Role != "Store")
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                UserName = model.UserName,
+                if (EntityRegistrationRepository.FindEmailDuplicates(model.Email))
+                {
+                    return BadRequest("Email already exists");
+                }
+            }
+
+            ApplicationUser user = new ApplicationUser
+            {
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                Country = model.Country,
-                City = model.City,
-                PostalCode = model.PostalCode,
-                Street = model.Street,
-                Role = model.Role,
-                Approved = model.Approved
+                UserName = model.UserName,
+                Role = model.Role
             };
-
-            //IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
-
             }
 
             var UserRoleResult = UserManager.AddToRole(user.Id, model.Role);
 
-            return Ok();
-        }
-
-        [Authorize(Roles = "Admin, StoreAdmin")]
-        [Route("RegisterStore")]
-        public async Task<IHttpActionResult> RegisterStore(RegisterBindingModel model)
-        {
-            if (!ModelState.IsValid)
+            if (model.Role == "User")
             {
-                return BadRequest(ModelState);
+                WebApiUserInfo userInfo = new WebApiUserInfo()
+                {
+                    UserId = user.Id,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
+                };
+
+                EntityRegistrationRepository.AddUserInfo(userInfo);
+            }
+            else if (model.Role == "Store")
+            {
+                WebApiStoreInfo storeInfo = new WebApiStoreInfo()
+                {
+                    StoreId = user.Id,
+                    WorkingHoursWeek = model.WorkingHoursWeek,
+                    WorkingHoursWeekends = model.WorkingHoursWeekends,
+                    WorkingHoursHolidays = model.WorkingHoursHolidays,
+                    MasterStoreID = model.MasterStoreId
+                };
+
+                EntityRegistrationRepository.AddStoreInfo(storeInfo);
+            }
+            else if (model.Role == "StoreAdmin")
+            {
+                WebApiStoreAdminInfo storeAdminInfo = new WebApiStoreAdminInfo()
+                {
+                    StoreAdminId = user.Id
+                };
+
+                EntityRegistrationRepository.AddStoreAdminInfo(storeAdminInfo);
+            }
+            else if (model.Role == "Admin")
+            {
+                WebApiAdminInfo adminInfo = new WebApiAdminInfo()
+                {
+                    AdminId = user.Id,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
+                };
+
+                EntityRegistrationRepository.AddAdminInfo(adminInfo);
             }
 
-            ApplicationStore store = new ApplicationStore()
-            {
-                Email = model.Email,
-                UserName = model.UserName,
-                PhoneNumber = model.PhoneNumber,
-                Country = model.Country,
-                City = model.City,
-                PostalCode = model.PostalCode,
-                Street = model.Street,
-                WorkingHoursWeek = model.WorkingHoursWeek,
-                WorkingHoursWeekends = model.WorkingHoursWeekends,
-                WorkingHoursHolidays = model.WorkingHoursHolidays,
-                Role = model.Role,
-                Approved = model.Approved,
-                MasterStoreID = model.MasterStoreId
-            };
-
-            IdentityResult result = await StoreManager.CreateAsync(store, model.Password);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-
-            }
-
-            var StoreRoleResult = StoreManager.AddToRole(store.Id, model.Role);
-
-            return Ok();
+            return Ok("Registration successful");
         }
+
+        //[Authorize(Roles = "Admin, StoreAdmin")]
+        //[Route("RegisterStore")]
+        //public async Task<IHttpActionResult> RegisterStore(StoreBindingModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    ApplicationUser store = new ApplicationUser();
+        //    //{
+        //    //    Email = model.Email,
+        //    //    UserName = model.UserName,
+        //    //    PhoneNumber = model.PhoneNumber,
+        //    //    //Country = model.Country,
+        //    //    //City = model.City,
+        //    //    //PostalCode = model.PostalCode,
+        //    //    //Street = model.Street,
+        //    //    WorkingHoursWeek = model.WorkingHoursWeek,
+        //    //    WorkingHoursWeekends = model.WorkingHoursWeekends,
+        //    //    WorkingHoursHolidays = model.WorkingHoursHolidays,
+        //    //    Role = model.Role,
+        //    //    Approved = model.Approved,
+        //    //    MasterStoreID = model.MasterStoreId,
+        //    //    Deleted = model.Deleted
+        //    //};
+
+            
+
+        //    IdentityResult result = await StoreManager.CreateAsync(store, model.Password);
+
+        //    if (!result.Succeeded)
+        //    {
+        //        return GetErrorResult(result);
+
+        //    }
+
+        //    var StoreRoleResult = StoreManager.AddToRole(store.Id, model.Role);
+
+        //    return Ok();
+        //}
 
 
         // POST api/Account/RegisterExternal

@@ -27,8 +27,8 @@ namespace AbatementHelper.WebAPI
             app.CreatePerOwinContext(ApplicationUserDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
             //
-            app.CreatePerOwinContext(ApplicationStoreDbContext.Create);
-            app.CreatePerOwinContext<ApplicationStoreManager>(ApplicationStoreManager.Create);
+            //app.CreatePerOwinContext(ApplicationStoreDbContext.Create);
+            //app.CreatePerOwinContext<ApplicationStoreManager>(ApplicationStoreManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -65,6 +65,8 @@ namespace AbatementHelper.WebAPI
 
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
+
+            
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(

@@ -56,15 +56,18 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<Response> Login(string email, string password)
+        public async Task<Response> InitialLogin(string email)
         {
-            var data = new FormUrlEncodedContent(new[]
+            var data = new
             {
-                new KeyValuePair<string, string>("email", email),
-                new KeyValuePair<string, string>("password", password)
-            });
+                Email = email
+            };
 
-            var request = await apiClient.PostAsync("/api/Login/EmailAuthentication", data);
+            string jsonData = (new JavaScriptSerializer()).Serialize(data);
+
+            HttpContent httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            var request = await apiClient.PostAsync("/api/Login/InitialLogin/", httpContent);
 
             var response = request.Content.ReadAsStringAsync();
 
@@ -87,9 +90,85 @@ namespace AbatementHelper.MVC.Repositories
             return responseModel;
         }
 
+        public async Task<Response> GetUserById(string id)
+        {
+            var request = apiClient.GetAsync("api/Login/GetUserById/" + id);
+            request.Wait();
+
+            var result = request.Result;
+
+            var response = await result.Content.ReadAsAsync<Response>();
+            
+            return response;
+        }
+
+        public async Task<Response> Login(string email, string userName, string password)
+        {
+            var data = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("Email", email),
+                new KeyValuePair<string, string>("UserName", userName),
+                new KeyValuePair<string, string>("Password", password)
+            });
+
+            var request = await apiClient.PostAsync("/api/Login/Authenticate", data);
+
+            var response = request.Content.ReadAsStringAsync();
+
+            string responseString = response.Result;
+
+            responseModel = JsonConvert.DeserializeObject<Response>(responseString);
+
+            ResponseMessageText = responseModel.ResponseMessage;
+
+            if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
+            {
+
+                LoginSuccessful = true;
+            }
+            else
+            {
+                LoginSuccessful = false;
+            }
+
+            return responseModel;
+        }
+
+
+
+
+
+
+
+
+        //public async Task<Response> StoreLogin(User user)
+        //{
+
+        //    var jsonContent = JsonConvert.SerializeObject(user);
+
+        //    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        //    var request = await apiClient.PostAsync("api/Login/StoreLogin", httpContent);
+
+        //    var response = request.Content.ReadAsStringAsync();
+
+        //    return new Response();
+        //}
+
+
+
+
+
+
+
+
+
+
+
+
         public async Task<string> Register(User user)
         {
-            //
+            
             var jsonContent = JsonConvert.SerializeObject(user);
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -105,7 +184,7 @@ namespace AbatementHelper.MVC.Repositories
             return await result;
         }
 
-        public CommonModels.Models.DataBaseUser Edit()
+        public DataBaseUser Edit()
         {
             DataBaseUser user = new DataBaseUser();
 

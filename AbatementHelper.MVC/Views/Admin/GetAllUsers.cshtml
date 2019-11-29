@@ -1,13 +1,6 @@
 ﻿@model IEnumerable<AbatementHelper.CommonModels.Models.DataBaseUser>
 
-@{
-    ViewBag.Title = "GetAllUsers";
-}
-
-<h2>Get All Users</h2>
-
-@if (ViewBag.Success == true) {
-    <table class="table">
+<table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Id)
@@ -19,19 +12,7 @@
             @Html.DisplayNameFor(model => model.LastName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.UserName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EmailConfirmed)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.PhoneNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PhoneNumberConfirmed)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Country)
@@ -52,79 +33,97 @@
             @Html.DisplayNameFor(model => model.Approved)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmailConfirmed)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNumberConfirmed)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.TwoFactorEnabled)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.AccessFailedCount)
         </th>
-        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Deleted)
+        </th>
     </tr>
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailConfirmed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumberConfirmed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Country)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Street)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Approved)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TwoFactorEnabled)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AccessFailedCount)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "GetDelete", new { id = item.Id })
-            </td>
-        </tr>
-    }
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PhoneNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Country)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Street)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Role)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Approved)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmailConfirmed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PhoneNumberConfirmed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TwoFactorEnabled)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AccessFailedCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Deleted)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditUser", new { id = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @{
+                if (item.Deleted)
+                {
+                    @Html.ActionLink("Restore", "Restore", new { id = item.Id }, new { role = item.Role });
+                }
+                else if (!item.Deleted)
+                {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { role = item.Role });
+                }
+            }
 
-
-</table> 
+        </td>
+    </tr>
 }
-else
-{
-    <p class="text-danger">An Error has occurred</p>
-}
 
-
+</table>

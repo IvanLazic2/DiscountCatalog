@@ -31,12 +31,13 @@ namespace AbatementHelper.CommonModels.Models
         public DataBaseStore Value { get; set; }
         public string Message { get; set; }
         public bool Success { get; set; }
+        public bool Deleted { get; set; }
     }
 
     public class DataBaseResultListOfStores
     {
         public List<DataBaseStore> Value { get; set; }
-        public string Messgae { get; set; }
+        public string Message { get; set; }
         public bool Success { get; set; }
     }
 }

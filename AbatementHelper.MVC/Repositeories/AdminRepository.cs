@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 
 namespace AbatementHelper.MVC.Repositeories
 {
@@ -39,18 +40,20 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public DataBaseResultListOfUsers GetAllUsers()
+        public DataBaseResultListOfUsers GetAllUsers(string role)
         {
             DataBaseResultListOfUsers users = new DataBaseResultListOfUsers();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/GetAllUsers");
+            var response = apiClient.GetAsync("api/Admin/GetAllUsers/"+role);
             response.Wait();
 
             var result = response.Result;
 
-            if (result.IsSuccessStatusCode)
+            var resultString = result.ToString();
+
+            if (result.IsSuccessStatusCode) //ovdje dobiva server error
             {
                 var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfUsers>();
                 resultContent.Wait();
@@ -61,13 +64,35 @@ namespace AbatementHelper.MVC.Repositeories
             return users;
         }
 
-        public DataBaseUser Edit(string id)
+        public DataBaseResultListOfStores GetAllStores()
+        {
+            DataBaseResultListOfStores users = new DataBaseResultListOfStores();
+
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/Admin/GetAllStores");
+            response.Wait();
+
+            var result = response.Result;
+
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfStores>();
+                resultContent.Wait();
+
+                users = resultContent.Result;
+            }
+
+            return users;
+        }
+
+        public DataBaseUser EditUser(string id)
         {
             DataBaseUser user = new DataBaseUser();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/Edit/" + id);
+            var response = apiClient.GetAsync("api/Admin/EditUser/" + id);
             response.Wait();
 
             var result = response.Result;
@@ -83,11 +108,11 @@ namespace AbatementHelper.MVC.Repositeories
 
         }
 
-        public bool Edit(DataBaseUser user)
+        public bool EditUser(DataBaseUser user)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync<DataBaseUser>("api/Admin/Edit", user);
+            var response = apiClient.PutAsJsonAsync("api/Admin/EditUser", user);
             response.Wait();
 
             var result = response.Result;
@@ -99,33 +124,33 @@ namespace AbatementHelper.MVC.Repositeories
             return false;
         }
 
-        public DataBaseUser GetDelete(string id)
+        public DataBaseStore EditStore(string id)
         {
-            DataBaseUser user = new DataBaseUser();
+            DataBaseStore store = new DataBaseStore();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/GetDelete/" + id);
+            var response = apiClient.GetAsync("api/Admin/EditStore/" + id);
             response.Wait();
 
             var result = response.Result;
             if (result.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<DataBaseUser>();
+                var resultContent = result.Content.ReadAsAsync<DataBaseStore>();
                 resultContent.Wait();
 
-                user = resultContent.Result;
+                store = resultContent.Result;
             }
 
-            return user;
+            return store;
 
         }
 
-        public bool Delete(string id)
-        { 
+        public bool EditStore(DataBaseStore store)
+        {
             AddTokenToHeader();
 
-            var response = apiClient.DeleteAsync("api/Admin/Delete/" + id);
+            var response = apiClient.PutAsJsonAsync("api/Admin/EditStore", store);
             response.Wait();
 
             var result = response.Result;
@@ -133,7 +158,51 @@ namespace AbatementHelper.MVC.Repositeories
             {
                 return true;
             }
+
             return false;
         }
+
+        public bool Delete(string role, string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.PutAsync("api/Admin/Delete/"  + role + "/" + id, null);
+            response.Wait();
+
+            var result = response.Result;
+
+            
+            var resultString = result.ToString();
+
+            
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Restore(string role, string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.PutAsync("api/Admin/Restore/" + role + "/" + id, null);
+            response.Wait();
+
+            var result = response.Result;
+
+
+            var resultString = result.ToString();
+
+
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

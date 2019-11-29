@@ -8,11 +8,15 @@ using AbatementHelper.MVC.Repositories;
 using System.Threading.Tasks;
 using System.Web.Security;
 using AbatementHelper.CommonModels.Models;
+using System.Web.Routing;
 
 namespace AbatementHelper.MVC.Controllers
 {
     public class UserController : Controller
     {
+        private AccountRepository account = new AccountRepository();
+        private Response response = new Response();
+
         [HttpGet]
         public ActionResult AccountTypeSelection()
         {
@@ -38,32 +42,29 @@ namespace AbatementHelper.MVC.Controllers
             {
                 return View("~/Views/User/UserRegistration.cshtml");
             }
-            else if ((string)Session["accountType"] == "Store")
-            {
-                return View("~/Views/User/StoreRegistration.cshtml");
-            }
             return View("~/Views/Shared/Error.cshtml");
         }
         //Registration POST action
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Registration([Bind(Exclude = "EmailConfirmed, ActivationCode")] User user)
+        public async Task<ActionResult> Registration(User user)
         {
             user.Role = Session["accountType"].ToString();
-            if (user.Role == "Store")
-            {
-                user.Approved = false;
-            }
-            else
-            {
-                user.Approved = true;
-            }
 
-            AccountRepository register = new AccountRepository();
+            //if (user.Role == "StoreAdmin")
+            //{
+            //    user.Approved = false;
+            //}
+            //else
+            //{
+            //    user.Approved = true;
+            //}
 
-            var result = await register.Register(user);
 
-            if (register.RegisterSuccessful)
+
+            var result = await account.Register(user);
+
+            if (account.RegisterSuccessful)
             {
                 TempData["Success"] = "Registration Successful, please log in!";
                 return RedirectToAction("Login");
@@ -82,7 +83,7 @@ namespace AbatementHelper.MVC.Controllers
 
         //Login
         [HttpGet]
-        public ActionResult Login()
+        public ActionResult InitialLogin()
         {
             if (TempData["Success"] != null)
             {
@@ -91,14 +92,111 @@ namespace AbatementHelper.MVC.Controllers
 
             return View();
         }
-        //Login POST
-        [HttpPost]
-        public async Task<ActionResult> Login([Bind(Exclude = "FirstName, LastName, PhoneNumber, BirthDate, EmailConfirmed, ConfirmationCode")] User user)
-        {
-            AccountRepository authenticate = new AccountRepository();
-            var result = await authenticate.Login(user.Email, user.Password);
 
-            if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
+        [HttpPost]
+        public async Task<ActionResult> InitialLogin(AuthenticatedUser user)
+        {
+            //TempData["EmailSuccess"] = false;
+            //TempData["Email"] = null;
+
+            //AccountRepository authenticate = new AccountRepository();
+            //Response result = await authenticate.InitialLogin(user.Email);
+
+            //if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
+            //{
+            //    TempData["StoreSelection"] = false;
+
+            //    user.Role = result.Users[0].Role;
+
+            //    if (user.Role == "Store")
+            //    {
+            //        TempData["StoreSelection"] = true;
+            //        //var storeResult = authenticate.StoreLogin(user);
+            //        return View(result);
+            //    }
+
+            //    //TempData["Email"] = user.Email;
+            //    ViewBag.Message = authenticate.ResponseMessageText;
+            //    //return RedirectToAction("PasswordLogin", new { email = user.Email, role = user.Role });
+            return RedirectToAction("AccountSelection", "User", new { email = user.Email });
+            //}
+            //else
+            //{
+            //    //TempData["Email"] = null;
+            //    ViewBag.Message = authenticate.ResponseMessageText;
+            //    return View("~/Views/User/InitialLogin.cshtml");
+            //}
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> AccountSelection(string email)
+        {
+            response = await account.InitialLogin(email);
+
+            if (response.Users != null)
+            {
+                List<User> users = response.Users.ConvertAll(u => new User
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    UserName = u.UserName,
+                    Role = u.Role
+                });
+
+                return View(users);
+            }
+            else if (response.User != null)
+            {
+                if (response.User.Email != null)
+                {
+                    return RedirectToAction("PasswordLogin", "User", new { id = response.User.Id });
+                }
+                else
+                {
+                    return RedirectToAction("InitialLogin", "User");
+                }
+            }
+            else
+            {
+                return RedirectToAction("InitialLogin", "User");
+            }
+        }
+
+        //[HttpPost]
+        //public async Task<ActionResult> AccountSelection(User user)
+        //{
+
+
+        //    return RedirectToAction("PasswordLogin", "User", new { id = user.Id });
+        //}
+
+        [HttpGet]
+        public async Task<ActionResult> PasswordLogin(string id)
+        {
+            var response = await account.GetUserById(id);
+
+            User user = new User
+            {
+                Id = response.User.Id,
+                Email = response.User.Email,
+                UserName = response.User.UserName,
+                Role = response.User.Role
+            };
+
+            TempData["User"] = user;
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PasswordLogin(User user)
+        {
+            User userTemp = (User)TempData["User"];
+            userTemp.Password = user.Password;
+
+            var result = await account.Login(userTemp.Email, userTemp.UserName, userTemp.Password);
+
+            if (account.LoginSuccessful && account.ResponseMessageText != null)
             {
                 Response.Cookies.Add(new HttpCookie("Access_Token")
                 {
@@ -122,18 +220,109 @@ namespace AbatementHelper.MVC.Controllers
                     Value = result.User.Id,
                     HttpOnly = true
                 });
+                Response.Cookies.Add(new HttpCookie("Email")
+                {
+                    Value = result.User.Email,
+                    HttpOnly = true
+                });
 
-
-
-                ViewBag.Message = authenticate.ResponseMessageText;
+                ViewBag.Message = account.ResponseMessageText;
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                ViewBag.Message = authenticate.ResponseMessageText;
-                return View("~/Views/User/Login.cshtml", user);
+                ViewBag.Message = account.ResponseMessageText;
+                return RedirectToAction("InitialLogin", "User");
             }
+
+            //return RedirectToAction("Index", "Home");
         }
+
+        //public async Task<ActionResult> StoreSelect(string id)
+        //{
+        //    return View();
+        //}
+
+
+
+
+        //public ActionResult PasswordLogin(string email, string role)
+        //{
+        //    if(email != null && role != null)
+        //    {
+        //        if(role == "User")
+        //        {
+        //            return View("~/Views/User/UserPasswordLogin.cshtml");
+        //        }
+        //        else if(role == "Store")
+        //        {
+        //            return View();
+        //        }
+        //        else
+        //        {
+        //            return View("~/Views/Shared/Error.cshtml");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("InitialLogin", "User");
+        //    }
+
+
+        //    //if (TempData["Email"] != null)
+        //    //{
+        //        //return View();
+        //    //}
+
+        //    //ViewBag.Message = "Please entera an e-mail address";
+        //    //return RedirectToAction("InitialLogin", "User");
+        //}
+
+        //[HttpPost]
+        //public async Task<ActionResult> PasswordLogin(User user)
+        //{
+        //    AccountRepository authenticate = new AccountRepository();
+        //    var result = await authenticate.UserLogin(user.Email, user.Password);
+
+        //    if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
+        //    {
+        //        Response.Cookies.Add(new HttpCookie("Access_Token")
+        //        {
+        //            Value = result.User.Access_Token,
+        //            HttpOnly = true
+        //        });
+
+        //        Response.Cookies.Add(new HttpCookie("Role")
+        //        {
+        //            Value = result.User.Role,
+        //            HttpOnly = true
+        //        });
+
+        //        Response.Cookies.Add(new HttpCookie("UserName")
+        //        {
+        //            Value = result.User.UserName,
+        //            HttpOnly = true
+        //        });
+        //        Response.Cookies.Add(new HttpCookie("UserID")
+        //        {
+        //            Value = result.User.Id,
+        //            HttpOnly = true
+        //        });
+        //        Response.Cookies.Add(new HttpCookie("Email")
+        //        {
+        //            Value = result.User.Email,
+        //            HttpOnly = true
+        //        });
+
+        //        ViewBag.Message = authenticate.ResponseMessageText;
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.Message = authenticate.ResponseMessageText;
+        //        return View("~/Views/User/Login.cshtml", user);
+        //    }
+        //}
 
         //Logout
 
@@ -158,8 +347,6 @@ namespace AbatementHelper.MVC.Controllers
         {
             DataBaseUser user = new DataBaseUser();
 
-            AccountRepository account = new AccountRepository();
-
             user = account.Edit();
 
             return View(user);
@@ -170,8 +357,6 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public ActionResult Edit(DataBaseUser user)
         {
-            AccountRepository account = new AccountRepository();
-
             if (account.Edit(user))
             {
                 return RedirectToAction("Index", "Home");
@@ -191,8 +376,6 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public ActionResult Delete(string id)
         {
-            AccountRepository account = new AccountRepository();
-
             account.Delete(id);
 
             return View();

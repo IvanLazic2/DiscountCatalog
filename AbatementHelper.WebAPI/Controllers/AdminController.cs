@@ -13,18 +13,27 @@ using System.Web.Http;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [RoutePrefix("api/Admin")]
     public class AdminController : ApiController
     {
         [HttpGet]
-        [Route("GetAllUsers")]
-        public DataBaseResultListOfUsers GetAllUsers()
+        [Route("GetAllUsers/{role}")]
+        public DataBaseResultListOfUsers GetAllUsers(string role)
         {
-            var users = DataBaseReader.ReadAllUsers();
 
+            var users = DataBaseReader.ReadAllUsers(role);
             return users;
         }
+
+        [HttpGet]
+        [Route("GetAllStores")]
+        public DataBaseResultListOfStores GetAllStores()
+        {
+            var stores = DataBaseReader.ReadAllStores();
+            return stores;
+        }
+
 
         [HttpPost]
         [Route("Approve")]
@@ -53,8 +62,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("Edit/{id}")]
-        public DataBaseUser Edit(string id)
+        [Route("EditUser/{id}")]
+        public DataBaseUser EditUser(string id)
         {
             DataBaseUser user = new DataBaseUser();
 
@@ -64,32 +73,91 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("Edit")]
-        public IHttpActionResult Edit(DataBaseUser user)
+        [Route("EditUser")]
+        public IHttpActionResult EditUser(DataBaseUser user)
         {
             DataBaseReader.EditUser(user);
 
             return Ok();
         }
 
-        [HttpGet]
-        [Route("GetDelete/{id}")]
-        public IHttpActionResult GetDelete(string id)
-        {
-            DataBaseUser user = DataBaseReader.ReadUserById(id).Value; 
 
-            return Ok(user);
+
+
+        [HttpGet]
+        [Route("EditStore/{id}")]
+        public DataBaseStore EditStore(string id)
+        {
+            DataBaseStore store = new DataBaseStore();
+
+            store = DataBaseReader.ReadStoreById(id).Value;
+
+            return store;
         }
 
-        [HttpDelete]
-        [Route("Delete")]
-        public IHttpActionResult Delete(string id)
+        [HttpPut]
+        [Route("EditStore")]
+        public IHttpActionResult EditStore(DataBaseStore store)
         {
-
-            DataBaseReader.Delete(id);
+            DataBaseReader.EditStore(store);
 
             return Ok();
         }
 
+        [HttpPut]
+        [Route("Delete/{role}/{id}")]
+        public IHttpActionResult Delete(string role, string id)
+        {
+            if (role == "User" || role == "StoreAdmin" || role == "Admin")
+            {
+                DataBaseReader.DeleteUser(id);
+                return Ok("User deleted");
+            }
+            else if (role == "Store")
+            {
+                DataBaseReader.DeleteStore(id);
+                return Ok("Store deleted");
+            }
+            else
+            {
+                return BadRequest("User does not exist");
+            }
+        }
+
+        [HttpPut]
+        [Route("Restore/{role}/{id}")]
+        public IHttpActionResult Restore(string role, string id)
+        {
+            if (role == "User" || role == "StoreAdmin" || role == "Admin")
+            {
+                DataBaseReader.RestoreUser(id);
+                return Ok("User restored");
+            }
+            else if (role == "Store")
+            {
+                DataBaseReader.RestoreStore(id);
+                return Ok("Store restored");
+            }
+            else
+            {
+                return BadRequest("User does not exist");
+            }
+        }
+
+
+
+
+
+
+
+
+
+        [Route("MethodTesting")]
+        public IHttpActionResult ReadEmail(string email)
+        {
+            DataBaseEntityRepository.ReadUsers(email);
+
+            return Ok();
+        }
     }
 }

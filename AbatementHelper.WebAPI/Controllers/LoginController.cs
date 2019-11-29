@@ -18,42 +18,115 @@ namespace AbatementHelper.WebAPI.Controllers
     [System.Web.Http.RoutePrefix("api/Login")]
     public class LoginController : ApiController
     {
+        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("EmailAuthentication")]
-        public Response EmailAuthentication(AuthenticationModel model)
+        [System.Web.Http.Route("InitialLogin")]
+        public Response InitialLogin(AuthenticationModel user)
         {
             Response response = new Response();
 
-            if (DataBaseReader.ReadEmail(model.Email).Success)
+            var emailReader = DataBaseEntityRepository.ReadEmail(user.Email);
+            var userReader = DataBaseEntityRepository.ReadUsers(user.Email);
+
+            //Task<string> role = Task.Run(() => entityReader.ReadRole("6d1eb4ab-1c16-4c74-a527-cfade928da79"));
+            //role.Wait();
+
+            if (emailReader.Success)
             {
-                AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
-
-                var result = Task.Run(() => authenticate.Authenticate(model.Email, DataBaseReader.ReadUsername(model.Email).Value, model.Password));
-                result.Wait();
-
-                response.User = result.Result;
-                
-                var readuser = DataBaseReader.ReadUser(model.Email);
-
-                if (authenticate.LoginSuccessful)
+                response.Users = userReader.ConvertAll(u => new AuthenticatedUser
                 {
-                    //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.OK, "Authentication successfull!");
+                    Id = u.Id,
+                    Role = returnAsyncRole(u.Id),
+                    Email = u.Email,
+                    UserName = u.UserName
+                });
 
-                    response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
-                    response.ResponseMessage = "Authentication Succesfull";
+                response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
 
-                    return response;
-                }
-                else
+                if (response.Users.Count == 1)
                 {
-                    //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Incorrect password!");
-
-                    response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
-                    response.ResponseMessage = "Incorrect password!";
-
-                    return response;
+                    response.User = response.Users.First();
+                    response.Users = null;
                 }
+
+                response.ResponseMessage = ""; // ovo cu jos vidit
             }
+            else
+            {
+                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+                response.ResponseMessage = "Email does not exist";
+            }
+
+            return response;
+        }
+
+        private string returnAsyncRole(string id)
+        {
+            Task<string> role = Task.Run(() => entityReader.ReadRole(id));
+            role.Wait();
+
+            return role.Result;
+        }
+
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("GetUserById/{id}")]
+        public Response GetUserById(string id)
+        {
+            Response response = new Response();
+
+            var userReader = entityReader.ReadUserById(id);
+
+            response.User = new AuthenticatedUser
+            {
+                Id = userReader.Id,
+                UserName = userReader.UserName,
+                Email = userReader.Email,
+                Role = returnAsyncRole(userReader.Id)
+            };
+
+            response.ResponseMessage = "";
+            response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
+
+            return response;
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("Authenticate")]
+        public Response Authenticate(AuthenticationModel model)
+        {
+            Response response = new Response();
+
+
+            AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
+
+            var result = Task.Run(() => authenticate.Authenticate(model.UserName, model.Password));
+            result.Wait();
+
+            response.User = result.Result;
+
+            //var readuser = DataBaseReader.ReadUser(model.Email);  ovo treba
+
+            if (authenticate.LoginSuccessful)
+            {
+                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.OK, "Authentication successfull!");
+
+                response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
+                response.ResponseMessage = "Authentication Succesfull";
+
+                return response;
+            }
+            else
+            {
+                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Incorrect password!");
+
+                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+                response.ResponseMessage = "Incorrect password!";
+
+                return response;
+            }
+
 
             //user.ResponseMessage = Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Email address does not exist!");
 
@@ -65,11 +138,10 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("test")]
-        public string test()
+        [System.Web.Http.Route("StoreAuthentication")]
+        public AuthenticationModel StoreLogin(DataBaseUser store, string password)
         {
-            
-            return DataBaseReader.ReadUsername("aaa@aaa.aaa").Value;
+            return new AuthenticationModel();
         }
 
     }

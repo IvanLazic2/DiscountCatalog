@@ -32,7 +32,7 @@ namespace AbatementHelper.WebAPI.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<AuthenticatedUser> Authenticate(string email, string username, string password)
+        public async Task<AuthenticatedUser> Authenticate(string username, string password)
         {
             //
             var data = new FormUrlEncodedContent(new[]

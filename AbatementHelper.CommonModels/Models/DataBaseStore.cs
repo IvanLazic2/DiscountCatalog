@@ -26,5 +26,6 @@ namespace AbatementHelper.CommonModels.Models
         public bool TwoFactorEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public string MasterStoreID { get; set; }
+        public bool Deleted { get; set; }
     }
 }

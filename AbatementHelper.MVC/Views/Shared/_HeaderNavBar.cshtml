@@ -25,15 +25,15 @@
                         {
                             Html.RenderPartial("_User");
                         }
-                        if (Request.Cookies["Role"].Value == "Store")
+                        if (Request.Cookies["Role"].Value == "StoreAdmin")
                         {
-                            Html.RenderPartial("_Store");
+                            Html.RenderPartial("_StoreAdmin");
                         }
                     }
                     else
                     {
                         <li>@Html.ActionLink("Register", "AccountTypeSelection", "User")</li>
-                        <li>@Html.ActionLink("Log in", "Login", "User")</li>
+                        <li>@Html.ActionLink("Log in", "InitialLogin", "User")</li>
                     }
 
                 }
