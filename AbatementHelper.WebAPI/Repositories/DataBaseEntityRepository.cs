@@ -25,19 +25,6 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<string> ReadRole(string id)
         {
-            //using (var context = new ApplicationUserDbContext())
-            //{
-            //    ApplicationUser user = (ApplicationUser)context.Users.Where(u => u.Email == email).SingleOrDefault();
-
-            //    return new DataBaseResult()
-            //    {
-            //        Value = user.Role,
-            //        Message = "Querry successful",
-            //        Success = true
-            //    };
-            //}
-
-
             using (var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationUserDbContext())))
             {
                 var roles = await userManager.GetRolesAsync(id);

@@ -268,6 +268,7 @@
     <Content Include="Views\User\_StoreList.cshtml" />
     <Content Include="Views\User\AccountSelection.cshtml" />
     <Content Include="Views\User\PasswordLogin.cshtml" />
+    <Content Include="Views\Shared\_Store.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -67,7 +67,7 @@ namespace AbatementHelper.MVC.Controllers
             if (account.RegisterSuccessful)
             {
                 TempData["Success"] = "Registration Successful, please log in!";
-                return RedirectToAction("Login");
+                return RedirectToAction("InitialLogin");
             }
             else
             {
@@ -173,19 +173,24 @@ namespace AbatementHelper.MVC.Controllers
         [HttpGet]
         public async Task<ActionResult> PasswordLogin(string id)
         {
-            var response = await account.GetUserById(id);
-
-            User user = new User
+            if (id != null)
             {
-                Id = response.User.Id,
-                Email = response.User.Email,
-                UserName = response.User.UserName,
-                Role = response.User.Role
-            };
+                var response = await account.GetUserById(id);
 
-            TempData["User"] = user;
+                User user = new User
+                {
+                    Id = response.User.Id,
+                    Email = response.User.Email,
+                    UserName = response.User.UserName,
+                    Role = response.User.Role
+                };
 
-            return View(user);
+                TempData["User"] = user;
+
+                return View(user);
+            }
+
+            return RedirectToAction("InitialLogin");
         }
 
         [HttpPost]
@@ -334,7 +339,7 @@ namespace AbatementHelper.MVC.Controllers
                 Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
             }
 
-            return RedirectToAction("Login");
+            return RedirectToAction("InitialLogin");
         }
 
 
