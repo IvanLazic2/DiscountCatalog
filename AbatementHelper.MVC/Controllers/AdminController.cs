@@ -1,4 +1,5 @@
 ﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Repositeories;
 using AbatementHelper.MVC.Repositories;
 using System;
@@ -12,50 +13,34 @@ namespace AbatementHelper.MVC.Controllers
     [RoutePrefix("Admin")]
     public class AdminController : Controller
     {
+        private AdminRepository admin = new AdminRepository();
+
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        [Route("GetAllUsers/{role}")]
-        public ActionResult GetAllUsers(string role)
+        [Route("GetAllUsers")]
+        public ActionResult GetAllUsers()
         {
-            List<DataBaseUser> users;
+            List<WebApiUser> users;
 
-            AdminRepository admin = new AdminRepository();
+            var result = admin.GetAllUsers();
 
-            ViewBag.Success = admin.GetAllUsers(role).Success;
-            ViewBag.Message = admin.GetAllUsers(role).Message;
+            ViewBag.Success = result.Success;
+            ViewBag.Message = result.Message;
 
-            users = admin.GetAllUsers(role).Value;
+            users = result.Value;
 
             return View(users);
-        }
-
-        [HttpGet]
-        [Route("GetAllStores/{role}")]
-        public ActionResult GetAllStores(string role)
-        {
-            List<DataBaseStore> stores;
-
-            AdminRepository admin = new AdminRepository();
-
-            ViewBag.Success = admin.GetAllStores().Success;
-            ViewBag.Message = admin.GetAllStores().Message;
-
-            stores = admin.GetAllStores().Value;
-
-            return View(stores);
         }
 
         [HttpGet]
         [Route("EditUser/{id}")]
         public ActionResult EditUser(string id)
         {
-            DataBaseUser user = new DataBaseUser();
-
-            AdminRepository admin = new AdminRepository();
+            WebApiUser user = new WebApiUser();
 
             user = admin.EditUser(id);
 
@@ -63,80 +48,100 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpPost]
-        [Route("EditUser/{id}")]
-        public ActionResult EditUser(DataBaseUser user)
+        [Route("EditUser")]
+        public ActionResult EditUser(WebApiUser user)
         {
-            AdminRepository admin = new AdminRepository();
+            admin.EditUser(user);
 
-            if (admin.EditUser(user))
-            {
-                if (user.Role == "User")
-                {
-                    return RedirectToAction("GetAllUsers/User");
-                }
-                else if (user.Role == "StoreAdmin")
-                {
-                    return RedirectToAction("GetAllUsers/StoreAdmin");
-                }
-                else if (user.Role == "Admin")
-                {
-                    return RedirectToAction("GetAllUsers/Admin");
-                }
-                else if (user.Role == "Store")
-                {
-                    return RedirectToAction("GetAllUsers/Store");
-                }
-            }
+            return RedirectToAction("GetAllUsers");
+        }
+
+        [HttpGet]
+        [Route("DetailsUser/{id}")]
+        public ActionResult DetailsUser(string id)
+        {
+            WebApiUser user = admin.DetailsUser(id);
 
             return View(user);
         }
 
         [HttpGet]
-        [Route("EditUser/{id}")]
-        public ActionResult EditStore(string id)
+        [Route("DeleteUser")]
+        public ActionResult DeleteUser(string id)
         {
-            DataBaseStore store = new DataBaseStore();
+            WebApiUser user = admin.DetailsUser(id);
 
-            AdminRepository admin = new AdminRepository();
-
-            store = admin.EditStore(id);
-
-            return View(store);
+            return View(user);
         }
 
         [HttpPost]
-        [Route("EditUser/{id}")]
-        public ActionResult EditStore(DataBaseStore store)
+        [Route("DeleteUser/{id}")]
+        public ActionResult DeleteUser(WebApiUser user)
         {
-            AdminRepository admin = new AdminRepository();
+            admin.DeleteUser(user);
 
-            if (admin.EditStore(store))
-            {
-                return RedirectToAction("GetAllStores");
-            }
-
-            return View(store);
+            return RedirectToAction("GetAllUsers");
         }
 
-        [Route("Delete/{role}/{id}")]
-        public ActionResult Delete(string role, string id)
+        [HttpGet]
+        [Route("RestoreUser/{id}")]
+        public ActionResult RestoreUser(string id)
         {
-            AdminRepository admin = new AdminRepository();
+            admin.RestoreUser(id);
 
-            admin.Delete(role, id);
-
-            return View("~/Views/Admin/Index.cshtml");
+            return RedirectToAction("GetAllUsers");
         }
 
-        [Route("Restore/{role}/{id}")]
-        public ActionResult Restore(string role, string id)
-        {
-            AdminRepository admin = new AdminRepository();
 
-            admin.Restore(role, id);
 
-            return View("~/Views/Admin/Index.cshtml");
-        }
+
+
+        //[HttpGet]
+        //[Route("EditUser/{id}")]
+        //public ActionResult EditStore(string id)
+        //{
+        //    DataBaseStore store = new DataBaseStore();
+
+        //    AdminRepository admin = new AdminRepository();
+
+        //    store = admin.EditStore(id);
+
+        //    return View(store);
+        //}
+
+        //[HttpPost]
+        //[Route("EditUser/{id}")]
+        //public ActionResult EditStore(DataBaseStore store)
+        //{
+        //    AdminRepository admin = new AdminRepository();
+
+        //    if (admin.EditStore(store))
+        //    {
+        //        return RedirectToAction("GetAllStores");
+        //    }
+
+        //    return View(store);
+        //}
+
+        //[Route("Delete/{role}/{id}")]
+        //public ActionResult Delete(string role, string id)
+        //{
+        //    AdminRepository admin = new AdminRepository();
+
+        //    admin.Delete(role, id);
+
+        //    return View("~/Views/Admin/Index.cshtml");
+        //}
+
+        //[Route("Restore/{role}/{id}")]
+        //public ActionResult Restore(string role, string id)
+        //{
+        //    AdminRepository admin = new AdminRepository();
+
+        //    admin.Restore(role, id);
+
+        //    return View("~/Views/Admin/Index.cshtml");
+        //}
 
     }
 }

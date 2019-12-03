@@ -14,39 +14,39 @@ namespace AbatementHelper.MVC.Controllers
     [RoutePrefix("StoreAdmin")]
     public class StoreAdminController : Controller
     {
-        [HttpGet]
-        public ActionResult GetAllStores()
-        {
-            string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
+        //[HttpGet]
+        //public ActionResult GetAllStores()
+        //{
+        //    string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
 
-            List<DataBaseStore> stores;
+        //    List<DataBaseStore> stores;
 
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
 
-            ViewBag.Success = storeAdmin.GetAllStores(masterStoreID).Success;
-            ViewBag.Message = storeAdmin.GetAllStores(masterStoreID).Message;
+        //    ViewBag.Success = storeAdmin.GetAllStores(masterStoreID).Success;
+        //    ViewBag.Message = storeAdmin.GetAllStores(masterStoreID).Message;
 
-            stores = storeAdmin.GetAllStores(masterStoreID).Value;
+        //    stores = storeAdmin.GetAllStores(masterStoreID).Value;
 
-            return View(stores);
-        }
+        //    return View(stores);
+        //}
 
-        [HttpGet]
-        public ActionResult GetAllDeletedStores()
-        {
-            string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
+        //[HttpGet]
+        //public ActionResult GetAllDeletedStores()
+        //{
+        //    string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
 
-            List<DataBaseStore> stores;
+        //    List<DataBaseStore> stores;
 
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
 
-            ViewBag.Success = storeAdmin.GetAllDeletedStores(masterStoreID).Success;
-            ViewBag.Message = storeAdmin.GetAllDeletedStores(masterStoreID).Message;
+        //    ViewBag.Success = storeAdmin.GetAllDeletedStores(masterStoreID).Success;
+        //    ViewBag.Message = storeAdmin.GetAllDeletedStores(masterStoreID).Message;
 
-            stores = storeAdmin.GetAllDeletedStores(masterStoreID).Value;
+        //    stores = storeAdmin.GetAllDeletedStores(masterStoreID).Value;
 
-            return View(stores);
-        }
+        //    return View(stores);
+        //}
 
         //Registration action
         [HttpGet]
@@ -78,29 +78,29 @@ namespace AbatementHelper.MVC.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult Edit(string id)
-        {
-            DataBaseStore store = new DataBaseStore();
+        //[HttpGet]
+        //public ActionResult Edit(string id)
+        //{
+        //    DataBaseStore store = new DataBaseStore();
 
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
 
-            store = storeAdmin.Edit(id);
+        //    store = storeAdmin.Edit(id);
 
-            return View(store);
-        }
+        //    return View(store);
+        //}
 
-        [HttpPost]
-        public ActionResult Edit(DataBaseStore store)
-        {
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        //[HttpPost]
+        //public ActionResult Edit(DataBaseStore store)
+        //{
+        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
 
-            if (storeAdmin.Edit(store))
-            {
-                return RedirectToAction("GetAllStores");
-            }
-            return View(store);
-        }
+        //    if (storeAdmin.Edit(store))
+        //    {
+        //        return RedirectToAction("GetAllStores");
+        //    }
+        //    return View(store);
+        //}
 
         public ActionResult DeleteStore(string id)
         {

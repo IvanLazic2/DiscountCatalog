@@ -1,1177 +1,1180 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Configuration;
-using AbatementHelper.CommonModels.Models;
-using AbatementHelper.WebAPI.Models;
-using AutoMapper;
-
-namespace AbatementHelper.WebApi.Repositeories
-{
-    public class DataBaseReader
-    {
-        private static string ConnectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(); //"Data Source=MyNameJeff;Initial Catalog=AbatementHelper.DataBase;Integrated Security=True";
-
-        //public static DataBaseResult ReadEmail(string email)
-        //{
-        //    var querry = "SELECT * FROM AspNetUsers";
-
-        //    SqlConnection connection = new SqlConnection(ConnectionString);
-
-        //    SqlCommand command = new SqlCommand(querry, connection);
-
-        //    try
-        //    {
-        //        connection.Open();
-
-        //        SqlDataReader reader = command.ExecuteReader();
-
-        //        DataBaseResult result = new DataBaseResult();
-
-        //        while (reader.Read())
-        //        {
-        //            if (reader["Email"].ToString() == email)
-        //            {
-        //                result.Value = email;
-        //                result.Message = "Querry successful";
-        //                result.Success = true;
-
-        //                return result;
-        //            }
-        //            else
-        //            {
-        //                result.Message = "Querry unsuccessful";
-        //                result.Success = false;
-        //            }
-        //        }
-
-        //        return result;
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //    finally
-        //    {
-        //        connection.Close();
-        //    }
-        //}
-
-        //public static DataBaseResult ReadUsername(string email)
-        //{
-        //    var querry = "SELECT * FROM AspNetUsers";
-
-        //    SqlConnection connection = new SqlConnection(ConnectionString);
-
-        //    SqlCommand command = new SqlCommand(querry, connection);
-
-        //    try
-        //    {
-        //        connection.Open();
-
-        //        SqlDataReader reader = command.ExecuteReader();
-
-        //        DataBaseResult result = new DataBaseResult();
-
-        //        while (reader.Read())
-        //        {
-        //            if (reader["Email"].ToString() == email)
-        //            {
-        //                result.Value = reader["UserName"].ToString();
-        //                result.Message = "Querry successful";
-        //                result.Success = true;
-
-        //                return result;
-        //            }
-        //            else
-        //            {
-        //                result.Message = "Querry unsuccessful";
-        //                result.Success = false;
-        //            }
-        //        }
-
-        //        return result;
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //    finally
-        //    {
-        //        connection.Close();
-        //    }
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Data.SqlClient;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using System.Web;
+//using System.Web.Configuration;
+//using AbatementHelper.CommonModels.Models;
+//using AbatementHelper.CommonModels.WebApiModels;
+//using AbatementHelper.WebAPI.Models;
+//using AutoMapper;
+
+//namespace AbatementHelper.WebApi.Repositeories
+//{
+//    public class DataBaseReader
+//    {
+//        private static string ConnectionString = WebConfigurationManager.ConnectionStrings["DefaultConnection"].ToString(); //"Data Source=MyNameJeff;Initial Catalog=AbatementHelper.DataBase;Integrated Security=True";
+
+//        //public static DataBaseResult ReadEmail(string email)
+//        //{
+//        //    var querry = "SELECT * FROM AspNetUsers";
+
+//        //    SqlConnection connection = new SqlConnection(ConnectionString);
+
+//        //    SqlCommand command = new SqlCommand(querry, connection);
+
+//        //    try
+//        //    {
+//        //        connection.Open();
+
+//        //        SqlDataReader reader = command.ExecuteReader();
+
+//        //        DataBaseResult result = new DataBaseResult();
+
+//        //        while (reader.Read())
+//        //        {
+//        //            if (reader["Email"].ToString() == email)
+//        //            {
+//        //                result.Value = email;
+//        //                result.Message = "Querry successful";
+//        //                result.Success = true;
+
+//        //                return result;
+//        //            }
+//        //            else
+//        //            {
+//        //                result.Message = "Querry unsuccessful";
+//        //                result.Success = false;
+//        //            }
+//        //        }
+
+//        //        return result;
+//        //    }
+//        //    catch
+//        //    {
+//        //        throw;
+//        //    }
+//        //    finally
+//        //    {
+//        //        connection.Close();
+//        //    }
+//        //}
+
+//        //public static DataBaseResult ReadUsername(string email)
+//        //{
+//        //    var querry = "SELECT * FROM AspNetUsers";
+
+//        //    SqlConnection connection = new SqlConnection(ConnectionString);
+
+//        //    SqlCommand command = new SqlCommand(querry, connection);
+
+//        //    try
+//        //    {
+//        //        connection.Open();
+
+//        //        SqlDataReader reader = command.ExecuteReader();
+
+//        //        DataBaseResult result = new DataBaseResult();
+
+//        //        while (reader.Read())
+//        //        {
+//        //            if (reader["Email"].ToString() == email)
+//        //            {
+//        //                result.Value = reader["UserName"].ToString();
+//        //                result.Message = "Querry successful";
+//        //                result.Success = true;
+
+//        //                return result;
+//        //            }
+//        //            else
+//        //            {
+//        //                result.Message = "Querry unsuccessful";
+//        //                result.Success = false;
+//        //            }
+//        //        }
+
+//        //        return result;
+//        //    }
+//        //    catch
+//        //    {
+//        //        throw;
+//        //    }
+//        //    finally
+//        //    {
+//        //        connection.Close();
+//        //    }
 
-        //}
+//        //}
 
-        //public static DataBaseResultUser ReadUser(string email)
-        //{
-        //    List<string> userData = new List<string>();
+//        //public static DataBaseResultUser ReadUser(string email)
+//        //{
+//        //    List<string> userData = new List<string>();
 
-        //    SqlConnection connection = new SqlConnection(ConnectionString);
+//        //    SqlConnection connection = new SqlConnection(ConnectionString);
 
-        //    SqlCommand sqlCommand = new SqlCommand();
+//        //    SqlCommand sqlCommand = new SqlCommand();
 
-        //    connection.Open();
+//        //    connection.Open();
 
-        //    sqlCommand.Connection = connection;
+//        //    sqlCommand.Connection = connection;
 
-        //    sqlCommand.CommandType = System.Data.CommandType.Text;
+//        //    sqlCommand.CommandType = System.Data.CommandType.Text;
 
-        //    sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE Email = @email";
+//        //    sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE Email = @email";
 
-        //    sqlCommand.Parameters.AddWithValue("@email", email);
-
-        //    SqlDataReader reader = sqlCommand.ExecuteReader();
-
-        //    DataBaseUser user = new DataBaseUser();
-
-        //    DataBaseResultUser result = new DataBaseResultUser();
-
-        //    try
-        //    {
-        //        int count = reader.FieldCount;
-        //        while (reader.Read())
-        //        {
-        //            if (reader["Email"].ToString() == email)
-        //            {
-        //                user.Id = reader["Id"].ToString();
-        //                user.FirstName = reader["FirstName"].ToString();
-        //                user.LastName = reader["LastName"].ToString();
-        //                user.PhoneNumber = reader["PhoneNumber"].ToString();
-        //                //user.Country = reader["Country"].ToString();
-        //                //user.City = reader["City"].ToString();
-        //                //user.PostalCode = reader["PostalCode"].ToString();
-        //                //user.Street = reader["Street"].ToString();
-        //                user.Role = reader["Role"].ToString();
-        //                user.Approved = (bool)reader["Approved"];
-        //                user.Email = reader["Email"].ToString();
-        //                user.EmailConfirmed = (bool)reader["EmailConfirmed"];
-        //                user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
-        //                user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
-        //                user.AccessFailedCount = (int)reader["AccessFailedCount"];
-        //                user.UserName = reader["UserName"].ToString();
-        //                user.Deleted = (bool)reader["Deleted"];
-
-        //                result.Value = user;
-        //                result.Message = "Querry successful";
-        //                result.Success = true;
-        //            }
-
-        //            else
-        //            {
-        //                result.Message = "Querry unsuccessful";
-        //                result.Success = false;
-
-        //                return result;
-        //            }
-        //        }
-
-        //        return result;
-
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }
-        //    finally
-        //    {
-        //        connection.Close();
-        //    }
+//        //    sqlCommand.Parameters.AddWithValue("@email", email);
+
+//        //    SqlDataReader reader = sqlCommand.ExecuteReader();
+
+//        //    DataBaseUser user = new DataBaseUser();
+
+//        //    DataBaseResultUser result = new DataBaseResultUser();
+
+//        //    try
+//        //    {
+//        //        int count = reader.FieldCount;
+//        //        while (reader.Read())
+//        //        {
+//        //            if (reader["Email"].ToString() == email)
+//        //            {
+//        //                user.Id = reader["Id"].ToString();
+//        //                user.FirstName = reader["FirstName"].ToString();
+//        //                user.LastName = reader["LastName"].ToString();
+//        //                user.PhoneNumber = reader["PhoneNumber"].ToString();
+//        //                //user.Country = reader["Country"].ToString();
+//        //                //user.City = reader["City"].ToString();
+//        //                //user.PostalCode = reader["PostalCode"].ToString();
+//        //                //user.Street = reader["Street"].ToString();
+//        //                user.Role = reader["Role"].ToString();
+//        //                user.Approved = (bool)reader["Approved"];
+//        //                user.Email = reader["Email"].ToString();
+//        //                user.EmailConfirmed = (bool)reader["EmailConfirmed"];
+//        //                user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
+//        //                user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
+//        //                user.AccessFailedCount = (int)reader["AccessFailedCount"];
+//        //                user.UserName = reader["UserName"].ToString();
+//        //                user.Deleted = (bool)reader["Deleted"];
+
+//        //                result.Value = user;
+//        //                result.Message = "Querry successful";
+//        //                result.Success = true;
+//        //            }
+
+//        //            else
+//        //            {
+//        //                result.Message = "Querry unsuccessful";
+//        //                result.Success = false;
+
+//        //                return result;
+//        //            }
+//        //        }
+
+//        //        return result;
+
+//        //    }
+//        //    catch
+//        //    {
+//        //        throw;
+//        //    }
+//        //    finally
+//        //    {
+//        //        connection.Close();
+//        //    }
 
-        //}
+//        //}
 
-        public static DataBaseResultUser ReadUserById(string id)
-        {
-            List<string> userData = new List<string>();
+//        public static DataBaseResultUser ReadUserById(string id)
+//        {
+//            List<string> userData = new List<string>();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            SqlCommand sqlCommand = new SqlCommand();
+
+//            connection.Open();
+
+//            sqlCommand.Connection = connection;
+
+//            sqlCommand.CommandType = System.Data.CommandType.Text;
+
+//            sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE Id = @Id";
+
+//            sqlCommand.Parameters.AddWithValue("@Id", id);
+
+//            SqlDataReader reader = sqlCommand.ExecuteReader();
+
+//            DataBaseUser user = new DataBaseUser();
+
+//            DataBaseResultUser result = new DataBaseResultUser();
+
+//            try
+//            {
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["Id"].ToString() == id)
+//                    {
+//                        user.Id = reader["Id"].ToString();
+//                        //user.FirstName = reader["FirstName"].ToString();
+//                        //user.LastName = reader["LastName"].ToString();
+//                        user.PhoneNumber = reader["PhoneNumber"].ToString();
+//                        //user.Country = reader["Country"].ToString();
+//                        //user.City = reader["City"].ToString();
+//                        //user.PostalCode = reader["PostalCode"].ToString();
+//                        //user.Street = reader["Street"].ToString();
+//                        user.Role = reader["Role"].ToString();
+//                        user.Approved = (bool)reader["Approved"];
+//                        user.Email = reader["Email"].ToString();
+//                        user.EmailConfirmed = (bool)reader["EmailConfirmed"];
+//                        user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
+//                        user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
+//                        user.AccessFailedCount = (int)reader["AccessFailedCount"];
+//                        user.UserName = reader["UserName"].ToString();
+//                        user.Deleted = (bool)reader["Deleted"];
+
+//                        result.Value = user;
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
+//                    }
+
+//                    else
+//                    {
+//                        result.Message = "Querry unsuccessful";
+//                        result.Success = false;
+
+//                        return result;
+//                    }
+//                }
+
+//                return result;
+
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
+
+//        public static DataBaseResultUser ReadUserByUsername(string username)
+//        {
+//            List<string> userData = new List<string>();
+
+//            SqlConnection connection = new SqlConnection(ConnectionString);
+
+//            SqlCommand sqlCommand = new SqlCommand();
+
+//            connection.Open();
+
+//            sqlCommand.Connection = connection;
+
+//            sqlCommand.CommandType = System.Data.CommandType.Text;
+
+//            sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE UserName = @UserName";
+
+//            sqlCommand.Parameters.AddWithValue("@UserName", username);
+
+//            SqlDataReader reader = sqlCommand.ExecuteReader();
+
+//            DataBaseUser user = new DataBaseUser();
+
+//            DataBaseResultUser result = new DataBaseResultUser();
+
+//            try
+//            {
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["UserName"].ToString() == username)
+//                    {
+//                        user.Id = reader["Id"].ToString();
+//                        //user.FirstName = reader["FirstName"].ToString();
+//                        //user.LastName = reader["LastName"].ToString();
+//                        user.PhoneNumber = reader["PhoneNumber"].ToString();
+//                        //user.Country = reader["Country"].ToString();
+//                        //user.City = reader["City"].ToString();
+//                        //user.PostalCode = reader["PostalCode"].ToString();
+//                        //user.Street = reader["Street"].ToString();
+//                        user.Role = reader["Role"].ToString();
+//                        user.Approved = (bool)reader["Approved"];
+//                        user.Email = reader["Email"].ToString();
+//                        user.EmailConfirmed = (bool)reader["EmailConfirmed"];
+//                        user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
+//                        user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
+//                        user.AccessFailedCount = (int)reader["AccessFailedCount"];
+//                        user.UserName = reader["UserName"].ToString();
+//                        user.Deleted = (bool)reader["Deleted"];
+
+//                        result.Value = user;
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
+//                    }
+
+//                    else
+//                    {
+//                        result.Message = "Querry unsuccessful";
+//                        result.Success = false;
+
+//                        return result;
+//                    }
+//                }
+
+//                return result;
+
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
+
+//        public static DataBaseResult ReadRole(string role)
+//        {
+//            SqlConnection connection = new SqlConnection(ConnectionString);
+
+//            SqlCommand sqlCommand = new SqlCommand();
+
+//            try
+//            {
+//                connection.Open();
 
-            connection.Open();
-
-            sqlCommand.Connection = connection;
-
-            sqlCommand.CommandType = System.Data.CommandType.Text;
-
-            sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE Id = @Id";
-
-            sqlCommand.Parameters.AddWithValue("@Id", id);
-
-            SqlDataReader reader = sqlCommand.ExecuteReader();
-
-            DataBaseUser user = new DataBaseUser();
-
-            DataBaseResultUser result = new DataBaseResultUser();
-
-            try
-            {
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["Id"].ToString() == id)
-                    {
-                        user.Id = reader["Id"].ToString();
-                        //user.FirstName = reader["FirstName"].ToString();
-                        //user.LastName = reader["LastName"].ToString();
-                        user.PhoneNumber = reader["PhoneNumber"].ToString();
-                        //user.Country = reader["Country"].ToString();
-                        //user.City = reader["City"].ToString();
-                        //user.PostalCode = reader["PostalCode"].ToString();
-                        //user.Street = reader["Street"].ToString();
-                        user.Role = reader["Role"].ToString();
-                        user.Approved = (bool)reader["Approved"];
-                        user.Email = reader["Email"].ToString();
-                        user.EmailConfirmed = (bool)reader["EmailConfirmed"];
-                        user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
-                        user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
-                        user.AccessFailedCount = (int)reader["AccessFailedCount"];
-                        user.UserName = reader["UserName"].ToString();
-                        user.Deleted = (bool)reader["Deleted"];
-
-                        result.Value = user;
-                        result.Message = "Querry successful";
-                        result.Success = true;
-                    }
-
-                    else
-                    {
-                        result.Message = "Querry unsuccessful";
-                        result.Success = false;
-
-                        return result;
-                    }
-                }
-
-                return result;
-
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        public static DataBaseResultUser ReadUserByUsername(string username)
-        {
-            List<string> userData = new List<string>();
-
-            SqlConnection connection = new SqlConnection(ConnectionString);
-
-            SqlCommand sqlCommand = new SqlCommand();
-
-            connection.Open();
-
-            sqlCommand.Connection = connection;
-
-            sqlCommand.CommandType = System.Data.CommandType.Text;
-
-            sqlCommand.CommandText = "SELECT * FROM AspNetUsers WHERE UserName = @UserName";
-
-            sqlCommand.Parameters.AddWithValue("@UserName", username);
-
-            SqlDataReader reader = sqlCommand.ExecuteReader();
-
-            DataBaseUser user = new DataBaseUser();
-
-            DataBaseResultUser result = new DataBaseResultUser();
-
-            try
-            {
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["UserName"].ToString() == username)
-                    {
-                        user.Id = reader["Id"].ToString();
-                        //user.FirstName = reader["FirstName"].ToString();
-                        //user.LastName = reader["LastName"].ToString();
-                        user.PhoneNumber = reader["PhoneNumber"].ToString();
-                        //user.Country = reader["Country"].ToString();
-                        //user.City = reader["City"].ToString();
-                        //user.PostalCode = reader["PostalCode"].ToString();
-                        //user.Street = reader["Street"].ToString();
-                        user.Role = reader["Role"].ToString();
-                        user.Approved = (bool)reader["Approved"];
-                        user.Email = reader["Email"].ToString();
-                        user.EmailConfirmed = (bool)reader["EmailConfirmed"];
-                        user.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
-                        user.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
-                        user.AccessFailedCount = (int)reader["AccessFailedCount"];
-                        user.UserName = reader["UserName"].ToString();
-                        user.Deleted = (bool)reader["Deleted"];
-
-                        result.Value = user;
-                        result.Message = "Querry successful";
-                        result.Success = true;
-                    }
-
-                    else
-                    {
-                        result.Message = "Querry unsuccessful";
-                        result.Success = false;
-
-                        return result;
-                    }
-                }
-
-                return result;
-
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        public static DataBaseResult ReadRole(string role)
-        {
-            SqlConnection connection = new SqlConnection(ConnectionString);
-
-            SqlCommand sqlCommand = new SqlCommand();
-
-            try
-            {
-                connection.Open();
+//                sqlCommand.Connection = connection;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = "SELECT * FROM AspNetRoles WHERE Name = @role";
 
-                sqlCommand.CommandText = "SELECT * FROM AspNetRoles WHERE Name = @role";
+//                sqlCommand.Parameters.AddWithValue("@role", role);
 
-                sqlCommand.Parameters.AddWithValue("@role", role);
+//                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+//                DataBaseResult result = new DataBaseResult();
 
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["Name"].ToString() == role)
+//                    {
+//                        result.Value = reader["Name"].ToString();
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
 
-                DataBaseResult result = new DataBaseResult();
+//                        return result;
+//                    }
 
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["Name"].ToString() == role)
-                    {
-                        result.Value = reader["Name"].ToString();
-                        result.Message = "Querry successful";
-                        result.Success = true;
+//                    else
+//                    {
+//                        result.Message = "Querry unsuccessful";
+//                        result.Success = false;
+
+//                        return result;
+//                    }
+//                }
+
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                        return result;
-                    }
+//                return result;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                    else
-                    {
-                        result.Message = "Querry unsuccessful";
-                        result.Success = false;
-
-                        return result;
-                    }
-                }
-
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//        public static DataBaseResultUser UpdateDataBaseApproved(string email, bool approved)
+//        {
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-                return result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            SqlCommand sqlCommandUpdate = new SqlCommand();
 
-        public static DataBaseResultUser UpdateDataBaseApproved(string email, bool approved)
-        {
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            SqlCommand sqlCommandSelect = new SqlCommand();
 
-            SqlCommand sqlCommandUpdate = new SqlCommand();
+//            DataBaseResultUser result = new DataBaseResultUser();
 
-            SqlCommand sqlCommandSelect = new SqlCommand();
+//            connection.Open();
 
-            DataBaseResultUser result = new DataBaseResultUser();
+//            sqlCommandSelect.Connection = connection;
 
-            connection.Open();
+//            sqlCommandSelect.CommandType = System.Data.CommandType.Text;
 
-            sqlCommandSelect.Connection = connection;
+//            sqlCommandSelect.CommandText = "SELECT * FROM AspNetUsers";
 
-            sqlCommandSelect.CommandType = System.Data.CommandType.Text;
+//            sqlCommandSelect.ExecuteNonQuery();
 
-            sqlCommandSelect.CommandText = "SELECT * FROM AspNetUsers";
+//            SqlDataReader reader = sqlCommandSelect.ExecuteReader();
+//            try
+//            {
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["Email"].ToString() == email)
+//                    {
+//                        if ((bool)reader["Approved"] == approved)
+//                        {
+//                            result.Message = $"User approved status is already: {(bool)reader["Approved"]}";
+//                            result.Success = false;
 
-            sqlCommandSelect.ExecuteNonQuery();
+//                            return result;
+//                        }
 
-            SqlDataReader reader = sqlCommandSelect.ExecuteReader();
-            try
-            {
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["Email"].ToString() == email)
-                    {
-                        if ((bool)reader["Approved"] == approved)
-                        {
-                            result.Message = $"User approved status is already: {(bool)reader["Approved"]}";
-                            result.Success = false;
+//                        reader.Close();
 
-                            return result;
-                        }
+//                        sqlCommandUpdate.Connection = connection;
 
-                        reader.Close();
+//                        sqlCommandUpdate.CommandType = System.Data.CommandType.Text;
 
-                        sqlCommandUpdate.Connection = connection;
+//                        sqlCommandUpdate.Parameters.AddWithValue("@email", email);
 
-                        sqlCommandUpdate.CommandType = System.Data.CommandType.Text;
+//                        sqlCommandUpdate.Parameters.Add(new SqlParameter("@approved", System.Data.SqlDbType.Bit)).Value = approved;
 
-                        sqlCommandUpdate.Parameters.AddWithValue("@email", email);
+//                        sqlCommandUpdate.CommandText = "UPDATE AspNetUsers SET Approved = @approved WHERE Email = @email";
 
-                        sqlCommandUpdate.Parameters.Add(new SqlParameter("@approved", System.Data.SqlDbType.Bit)).Value = approved;
+//                        sqlCommandUpdate.ExecuteNonQuery();
 
-                        sqlCommandUpdate.CommandText = "UPDATE AspNetUsers SET Approved = @approved WHERE Email = @email";
+//                        sqlCommandUpdate.Parameters.Clear();
 
-                        sqlCommandUpdate.ExecuteNonQuery();
+//                        //result.Value = ReadUser(email).Value;
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
 
-                        sqlCommandUpdate.Parameters.Clear();
+//                        return result;
+//                    }
+//                    else
+//                    {
+//                        result.Message = "Email does not exist";
+//                        result.Success = false;
 
-                        //result.Value = ReadUser(email).Value;
-                        result.Message = "Querry successful";
-                        result.Success = true;
+//                        return result;
+//                    }
+//                }
 
-                        return result;
-                    }
-                    else
-                    {
-                        result.Message = "Email does not exist";
-                        result.Success = false;
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                        return result;
-                    }
-                }
+//                return result;
 
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                return result;
+//        public static DataBaseResultListOfUsers ReadAllUsers(string role)
+//        {
 
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
 
-        public static DataBaseResultListOfUsers ReadAllUsers(string role)
-        {
 
 
+//            List<DataBaseUser> users = new List<DataBaseUser>();
 
+//            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-            List<DataBaseUser> users = new List<DataBaseUser>();
+//            var querry = "SELECT * FROM AspNetUsers where Role = @role";
 
-            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-            var querry = "SELECT * FROM AspNetUsers where Role = @role";
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
+//            SqlCommand command = new SqlCommand(querry, connection);
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            command.Parameters.AddWithValue("@role", role);
 
-            SqlCommand command = new SqlCommand(querry, connection);
+//            try
+//            {
+//                connection.Open();
 
-            command.Parameters.AddWithValue("@role", role);
+//                SqlDataReader reader = command.ExecuteReader();
 
-            try
-            {
-                connection.Open();
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    string email = reader["Email"].ToString();
+//                    //users.Add(ReadUser(email).Value);
+//                }
 
-                SqlDataReader reader = command.ExecuteReader();
+//                if (users != null)
+//                {
+//                    result.Value = users;
+//                    result.Message = "Querry successful";
+//                    result.Success = true;
 
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    string email = reader["Email"].ToString();
-                    //users.Add(ReadUser(email).Value);
-                }
+//                    return result;
+//                }
 
-                if (users != null)
-                {
-                    result.Value = users;
-                    result.Message = "Querry successful";
-                    result.Success = true;
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                    return result;
-                }
+//                return result;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//        public static void EditUser(WebApiUser user)
+//        {
+//            List<WebApiUser> users = new List<WebApiUser>();
 
-                return result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-        public static void EditUser(DataBaseUser user)
-        {
-            List<DataBaseUser> users = new List<DataBaseUser>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetUsers SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, Role = @Role, Approved = @Approved, Email = @Email, EmailConfirmed = @EmailConfirmed, PhoneNumberConfirmed = @PhoneNumberConfirmed, TwoFactorEnabled = @TwoFactorEnabled, UserName = @UserName, Deleted = @Deleted WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetUsers SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, Role = @Role, Approved = @Approved, Email = @Email, EmailConfirmed = @EmailConfirmed, PhoneNumberConfirmed = @PhoneNumberConfirmed, TwoFactorEnabled = @TwoFactorEnabled, UserName = @UserName, Deleted = @Deleted WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, user.Id));
+//                //sqlCommand.Parameters.Add(ValueHandler("@FirstName", System.Data.SqlDbType.NVarChar, user.FirstName));
+//                //sqlCommand.Parameters.Add(ValueHandler("@LastName", System.Data.SqlDbType.NVarChar, user.LastName));
+//                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, user.PhoneNumber));
+//                //sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, user.Country));
+//                //sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, user.City));
+//                //sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, user.PostalCode));
+//                //sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, user.Street));
+//                sqlCommand.Parameters.Add(ValueHandler("@Role", System.Data.SqlDbType.NVarChar, user.Role));
+//                sqlCommand.Parameters.Add(ValueHandler("@Approved", System.Data.SqlDbType.NVarChar, user.Approved));
+//                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, user.Email));
+//                sqlCommand.Parameters.Add(ValueHandler("@EmailConfirmed", System.Data.SqlDbType.NVarChar, user.EmailConfirmed));
+//                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumberConfirmed", System.Data.SqlDbType.NVarChar, user.PhoneNumberConfirmed));
+//                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, user.TwoFactorEnabled));
+//                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, user.UserName));
+//                sqlCommand.Parameters.Add(ValueHandler("@Deleted", System.Data.SqlDbType.Bit, user.Deleted));
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, user.Id));
-                //sqlCommand.Parameters.Add(ValueHandler("@FirstName", System.Data.SqlDbType.NVarChar, user.FirstName));
-                //sqlCommand.Parameters.Add(ValueHandler("@LastName", System.Data.SqlDbType.NVarChar, user.LastName));
-                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, user.PhoneNumber));
-                //sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, user.Country));
-                //sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, user.City));
-                //sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, user.PostalCode));
-                //sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, user.Street));
-                sqlCommand.Parameters.Add(ValueHandler("@Role", System.Data.SqlDbType.NVarChar, user.Role));
-                sqlCommand.Parameters.Add(ValueHandler("@Approved", System.Data.SqlDbType.NVarChar, user.Approved));
-                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, user.Email));
-                sqlCommand.Parameters.Add(ValueHandler("@EmailConfirmed", System.Data.SqlDbType.NVarChar, user.EmailConfirmed));
-                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumberConfirmed", System.Data.SqlDbType.NVarChar, user.PhoneNumberConfirmed));
-                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, user.TwoFactorEnabled));
-                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, user.UserName));
-                sqlCommand.Parameters.Add(ValueHandler("@Deleted", System.Data.SqlDbType.Bit, user.Deleted));
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
+//        public static void EditUserPersonal(DataBaseUser user)
+//        {
+//            List<DataBaseUser> users = new List<DataBaseUser>();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-        public static void EditUserPersonal(DataBaseUser user)
-        {
-            List<DataBaseUser> users = new List<DataBaseUser>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetUsers SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, Email = @Email, TwoFactorEnabled = @TwoFactorEnabled, UserName = @UserName WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetUsers SET FirstName = @FirstName, LastName = @LastName, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, Email = @Email, TwoFactorEnabled = @TwoFactorEnabled, UserName = @UserName WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, user.Id));
+//                //sqlCommand.Parameters.Add(ValueHandler("@FirstName", System.Data.SqlDbType.NVarChar, user.FirstName));
+//                //sqlCommand.Parameters.Add(ValueHandler("@LastName", System.Data.SqlDbType.NVarChar, user.LastName));
+//                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, user.PhoneNumber));
+//                //sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, user.Country));
+//                //sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, user.City));
+//                //sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, user.PostalCode));
+//                //sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, user.Street));
+//                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, user.Email));
+//                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, user.TwoFactorEnabled));
+//                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, user.UserName));
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, user.Id));
-                //sqlCommand.Parameters.Add(ValueHandler("@FirstName", System.Data.SqlDbType.NVarChar, user.FirstName));
-                //sqlCommand.Parameters.Add(ValueHandler("@LastName", System.Data.SqlDbType.NVarChar, user.LastName));
-                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, user.PhoneNumber));
-                //sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, user.Country));
-                //sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, user.City));
-                //sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, user.PostalCode));
-                //sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, user.Street));
-                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, user.Email));
-                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, user.TwoFactorEnabled));
-                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, user.UserName));
+//                sqlCommand.CommandText = querry;
 
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
+//        public static SqlParameter ValueHandler(string parameterName, System.Data.SqlDbType dbType, dynamic value)
+//        {
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            if (value != null)
+//            {
+//                SqlParameter sqlParameter = new SqlParameter(parameterName, dbType);
+//                sqlParameter.Value = value;
+//                return sqlParameter;
+//            }
+//            else
+//            {
+//                return new SqlParameter(parameterName, DBNull.Value);
+//            }
+//        }
 
-        public static SqlParameter ValueHandler(string parameterName, System.Data.SqlDbType dbType, dynamic value)
-        {
 
-            if (value != null)
-            {
-                SqlParameter sqlParameter = new SqlParameter(parameterName, dbType);
-                sqlParameter.Value = value;
-                return sqlParameter;
-            }
-            else
-            {
-                return new SqlParameter(parameterName, DBNull.Value);
-            }
-        }
+//        public static void DeleteUser(string id)
+//        {
+//            List<DataBaseUser> users = new List<DataBaseUser>();
 
+//            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-        public static void DeleteUser(string id)
-        {
-            List<DataBaseUser> users = new List<DataBaseUser>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetUsers SET Deleted = @Deleted WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetUsers SET Deleted = @Deleted WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = true;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = true;
-                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
+//        public static void RestoreUser(string id)
+//        {
+//            List<DataBaseUser> users = new List<DataBaseUser>();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
 
-        public static void RestoreUser(string id)
-        {
-            List<DataBaseUser> users = new List<DataBaseUser>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfUsers result = new DataBaseResultListOfUsers();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetUsers SET Deleted = @Deleted WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetUsers SET Deleted = @Deleted WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = false;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = false;
-                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
 
+//        //Store actions
 
 
-        //Store actions
+//        public static DataBaseResultStore ReadStoreByUserName(string userName)
+//        {
+//            List<string> userData = new List<string>();
 
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-        public static DataBaseResultStore ReadStoreByUserName(string userName)
-        {
-            List<string> userData = new List<string>();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            connection.Open();
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            sqlCommand.Connection = connection;
 
-            connection.Open();
+//            sqlCommand.CommandType = System.Data.CommandType.Text;
 
-            sqlCommand.Connection = connection;
+//            sqlCommand.CommandText = "SELECT * FROM AspNetStores WHERE UserName = @userName";
 
-            sqlCommand.CommandType = System.Data.CommandType.Text;
+//            sqlCommand.Parameters.AddWithValue("@userName", userName);
 
-            sqlCommand.CommandText = "SELECT * FROM AspNetStores WHERE UserName = @userName";
+//            SqlDataReader reader = sqlCommand.ExecuteReader();
 
-            sqlCommand.Parameters.AddWithValue("@userName", userName);
+//            DataBaseStore store = new DataBaseStore();
 
-            SqlDataReader reader = sqlCommand.ExecuteReader();
+//            DataBaseResultStore result = new DataBaseResultStore();
 
-            DataBaseStore store = new DataBaseStore();
+//            try
+//            {
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["UserName"].ToString() == userName)
+//                    {
+//                        store.Id = reader["Id"].ToString();
+//                        store.UserName = reader["UserName"].ToString();
+//                        store.Email = reader["Email"].ToString();
+//                        store.EmailConfirmed = (bool)reader["EmailConfirmed"];
+//                        store.PhoneNumber = reader["PhoneNumber"].ToString();
+//                        store.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
+//                        store.Country = reader["Country"].ToString();
+//                        store.City = reader["City"].ToString();
+//                        store.PostalCode = reader["PostalCode"].ToString();
+//                        store.Street = reader["Street"].ToString();
+//                        store.WorkingHoursWeek = reader["WorkingHoursWeek"].ToString();
+//                        store.WorkingHoursWeekends = reader["WorkingHoursWeekends"].ToString();
+//                        store.WorkingHoursHolidays = reader["WorkingHoursHolidays"].ToString();
+//                        store.Role = reader["Role"].ToString();
+//                        store.Approved = (bool)reader["Approved"];
+//                        store.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
+//                        store.AccessFailedCount = (int)reader["AccessFailedCount"];
+//                        store.MasterStoreID = reader["MasterStoreID"].ToString();
+//                        store.Deleted = (bool)reader["Deleted"];
 
-            DataBaseResultStore result = new DataBaseResultStore();
+//                        result.Value = store;
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
+//                        result.Deleted = (bool)reader["Deleted"];
+//                    }
 
-            try
-            {
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["UserName"].ToString() == userName)
-                    {
-                        store.Id = reader["Id"].ToString();
-                        store.UserName = reader["UserName"].ToString();
-                        store.Email = reader["Email"].ToString();
-                        store.EmailConfirmed = (bool)reader["EmailConfirmed"];
-                        store.PhoneNumber = reader["PhoneNumber"].ToString();
-                        store.PhoneNumberConfirmed = (bool)reader["PhoneNumberConfirmed"];
-                        store.Country = reader["Country"].ToString();
-                        store.City = reader["City"].ToString();
-                        store.PostalCode = reader["PostalCode"].ToString();
-                        store.Street = reader["Street"].ToString();
-                        store.WorkingHoursWeek = reader["WorkingHoursWeek"].ToString();
-                        store.WorkingHoursWeekends = reader["WorkingHoursWeekends"].ToString();
-                        store.WorkingHoursHolidays = reader["WorkingHoursHolidays"].ToString();
-                        store.Role = reader["Role"].ToString();
-                        store.Approved = (bool)reader["Approved"];
-                        store.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
-                        store.AccessFailedCount = (int)reader["AccessFailedCount"];
-                        store.MasterStoreID = reader["MasterStoreID"].ToString();
-                        store.Deleted = (bool)reader["Deleted"];
+//                    else
+//                    {
+//                        result.Message = "Querry unsuccessful";
+//                        result.Success = false;
 
-                        result.Value = store;
-                        result.Message = "Querry successful";
-                        result.Success = true;
-                        result.Deleted = (bool)reader["Deleted"];
-                    }
+//                        return result;
+//                    }
+//                }
 
-                    else
-                    {
-                        result.Message = "Querry unsuccessful";
-                        result.Success = false;
+//                return result;
 
-                        return result;
-                    }
-                }
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                return result;
 
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//        public static DataBaseResultListOfStores ReadAllStores()
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static DataBaseResultListOfStores ReadAllStores()
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            var querry = "SELECT * FROM AspNetStores";
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            var querry = "SELECT * FROM AspNetStores";
+//            SqlCommand command = new SqlCommand(querry, connection);
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            try
+//            {
+//                connection.Open();
 
-            SqlCommand command = new SqlCommand(querry, connection);
+//                SqlDataReader reader = command.ExecuteReader();
 
-            try
-            {
-                connection.Open();
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    string email = reader["UserName"].ToString();
+//                    stores.Add(ReadStoreByUserName(email).Value);
+//                }
 
-                SqlDataReader reader = command.ExecuteReader();
+//                if (stores != null)
+//                {
+//                    result.Value = stores;
+//                    result.Message = "Querry successful";
+//                    result.Success = true;
 
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    string email = reader["UserName"].ToString();
-                    stores.Add(ReadStoreByUserName(email).Value);
-                }
+//                    return result;
+//                }
 
-                if (stores != null)
-                {
-                    result.Value = stores;
-                    result.Message = "Querry successful";
-                    result.Success = true;
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                    return result;
-                }
+//                return result;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//        public static DataBaseResultListOfStores ReadAllStoresByMasterID(string masteStoreID)
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
-                return result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static DataBaseResultListOfStores ReadAllStoresByMasterID(string masteStoreID)
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            var querry = "SELECT * FROM AspNetStores WHERE MasterStoreID = @masterID";
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            var querry = "SELECT * FROM AspNetStores WHERE MasterStoreID = @masterID";
+//            SqlCommand command = new SqlCommand(querry, connection);
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            command.Parameters.AddWithValue("@masterID", masteStoreID);
 
-            SqlCommand command = new SqlCommand(querry, connection);
+//            try
+//            {
+//                connection.Open();
 
-            command.Parameters.AddWithValue("@masterID", masteStoreID);
+//                SqlDataReader reader = command.ExecuteReader();
 
-            try
-            {
-                connection.Open();
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    string userName = reader["UserName"].ToString();
 
-                SqlDataReader reader = command.ExecuteReader();
+//                    if (!ReadStoreByUserName(userName).Deleted)
+//                    {
+//                        stores.Add(ReadStoreByUserName(userName).Value);
+//                    }
+//                }
 
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    string userName = reader["UserName"].ToString();
+//                if (stores != null)
+//                {
+//                    result.Value = stores;
+//                    result.Message = "Querry successful";
+//                    result.Success = true;
 
-                    if (!ReadStoreByUserName(userName).Deleted)
-                    {
-                        stores.Add(ReadStoreByUserName(userName).Value);
-                    }
-                }
+//                    return result;
+//                }
 
-                if (stores != null)
-                {
-                    result.Value = stores;
-                    result.Message = "Querry successful";
-                    result.Success = true;
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                    return result;
-                }
+//                return result;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//        public static DataBaseResultListOfStores ReadDeletedStores(string masteStoreID)
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
-                return result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static DataBaseResultListOfStores ReadDeletedStores(string masteStoreID)
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            var querry = "SELECT * FROM AspNetStores WHERE MasterStoreID = @masterID";
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            var querry = "SELECT * FROM AspNetStores WHERE MasterStoreID = @masterID";
+//            SqlCommand command = new SqlCommand(querry, connection);
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            command.Parameters.AddWithValue("@masterID", masteStoreID);
 
-            SqlCommand command = new SqlCommand(querry, connection);
+//            try
+//            {
+//                connection.Open();
 
-            command.Parameters.AddWithValue("@masterID", masteStoreID);
+//                SqlDataReader reader = command.ExecuteReader();
 
-            try
-            {
-                connection.Open();
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    string userName = reader["UserName"].ToString();
 
-                SqlDataReader reader = command.ExecuteReader();
+//                    if (ReadStoreByUserName(userName).Deleted)
+//                    {
+//                        stores.Add(ReadStoreByUserName(userName).Value);
+//                    }
+//                }
 
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    string userName = reader["UserName"].ToString();
+//                if (stores != null)
+//                {
+//                    result.Value = stores;
+//                    result.Message = "Querry successful";
+//                    result.Success = true;
 
-                    if (ReadStoreByUserName(userName).Deleted)
-                    {
-                        stores.Add(ReadStoreByUserName(userName).Value);
-                    }
-                }
+//                    return result;
+//                }
 
-                if (stores != null)
-                {
-                    result.Value = stores;
-                    result.Message = "Querry successful";
-                    result.Success = true;
+//                result.Message = "Querry unsuccessful";
+//                result.Success = false;
 
-                    return result;
-                }
+//                return result;
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                result.Message = "Querry unsuccessful";
-                result.Success = false;
+//        public static DataBaseResultStore ReadStoreById(string id)
+//        {
+//            List<string> userData = new List<string>();
 
-                return result;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-        public static DataBaseResultStore ReadStoreById(string id)
-        {
-            List<string> userData = new List<string>();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            connection.Open();
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            sqlCommand.Connection = connection;
 
-            connection.Open();
+//            sqlCommand.CommandType = System.Data.CommandType.Text;
 
-            sqlCommand.Connection = connection;
+//            sqlCommand.CommandText = "SELECT * FROM AspNetStores WHERE Id = @Id";
 
-            sqlCommand.CommandType = System.Data.CommandType.Text;
+//            sqlCommand.Parameters.AddWithValue("@Id", id);
 
-            sqlCommand.CommandText = "SELECT * FROM AspNetStores WHERE Id = @Id";
+//            SqlDataReader reader = sqlCommand.ExecuteReader();
 
-            sqlCommand.Parameters.AddWithValue("@Id", id);
+//            DataBaseStore store = new DataBaseStore();
 
-            SqlDataReader reader = sqlCommand.ExecuteReader();
+//            DataBaseResultStore result = new DataBaseResultStore();
 
-            DataBaseStore store = new DataBaseStore();
+//            try
+//            {
+//                int count = reader.FieldCount;
+//                while (reader.Read())
+//                {
+//                    if (reader["Id"].ToString() == id)
+//                    {
+//                        store.Id = reader["Id"].ToString();
+//                        store.UserName = reader["UserName"].ToString();
+//                        store.Email = reader["Email"].ToString();
+//                        store.PhoneNumber = reader["PhoneNumber"].ToString();
+//                        store.Country = reader["Country"].ToString();
+//                        store.City = reader["City"].ToString();
+//                        store.PostalCode = reader["PostalCode"].ToString();
+//                        store.Street = reader["Street"].ToString();
+//                        store.WorkingHoursWeek = reader["WorkingHoursWeek"].ToString();
+//                        store.WorkingHoursWeekends = reader["WorkingHoursWeekends"].ToString();
+//                        store.WorkingHoursHolidays = reader["WorkingHoursHolidays"].ToString();
+//                        store.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
+//                        store.Deleted = (bool)reader["Deleted"];
 
-            DataBaseResultStore result = new DataBaseResultStore();
+//                        result.Value = store;
+//                        result.Message = "Querry successful";
+//                        result.Success = true;
+//                    }
 
-            try
-            {
-                int count = reader.FieldCount;
-                while (reader.Read())
-                {
-                    if (reader["Id"].ToString() == id)
-                    {
-                        store.Id = reader["Id"].ToString();
-                        store.UserName = reader["UserName"].ToString();
-                        store.Email = reader["Email"].ToString();
-                        store.PhoneNumber = reader["PhoneNumber"].ToString();
-                        store.Country = reader["Country"].ToString();
-                        store.City = reader["City"].ToString();
-                        store.PostalCode = reader["PostalCode"].ToString();
-                        store.Street = reader["Street"].ToString();
-                        store.WorkingHoursWeek = reader["WorkingHoursWeek"].ToString();
-                        store.WorkingHoursWeekends = reader["WorkingHoursWeekends"].ToString();
-                        store.WorkingHoursHolidays = reader["WorkingHoursHolidays"].ToString();
-                        store.TwoFactorEnabled = (bool)reader["TwoFactorEnabled"];
-                        store.Deleted = (bool)reader["Deleted"];
+//                    else
+//                    {
+//                        result.Message = "Querry unsuccessful";
+//                        result.Success = false;
 
-                        result.Value = store;
-                        result.Message = "Querry successful";
-                        result.Success = true;
-                    }
+//                        return result;
+//                    }
+//                }
 
-                    else
-                    {
-                        result.Message = "Querry unsuccessful";
-                        result.Success = false;
+//                return result;
 
-                        return result;
-                    }
-                }
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                return result;
+//        public static void EditStore(DataBaseStore store)
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static void EditStore(DataBaseStore store)
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetStores SET UserName = @UserName, Email = @Email, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, WorkingHoursWeek = @WorkingHoursWeek, WorkingHoursWeekends = @WorkingHoursWeekends, WorkingHoursHolidays = @WorkingHoursHolidays, TwoFactorEnabled = @TwoFactorEnabled WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetStores SET UserName = @UserName, Email = @Email, PhoneNumber = @PhoneNumber, Country = @Country, City = @City, PostalCode = @PostalCode, Street = @Street, WorkingHoursWeek = @WorkingHoursWeek, WorkingHoursWeekends = @WorkingHoursWeekends, WorkingHoursHolidays = @WorkingHoursHolidays, TwoFactorEnabled = @TwoFactorEnabled WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, store.Id));
+//                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, store.UserName));
+//                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, store.Email));
+//                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, store.PhoneNumber));
+//                sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, store.Country));
+//                sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, store.City));
+//                sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, store.PostalCode));
+//                sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, store.Street));
+//                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursWeek", System.Data.SqlDbType.NVarChar, store.WorkingHoursWeek));
+//                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursWeekends", System.Data.SqlDbType.NVarChar, store.WorkingHoursWeekends));
+//                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursHolidays", System.Data.SqlDbType.NVarChar, store.WorkingHoursHolidays));
+//                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, store.TwoFactorEnabled));
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(ValueHandler("@Id", System.Data.SqlDbType.NVarChar, store.Id));
-                sqlCommand.Parameters.Add(ValueHandler("@UserName", System.Data.SqlDbType.NVarChar, store.UserName));
-                sqlCommand.Parameters.Add(ValueHandler("@Email", System.Data.SqlDbType.NVarChar, store.Email));
-                sqlCommand.Parameters.Add(ValueHandler("@PhoneNumber", System.Data.SqlDbType.NVarChar, store.PhoneNumber));
-                sqlCommand.Parameters.Add(ValueHandler("@Country", System.Data.SqlDbType.NVarChar, store.Country));
-                sqlCommand.Parameters.Add(ValueHandler("@City", System.Data.SqlDbType.NVarChar, store.City));
-                sqlCommand.Parameters.Add(ValueHandler("@PostalCode", System.Data.SqlDbType.NVarChar, store.PostalCode));
-                sqlCommand.Parameters.Add(ValueHandler("@Street", System.Data.SqlDbType.NVarChar, store.Street));
-                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursWeek", System.Data.SqlDbType.NVarChar, store.WorkingHoursWeek));
-                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursWeekends", System.Data.SqlDbType.NVarChar, store.WorkingHoursWeekends));
-                sqlCommand.Parameters.Add(ValueHandler("WorkingHoursHolidays", System.Data.SqlDbType.NVarChar, store.WorkingHoursHolidays));
-                sqlCommand.Parameters.Add(ValueHandler("@TwoFactorEnabled", System.Data.SqlDbType.NVarChar, store.TwoFactorEnabled));
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
+//        public static void DeleteStore(string id)
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static void DeleteStore(string id)
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetStores SET Deleted = @Deleted WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetStores SET Deleted = @Deleted WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = true;
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
-                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = true;
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
 
-                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
+//        }
 
+//        public static void RestoreStore(string id)
+//        {
+//            List<DataBaseStore> stores = new List<DataBaseStore>();
 
-        }
+//            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
 
-        public static void RestoreStore(string id)
-        {
-            List<DataBaseStore> stores = new List<DataBaseStore>();
+//            SqlConnection connection = new SqlConnection(ConnectionString);
 
-            DataBaseResultListOfStores result = new DataBaseResultListOfStores();
+//            SqlCommand sqlCommand = new SqlCommand();
 
-            SqlConnection connection = new SqlConnection(ConnectionString);
+//            var querry = "UPDATE AspNetStores SET Deleted = @Deleted WHERE Id = @Id";
 
-            SqlCommand sqlCommand = new SqlCommand();
+//            try
+//            {
+//                connection.Open();
 
-            var querry = "UPDATE AspNetStores SET Deleted = @Deleted WHERE Id = @Id";
+//                sqlCommand.Connection = connection;
 
-            try
-            {
-                connection.Open();
+//                sqlCommand.CommandType = System.Data.CommandType.Text;
 
-                sqlCommand.Connection = connection;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
+//                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = false;
 
-                sqlCommand.CommandType = System.Data.CommandType.Text;
+//                sqlCommand.CommandText = querry;
 
-                sqlCommand.Parameters.Add(new SqlParameter("@Id", System.Data.SqlDbType.NVarChar)).Value = id;
-                sqlCommand.Parameters.Add(new SqlParameter("@Deleted", System.Data.SqlDbType.Bit)).Value = false;
+//                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.CommandText = querry;
+//                sqlCommand.Parameters.Clear();
+//            }
+//            catch
+//            {
+//                throw;
+//            }
+//            finally
+//            {
+//                connection.Close();
+//            }
+//        }
 
-                sqlCommand.ExecuteNonQuery();
 
-                sqlCommand.Parameters.Clear();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
 
 
 
@@ -1191,54 +1194,52 @@ namespace AbatementHelper.WebApi.Repositeories
 
 
 
-
-
-        //public static DataBaseResult ReadEntityEmail(string email)
-        //{
+//        //public static DataBaseResult ReadEntityEmail(string email)
+//        //{
             
-        //    using (var context = new ApplicationUserDbContext())
-        //    {
-        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
+//        //    using (var context = new ApplicationUserDbContext())
+//        //    {
+//        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
 
-        //        return new DataBaseResult()
-        //        {
-        //            Value = user.Email,
-        //            Message = "Query successful",
-        //            Success = true
-        //        };
-        //    }
-        //}
+//        //        return new DataBaseResult()
+//        //        {
+//        //            Value = user.Email,
+//        //            Message = "Query successful",
+//        //            Success = true
+//        //        };
+//        //    }
+//        //}
 
-        //public static DataBaseResult ReadEntityUserName(string email)
-        //{
-        //    using (var context = new ApplicationUserDbContext())
-        //    {
-        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
+//        //public static DataBaseResult ReadEntityUserName(string email)
+//        //{
+//        //    using (var context = new ApplicationUserDbContext())
+//        //    {
+//        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
 
-        //        return new DataBaseResult()
-        //        {
-        //            Value = user.UserName,
-        //            Message = "Query successful",
-        //            Success = true
-        //        };
-        //    }
-        //}
+//        //        return new DataBaseResult()
+//        //        {
+//        //            Value = user.UserName,
+//        //            Message = "Query successful",
+//        //            Success = true
+//        //        };
+//        //    }
+//        //}
 
-        //public static DataBaseResultUser ReadEntityUser(string email)
-        //{
-        //    using (var context = new ApplicationUserDbContext())
-        //    {
-        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
+//        //public static DataBaseResultUser ReadEntityUser(string email)
+//        //{
+//        //    using (var context = new ApplicationUserDbContext())
+//        //    {
+//        //        var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
 
-        //        var config = new MapperConfiguration(cfg => {
-        //            cfg.CreateMap<ApplicationUserDbContext, DataBaseUser>();
-        //        });
+//        //        var config = new MapperConfiguration(cfg => {
+//        //            cfg.CreateMap<ApplicationUserDbContext, DataBaseUser>();
+//        //        });
 
-        //        return new DataBaseResultUser()
-        //        {
+//        //        return new DataBaseResultUser()
+//        //        {
                    
-        //        };
-        //    }
-        //}
-    }
-}
+//        //        };
+//        //    }
+//        //}
+//    }
+//}

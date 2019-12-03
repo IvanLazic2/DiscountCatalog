@@ -1,163 +1,183 @@
 ﻿using AbatementHelper.CommonModels.Models;
-using AbatementHelper.WebApi.Repositeories;
+using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
 namespace AbatementHelper.WebAPI.Controllers
-{
+{ 
     //[Authorize(Roles = "Admin")]
     [RoutePrefix("api/Admin")]
     public class AdminController : ApiController
     {
-        [HttpGet]
-        [Route("GetAllUsers/{role}")]
-        public DataBaseResultListOfUsers GetAllUsers(string role)
-        {
-
-            var users = DataBaseReader.ReadAllUsers(role);
-            return users;
-        }
+        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
 
         [HttpGet]
-        [Route("GetAllStores")]
-        public DataBaseResultListOfStores GetAllStores()
+        [Route("GetAllUsers")]
+        public WebApiListOfUsersResult GetAllUsers()
         {
-            var stores = DataBaseReader.ReadAllStores();
-            return stores;
-        }
+            var users = entityReader.ReadAllUsers();
 
+            List<WebApiUser> processedUsers = new List<WebApiUser>();
 
-        [HttpPost]
-        [Route("Approve")]
-        public IHttpActionResult Approve(string email)
-        {
-            var querry = DataBaseReader.UpdateDataBaseApproved(email, true);
-
-            if (querry.Success)
+            foreach (var user in users)
             {
-                return Ok(querry.Message);
+                processedUsers.Add(UserProcessor.ApplicationUserToWebApiUser(user));
             }
-            return BadRequest(querry.Message);
-        }
 
-        [HttpPost]
-        [Route("Refuse")]
-        public IHttpActionResult Refuse(string email)
-        {
-            var querry = DataBaseReader.UpdateDataBaseApproved(email, false);
-
-            if (querry.Success)
+            return new WebApiListOfUsersResult
             {
-                return Ok(querry.Message);
-            }
-            return BadRequest(querry.Message);
+                Value = processedUsers,
+                Success = true
+            };
         }
+
+
+
+
+
+
+        //[HttpGet]
+        //[Route("GetAllStores")]
+        //public DataBaseResultListOfStores GetAllStores()
+        //{
+        //    var stores = DataBaseReader.ReadAllStores();
+        //    return stores;
+        //}
+
+
+        //[HttpPost]
+        //[Route("Approve")]
+        //public IHttpActionResult Approve(string email)
+        //{
+        //    var querry = DataBaseReader.UpdateDataBaseApproved(email, true);
+
+        //    if (querry.Success)
+        //    {
+        //        return Ok(querry.Message);
+        //    }
+        //    return BadRequest(querry.Message);
+        //}
+
+        //[HttpPost]
+        //[Route("Refuse")]
+        //public IHttpActionResult Refuse(string email)
+        //{
+        //    var querry = DataBaseReader.UpdateDataBaseApproved(email, false);
+
+        //    if (querry.Success)
+        //    {
+        //        return Ok(querry.Message);
+        //    }
+        //    return BadRequest(querry.Message);
+        //}
 
         [HttpGet]
         [Route("EditUser/{id}")]
-        public DataBaseUser EditUser(string id)
+        public WebApiUser EditUser(string id)
         {
-            DataBaseUser user = new DataBaseUser();
+            //WebApiUser user = new WebApiUser();
 
-            user = DataBaseReader.ReadUserById(id).Value;
+            var user = entityReader.ReadUserById(id);
 
-            return user;
+            return UserProcessor.ApplicationUserToWebApiUser(user);
         }
 
         [HttpPut]
         [Route("EditUser")]
-        public IHttpActionResult EditUser(DataBaseUser user)
+        public IHttpActionResult EditUser(WebApiUser user)
         {
-            DataBaseReader.EditUser(user);
+            entityReader.EditUser(user);
 
             return Ok();
         }
-
-
-
 
         [HttpGet]
-        [Route("EditStore/{id}")]
-        public DataBaseStore EditStore(string id)
+        [Route("DetailsUser/{id}")]
+        public WebApiUser DetailsUser(string id)
         {
-            DataBaseStore store = new DataBaseStore();
+            var user = entityReader.ReadUserById(id);
 
-            store = DataBaseReader.ReadStoreById(id).Value;
-
-            return store;
+            return UserProcessor.ApplicationUserToWebApiUser(user);
         }
 
         [HttpPut]
-        [Route("EditStore")]
-        public IHttpActionResult EditStore(DataBaseStore store)
+        [Route("DeleteUser")]
+        public IHttpActionResult DeleteUser(WebApiUser user)
         {
-            DataBaseReader.EditStore(store);
+            entityReader.DeleteUser(user.Id);
 
             return Ok();
         }
 
         [HttpPut]
-        [Route("Delete/{role}/{id}")]
-        public IHttpActionResult Delete(string role, string id)
+        [Route("RestoreUser/{id}")]
+        public IHttpActionResult RestoreUser(string id)
         {
-            if (role == "User" || role == "StoreAdmin" || role == "Admin")
-            {
-                DataBaseReader.DeleteUser(id);
-                return Ok("User deleted");
-            }
-            else if (role == "Store")
-            {
-                DataBaseReader.DeleteStore(id);
-                return Ok("Store deleted");
-            }
-            else
-            {
-                return BadRequest("User does not exist");
-            }
-        }
-
-        [HttpPut]
-        [Route("Restore/{role}/{id}")]
-        public IHttpActionResult Restore(string role, string id)
-        {
-            if (role == "User" || role == "StoreAdmin" || role == "Admin")
-            {
-                DataBaseReader.RestoreUser(id);
-                return Ok("User restored");
-            }
-            else if (role == "Store")
-            {
-                DataBaseReader.RestoreStore(id);
-                return Ok("Store restored");
-            }
-            else
-            {
-                return BadRequest("User does not exist");
-            }
-        }
-
-
-
-
-
-
-
-
-
-        [Route("MethodTesting")]
-        public IHttpActionResult ReadEmail(string email)
-        {
-            DataBaseEntityRepository.ReadUsers(email);
+            entityReader.RestoreUser(id);
 
             return Ok();
         }
+
+
+
+
+        //[HttpPut]
+        //[Route("Delete/{role}/{id}")]
+        //public IHttpActionResult Delete(string role, string id)
+        //{
+        //    if (role == "User" || role == "StoreAdmin" || role == "Admin")
+        //    {
+        //        DataBaseReader.DeleteUser(id);
+        //        return Ok("User deleted");
+        //    }
+        //    else if (role == "Store")
+        //    {
+        //        DataBaseReader.DeleteStore(id);
+        //        return Ok("Store deleted");
+        //    }
+        //    else
+        //    {
+        //        return BadRequest("User does not exist");
+        //    }
+        //}
+
+        //[HttpPut]
+        //[Route("Restore/{role}/{id}")]
+        //public IHttpActionResult Restore(string role, string id)
+        //{
+        //    if (role == "User" || role == "StoreAdmin" || role == "Admin")
+        //    {
+        //        DataBaseReader.RestoreUser(id);
+        //        return Ok("User restored");
+        //    }
+        //    else if (role == "Store")
+        //    {
+        //        DataBaseReader.RestoreStore(id);
+        //        return Ok("Store restored");
+        //    }
+        //    else
+        //    {
+        //        return BadRequest("User does not exist");
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
     }
 }

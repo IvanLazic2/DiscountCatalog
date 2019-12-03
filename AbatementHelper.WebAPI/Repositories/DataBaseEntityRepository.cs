@@ -1,5 +1,8 @@
 ﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Models;
+using AbatementHelper.WebAPI.Processors;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -11,7 +14,24 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class DataBaseEntityRepository
     {
-        public IdentityUser ReadUserById(string id)
+        
+
+        public async Task<string> ReturnUserName(UserManager userManager, string usernameOrEmail)
+        {
+            var username = usernameOrEmail;
+            if (usernameOrEmail.Contains("@"))
+            {
+                var userForEmail = await userManager.FindByEmailAsync(usernameOrEmail);
+                if (userForEmail != null)
+                {
+                    username = userForEmail.UserName;
+                }
+            }
+            //return await userManager.FindAsync(username, password);
+            return username;
+        }
+
+        public ApplicationUser ReadUserById(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
@@ -23,34 +43,14 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public async Task<string> ReadRole(string id)
-        {
-            using (var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationUserDbContext())))
-            {
-                var roles = await userManager.GetRolesAsync(id);
-                
-                var rolesArray = new List<string>(roles).ToArray();
-
-                if (roles.Count != 1)
-                {
-                    return "Error";
-                }
-                else
-                {
-                    return roles.First();
-                }
-            }
-
-        }
-
-        public static DataBaseResult ReadEmail(string email)
+        public static WebApiResult ReadEmail(string email)
         {
 
             using (var context = new ApplicationUserDbContext())
             {
                 var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
 
-                return new DataBaseResult()
+                return new WebApiResult()
                 {
                     Value = user.Email,
                     Message = "Query successful",
@@ -59,13 +59,13 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public static DataBaseResult ReadUserName(string email)
+        public static WebApiResult ReadUserName(string email)
         {
             using (var context = new ApplicationUserDbContext())
             {
                 var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
 
-                return new DataBaseResult()
+                return new WebApiResult()
                 {
                     Value = user.UserName,
                     Message = "Query successful",
@@ -74,15 +74,37 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public static List<IdentityUser> ReadUsers(string email)
+        public List<ApplicationUser> ReadAllUsers()
+        {
+            return new UserManager().Users.ToList();
+        }
+
+        public void EditUser(WebApiUser user)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                var users = (from u in context.Users
-                             where u.Email == email
-                             select u).ToList();
+                var result = context.Entry(UserProcessor.WebApiUserToApplicationUser(user)).State = System.Data.Entity.EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
 
-                return users;
+        public void DeleteUser(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser user = context.Users.Find(id);
+                user.Deleted = true;
+                context.SaveChanges();
+            }
+        }
+
+        public void RestoreUser(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser user = context.Users.Find(id);
+                user.Deleted = false;
+                context.SaveChanges();
             }
         }
     }

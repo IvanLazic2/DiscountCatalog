@@ -25,7 +25,7 @@ namespace AbatementHelper.WebAPI
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = false
+                RequireUniqueEmail = true
             };
             // Configure validation logic for passwords
             manager.PasswordValidator = new PasswordValidator

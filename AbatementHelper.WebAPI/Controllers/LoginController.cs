@@ -1,7 +1,8 @@
 ﻿using AbatementHelper.CommonModels.Models;
-using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Repositories;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -14,94 +15,111 @@ using System.Web.Mvc;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
+    
 
     [System.Web.Http.RoutePrefix("api/Login")]
     public class LoginController : ApiController
     {
-        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        //private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        private AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
+        private Response response = new Response();
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("InitialLogin")]
-        public Response InitialLogin(AuthenticationModel user)
+        //[System.Web.Http.HttpPost]
+        //[System.Web.Http.Route("InitialLogin")]
+        //public Response InitialLogin(AuthenticationModel user)
+        //{
+        //    Response response = new Response();
+
+        //    var emailReader = DataBaseEntityRepository.ReadEmail(user.Email);
+        //    var userReader = DataBaseEntityRepository.ReadUsers(user.Email);
+
+        //    //Task<string> role = Task.Run(() => entityReader.ReadRole("6d1eb4ab-1c16-4c74-a527-cfade928da79"));
+        //    //role.Wait();
+
+        //    if (emailReader.Success)
+        //    {
+        //        response.Users = userReader.ConvertAll(u => new AuthenticatedUser
+        //        {
+        //            Id = u.Id,
+        //            Role = returnAsyncRole(u.Id),
+        //            Email = u.Email,
+        //            UserName = u.UserName
+        //        });
+
+        //        response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
+
+        //        if (response.Users.Count == 1)
+        //        {
+        //            response.User = response.Users.First();
+        //            response.Users = null;
+        //        }
+
+        //        response.ResponseMessage = ""; // ovo cu jos vidit
+        //    }
+        //    else
+        //    {
+        //        response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+        //        response.ResponseMessage = "Email does not exist";
+        //    }
+
+        //    return response;
+        //}
+
+        //private string returnAsyncRole(string id)
+        //{
+        //    Task<string> role = Task.Run(() => entityReader.ReadRole(id));
+        //    role.Wait();
+
+        //    return role.Result;
+        //}
+
+
+        //[System.Web.Http.HttpGet]
+        //[System.Web.Http.Route("GetUserById/{id}")]
+        //public Response GetUserById(string id)
+        //{
+        //    Response response = new Response();
+
+        //    var userReader = entityReader.ReadUserById(id);
+
+        //    response.User = new AuthenticatedUser
+        //    {
+        //        Id = userReader.Id,
+        //        UserName = userReader.UserName,
+        //        Email = userReader.Email,
+        //        Role = returnAsyncRole(userReader.Id)
+        //    };
+
+        //    response.ResponseMessage = "";
+        //    response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
+
+        //    return response;
+        //}
+
+        public static async Task<ApplicationUser> ReturnUserName
+            ( UserManager<ApplicationUser> userManager, string usernameOrEmail, string password)
         {
-            Response response = new Response();
-
-            var emailReader = DataBaseEntityRepository.ReadEmail(user.Email);
-            var userReader = DataBaseEntityRepository.ReadUsers(user.Email);
-
-            //Task<string> role = Task.Run(() => entityReader.ReadRole("6d1eb4ab-1c16-4c74-a527-cfade928da79"));
-            //role.Wait();
-
-            if (emailReader.Success)
+            var username = usernameOrEmail;
+            if (usernameOrEmail.Contains("@"))
             {
-                response.Users = userReader.ConvertAll(u => new AuthenticatedUser
+                var userForEmail = await userManager.FindByEmailAsync(usernameOrEmail);
+                if (userForEmail != null)
                 {
-                    Id = u.Id,
-                    Role = returnAsyncRole(u.Id),
-                    Email = u.Email,
-                    UserName = u.UserName
-                });
-
-                response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
-
-                if (response.Users.Count == 1)
-                {
-                    response.User = response.Users.First();
-                    response.Users = null;
+                    username = userForEmail.UserName;
                 }
-
-                response.ResponseMessage = ""; // ovo cu jos vidit
             }
-            else
-            {
-                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
-                response.ResponseMessage = "Email does not exist";
-            }
-
-            return response;
-        }
-
-        private string returnAsyncRole(string id)
-        {
-            Task<string> role = Task.Run(() => entityReader.ReadRole(id));
-            role.Wait();
-
-            return role.Result;
-        }
-
-
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("GetUserById/{id}")]
-        public Response GetUserById(string id)
-        {
-            Response response = new Response();
-
-            var userReader = entityReader.ReadUserById(id);
-
-            response.User = new AuthenticatedUser
-            {
-                Id = userReader.Id,
-                UserName = userReader.UserName,
-                Email = userReader.Email,
-                Role = returnAsyncRole(userReader.Id)
-            };
-
-            response.ResponseMessage = "";
-            response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
-
-            return response;
+            return await userManager.FindAsync(username, password);
         }
 
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("Authenticate")]
-        public Response Authenticate(AuthenticationModel model)
+        public async Task<Response> Authenticate(AuthenticationModel model)
         {
-            Response response = new Response();
+
+            var user = await ReturnUserName(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationUserDbContext())), model.EmailOrUserName, model.Password);
 
 
-            AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
-
-            var result = Task.Run(() => authenticate.Authenticate(model.UserName, model.Password));
+            var result = Task.Run(() => authenticate.Authenticate(user.UserName, model.Password));
             result.Wait();
 
             response.User = result.Result;
@@ -137,12 +155,6 @@ namespace AbatementHelper.WebAPI.Controllers
 
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("StoreAuthentication")]
-        public AuthenticationModel StoreLogin(DataBaseUser store, string password)
-        {
-            return new AuthenticationModel();
-        }
-
     }
+
 }

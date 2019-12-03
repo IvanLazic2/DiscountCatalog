@@ -44,15 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
-    <Compile Include="Models\DataBaseModels.cs" />
-    <Compile Include="Models\DataBaseStore.cs" />
-    <Compile Include="Models\DataBaseUser.cs" />
-    <Compile Include="Models\InformationModels.cs" />
+    <Compile Include="Models\AuthenticationModel.cs" />
+    <Compile Include="WebApiModels\WebApiModels.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Processor\ModelProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApiModels\WebApiUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

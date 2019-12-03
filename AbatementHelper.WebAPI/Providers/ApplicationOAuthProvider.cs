@@ -33,59 +33,23 @@ namespace AbatementHelper.WebAPI.Providers
 
             ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
 
-            //var storeManager = context.OwinContext.GetUserManager<ApplicationStoreManager>();
-
-            //ApplicationStore store = await storeManager.FindAsync(context.UserName, context.Password);
-
             if (user != null)
             {
                 ClaimsIdentity oAuthIdentityUser = await user.GenerateUserIdentityAsync(userManager,
                                OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookiesIdentityUser = await user.GenerateUserIdentityAsync(userManager,
                     CookieAuthenticationDefaults.AuthenticationType);
+                
+                List<string> userRoles = new UserManager().GetRoles(user.Id).ToList();
+                var userRole = userRoles.First();
 
                 List<Claim> rolesUser = oAuthIdentityUser.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-                AuthenticationProperties propertiesUser = CreateProperties(user.Id, user.UserName, user.Email, user.Role);
+                AuthenticationProperties propertiesUser = CreateProperties(user.Id, user.UserName, user.Email, userRole); //nezz
 
                 AuthenticationTicket userTicket = new AuthenticationTicket(oAuthIdentityUser, propertiesUser);
                 context.Validated(userTicket);
                 context.Request.Context.Authentication.SignIn(cookiesIdentityUser);
             }
-            //else if (store != null)
-            //{
-            //    ClaimsIdentity oAuthIdentityStore = await store.GenerateUserIdentityAsync(storeManager,
-            //   OAuthDefaults.AuthenticationType);
-            //    ClaimsIdentity cookiesIdentityStore = await store.GenerateUserIdentityAsync(storeManager,
-            //        CookieAuthenticationDefaults.AuthenticationType);
-
-            //    List<Claim> rolesStore = oAuthIdentityStore.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-            //    AuthenticationProperties propertiesStore = CreateProperties(store.Id, store.UserName, store.Email, store.Role);
-
-            //    AuthenticationTicket storeTicket = new AuthenticationTicket(oAuthIdentityStore, propertiesStore);
-            //    context.Validated(storeTicket);
-            //    context.Request.Context.Authentication.SignIn(cookiesIdentityStore);
-            //}
-            //if (user == null)
-            //{
-            //    context.SetError("invalid_grant", "The user name or password is incorrect.");
-            //    return;
-            //}
-
-
-
-            //
-
-
-            //if (store == null)
-            //{
-            //    context.SetError("invalid_grant", "The user name or password is incorrectt.");
-            //    return;
-            //}
-
-
-            //AuthenticationProperties properties = CreateProperties(user.UserName, user.Role);
-            
-
             
         }
 

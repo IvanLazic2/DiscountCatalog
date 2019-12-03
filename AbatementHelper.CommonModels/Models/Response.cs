@@ -11,6 +11,5 @@ namespace AbatementHelper.CommonModels.Models
         public int ResponseCode { get; set; }
         public string ResponseMessage { get; set; }
         public AuthenticatedUser User { get; set; }
-        public List<AuthenticatedUser> Users { get; set; }
     }
 }

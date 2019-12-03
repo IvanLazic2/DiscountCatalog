@@ -1,4 +1,5 @@
 ﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Models;
 using Hanssens.Net;
 using Newtonsoft.Json;
@@ -56,51 +57,39 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<Response> InitialLogin(string email)
-        {
-            var data = new
-            {
-                Email = email
-            };
+        //public async Task<Response> InitialLogin(string email)
+        //{
+        //    var data = new
+        //    {
+        //        Email = email
+        //    };
 
-            string jsonData = (new JavaScriptSerializer()).Serialize(data);
+        //    string jsonData = (new JavaScriptSerializer()).Serialize(data);
 
-            HttpContent httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+        //    HttpContent httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-            var request = await apiClient.PostAsync("/api/Login/InitialLogin/", httpContent);
+        //    var request = await apiClient.PostAsync("/api/Account/Authenticate/", httpContent);
 
-            var response = request.Content.ReadAsStringAsync();
+        //    var response = request.Content.ReadAsStringAsync();
 
-            string responseString = response.Result;
+        //    string responseString = response.Result;
 
-            responseModel = JsonConvert.DeserializeObject<Response>(responseString);
+        //    responseModel = JsonConvert.DeserializeObject<Response>(responseString);
 
-            ResponseMessageText = responseModel.ResponseMessage;
+        //    ResponseMessageText = responseModel.ResponseMessage;
 
-            if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
-            {
+        //    if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
+        //    {
 
-                LoginSuccessful = true;
-            }
-            else
-            {
-                LoginSuccessful = false;
-            }
+        //        LoginSuccessful = true;
+        //    }
+        //    else
+        //    {
+        //        LoginSuccessful = false;
+        //    }
 
-            return responseModel;
-        }
-
-        public async Task<Response> GetUserById(string id)
-        {
-            var request = apiClient.GetAsync("api/Login/GetUserById/" + id);
-            request.Wait();
-
-            var result = request.Result;
-
-            var response = await result.Content.ReadAsAsync<Response>();
-            
-            return response;
-        }
+        //    return responseModel;
+        //}
 
         public async Task<Response> Login(string email, string userName, string password)
         {
@@ -134,41 +123,8 @@ namespace AbatementHelper.MVC.Repositories
             return responseModel;
         }
 
-
-
-
-
-
-
-
-        //public async Task<Response> StoreLogin(User user)
-        //{
-
-        //    var jsonContent = JsonConvert.SerializeObject(user);
-
-        //    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-        //    var request = await apiClient.PostAsync("api/Login/StoreLogin", httpContent);
-
-        //    var response = request.Content.ReadAsStringAsync();
-
-        //    return new Response();
-        //}
-
-
-
-
-
-
-
-
-
-
-
-
         public async Task<string> Register(User user)
         {
-            
             var jsonContent = JsonConvert.SerializeObject(user);
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -184,9 +140,28 @@ namespace AbatementHelper.MVC.Repositories
             return await result;
         }
 
-        public DataBaseUser Edit()
+        public async Task<Response> Login(AuthenticationModel authentication)
         {
-            DataBaseUser user = new DataBaseUser();
+            var jsonContent = JsonConvert.SerializeObject(authentication);
+
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var request = await apiClient.PostAsync("api/Account/Authenticate", httpContent);
+
+            string response = await request.Content.ReadAsStringAsync();
+
+            LoginSuccessful = request.IsSuccessStatusCode;
+
+            var result = request.Content.ReadAsAsync<AuthenticatedUser>();
+
+            Response resultModel = JsonConvert.DeserializeObject<Response>(response); 
+
+            return resultModel;
+        }
+
+        public WebApiUser Edit()
+        {
+            WebApiUser user = new WebApiUser();
 
             AddTokenToHeader();
 
@@ -198,7 +173,7 @@ namespace AbatementHelper.MVC.Repositories
             var result = response.Result;
             if (result.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<DataBaseUser>();
+                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
                 resultContent.Wait();
 
                 user = resultContent.Result;
@@ -208,7 +183,7 @@ namespace AbatementHelper.MVC.Repositories
 
         }
 
-        public bool Edit(DataBaseUser user)
+        public bool Edit(WebApiUser user)
         {
             AddTokenToHeader();
 

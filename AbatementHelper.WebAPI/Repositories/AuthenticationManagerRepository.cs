@@ -1,5 +1,4 @@
 ﻿using AbatementHelper.CommonModels.Models;
-using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -46,11 +45,11 @@ namespace AbatementHelper.WebAPI.Repositories
 
             response = await apiClient.PostAsync("/token", data);
 
+            var boi = response.Content.ReadAsStringAsync();
+
             LoginSuccessful = response.IsSuccessStatusCode;
 
             var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
-
-            var dataBaseResult = DataBaseReader.ReadUserByUsername(result.UserName);
 
             return result;
 

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace AbatementHelper.WebAPI.Models
+namespace AbatementHelper.CommonModels.Models
 {
     public class AuthenticationModel
     {
-        public string Email { get; set; }
-        public string UserName { get; set; }
+        public string EmailOrUserName { get; set; }
         public string Password { get; set; }
     }
 }

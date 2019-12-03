@@ -17,8 +17,8 @@ using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Providers;
 using AbatementHelper.WebAPI.Results;
 using AbatementHelper.CommonModels.Models;
-using AbatementHelper.WebApi.Repositeories;
 using AbatementHelper.WebAPI.Repositories;
+using AbatementHelper.WebAPI.DataBaseModels;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
@@ -29,7 +29,8 @@ namespace AbatementHelper.WebAPI.Controllers
         private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        //private ApplicationStoreManager _storeManager;
+        private AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
+        private Response response = new Response();
 
         public AccountController()
         {
@@ -286,9 +287,15 @@ namespace AbatementHelper.WebAPI.Controllers
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
-                string userRole = await entityReader.ReadRole(user.Id);
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
 
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.Id, user.UserName, user.Email, userRole);
+                IList<string> userRoles = await new UserManager().GetRolesAsync(user.Id);
+
+                
+
+                //string userRole = await entityReader.ReadRole(user.Id);
+
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.Id, user.UserName, user.Email, userRoles[0]);
                 Authentication.SignIn(properties, oAuthIdentity, cookieIdentity);
             }
             else
@@ -342,18 +349,6 @@ namespace AbatementHelper.WebAPI.Controllers
             return logins;
         }
 
-        [AllowAnonymous]
-        [Route("Test")]
-        public async Task<IHttpActionResult> Test(string id)
-        {
-            DataBaseEntityRepository dbe = new DataBaseEntityRepository();
-
-            string role = await dbe.ReadRole(id);
-
-            return Ok();
-        }
-
-
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("Register")]
@@ -364,20 +359,10 @@ namespace AbatementHelper.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (model.Role != "Store")
-            {
-                if (EntityRegistrationRepository.FindEmailDuplicates(model.Email))
-                {
-                    return BadRequest("Email already exists");
-                }
-            }
-
             ApplicationUser user = new ApplicationUser
             {
                 Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                UserName = model.UserName,
-                Role = model.Role
+                UserName = model.Email.Split('@')[0],
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
@@ -387,97 +372,17 @@ namespace AbatementHelper.WebAPI.Controllers
                 return GetErrorResult(result);
             }
 
-            var UserRoleResult = UserManager.AddToRole(user.Id, model.Role);
+            IdentityResult UserRoleResult = await UserManager.AddToRoleAsync(user.Id, model.Role);
 
-            if (model.Role == "User")
+            if (!UserRoleResult.Succeeded)
             {
-                WebApiUserInfo userInfo = new WebApiUserInfo()
-                {
-                    UserId = user.Id,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
-
-                EntityRegistrationRepository.AddUserInfo(userInfo);
-            }
-            else if (model.Role == "Store")
-            {
-                WebApiStoreInfo storeInfo = new WebApiStoreInfo()
-                {
-                    StoreId = user.Id,
-                    WorkingHoursWeek = model.WorkingHoursWeek,
-                    WorkingHoursWeekends = model.WorkingHoursWeekends,
-                    WorkingHoursHolidays = model.WorkingHoursHolidays,
-                    MasterStoreID = model.MasterStoreId
-                };
-
-                EntityRegistrationRepository.AddStoreInfo(storeInfo);
-            }
-            else if (model.Role == "StoreAdmin")
-            {
-                WebApiStoreAdminInfo storeAdminInfo = new WebApiStoreAdminInfo()
-                {
-                    StoreAdminId = user.Id
-                };
-
-                EntityRegistrationRepository.AddStoreAdminInfo(storeAdminInfo);
-            }
-            else if (model.Role == "Admin")
-            {
-                WebApiAdminInfo adminInfo = new WebApiAdminInfo()
-                {
-                    AdminId = user.Id,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
-
-                EntityRegistrationRepository.AddAdminInfo(adminInfo);
+                return GetErrorResult(UserRoleResult);
             }
 
             return Ok("Registration successful");
         }
 
-        //[Authorize(Roles = "Admin, StoreAdmin")]
-        //[Route("RegisterStore")]
-        //public async Task<IHttpActionResult> RegisterStore(StoreBindingModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    ApplicationUser store = new ApplicationUser();
-        //    //{
-        //    //    Email = model.Email,
-        //    //    UserName = model.UserName,
-        //    //    PhoneNumber = model.PhoneNumber,
-        //    //    //Country = model.Country,
-        //    //    //City = model.City,
-        //    //    //PostalCode = model.PostalCode,
-        //    //    //Street = model.Street,
-        //    //    WorkingHoursWeek = model.WorkingHoursWeek,
-        //    //    WorkingHoursWeekends = model.WorkingHoursWeekends,
-        //    //    WorkingHoursHolidays = model.WorkingHoursHolidays,
-        //    //    Role = model.Role,
-        //    //    Approved = model.Approved,
-        //    //    MasterStoreID = model.MasterStoreId,
-        //    //    Deleted = model.Deleted
-        //    //};
-
-            
-
-        //    IdentityResult result = await StoreManager.CreateAsync(store, model.Password);
-
-        //    if (!result.Succeeded)
-        //    {
-        //        return GetErrorResult(result);
-
-        //    }
-
-        //    var StoreRoleResult = StoreManager.AddToRole(store.Id, model.Role);
-
-        //    return Ok();
-        //}
+        
 
 
         // POST api/Account/RegisterExternal
@@ -513,30 +418,74 @@ namespace AbatementHelper.WebAPI.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
+        [Route("Authenticate")]
+        public async Task<Response> Authenticate(AuthenticationModel model)
+        {
+            //var user = await ReturnUserName(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationUserDbContext())), "aaa@aaa.aaa", "Aaa123");
+
+            var userName = await entityReader.ReturnUserName(new UserManager(), model.EmailOrUserName);
+
+            var result = Task.Run(() => authenticate.Authenticate(userName, model.Password));
+            result.Wait();
+
+            response.User = result.Result;
+
+            //var readuser = DataBaseReader.ReadUser(model.Email);  ovo treba
+
+            if (authenticate.LoginSuccessful)
+            {
+                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.OK, "Authentication successfull!");
+
+                response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
+                response.ResponseMessage = "Authentication Succesfull";
+
+                return response;
+            }
+            else
+            {
+                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Incorrect password!");
+
+                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+                response.ResponseMessage = "Incorrect password!";
+
+                return response;
+            }
+
+
+            //user.ResponseMessage = Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Email address does not exist!");
+
+            response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+            response.ResponseMessage = "Email address does not exist!";
+
+            return response;
+
+        }
+
         public IHttpActionResult Details()
         {
             return Ok();
         }
 
-        [HttpGet]
-        [Route("Edit/{id}")]
-        public DataBaseUser Edit(string id)
-        {
-            DataBaseUser user = new DataBaseUser();
+        //[HttpGet]
+        //[Route("Edit/{id}")]
+        //public DataBaseUser Edit(string id)
+        //{
+        //    DataBaseUser user = new DataBaseUser();
 
-            user = DataBaseReader.ReadUserById(id).Value;
+        //    user = DataBaseReader.ReadUserById(id).Value;
 
-            return user;
-        }
+        //    return user;
+        //}
 
-        [HttpPut]
-        [Route("Edit")]
-        public IHttpActionResult Edit(DataBaseUser user)
-        {
-            DataBaseReader.EditUserPersonal(user);
+        //[HttpPut]
+        //[Route("Edit")]
+        //public IHttpActionResult Edit(DataBaseUser user)
+        //{
+        //    DataBaseReader.EditUserPersonal(user);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         //[HttpGet]
         //[Route("GetDelete/{id}")]

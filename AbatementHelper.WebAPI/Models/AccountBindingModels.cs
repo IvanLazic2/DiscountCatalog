@@ -34,28 +34,10 @@ namespace AbatementHelper.WebAPI.Models
 
     public class RegisterBindingModel
     {
-        //User, Admin and StoreAdmin section
-        //[Required(AllowEmptyStrings = false, ErrorMessage = "First name is required")]
-        [Display(Name = "First name")]
-        public string FirstName { get; set; }
-
-        //[Required(AllowEmptyStrings = false, ErrorMessage = "Last name is required")]
-        [Display(Name = "Last name")]
-        public string LastName { get; set; }
-
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Username is required")]
-        [Display(Name = "Username")]
-        public string UserName { get; set; }
-
         [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
-        //[Required(AllowEmptyStrings = true)]
-        [Display(Name = "Phone number")]
-        [DataType(DataType.PhoneNumber)]
-        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -70,69 +52,42 @@ namespace AbatementHelper.WebAPI.Models
 
         [Required]
         public string Role { get; set; }
-
-        //Store Section
-        public string WorkingHoursWeek { get; set; }
-        public string WorkingHoursWeekends { get; set; }
-        public string WorkingHoursHolidays { get; set; }
-
-        public string MasterStoreId { get; set; }
     }
 
-    //public class StoreBindingModel
-    //{
-    //    //[Required(AllowEmptyStrings = false, ErrorMessage = "First name is required")]
-    //    [Display(Name = "First name")]
-    //    public string FirstName { get; set; }
+    public class AdminCreateBindingModel
+    {
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
+        [Display(Name = "Email")]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
 
-    //    //[Required(AllowEmptyStrings = false, ErrorMessage = "Last name is required")]
-    //    [Display(Name = "Last name")]
-    //    public string LastName { get; set; }
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
 
-    //    [Required(AllowEmptyStrings = false, ErrorMessage = "Username is required")]
-    //    [Display(Name = "Username")]
-    //    public string UserName { get; set; }
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
 
-    //    [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
-    //    [Display(Name = "Email")]
-    //    [DataType(DataType.EmailAddress)]
-    //    public string Email { get; set; }
+        public string UserName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
-    //    //[Required(AllowEmptyStrings = true)]
-    //    [Display(Name = "Phone number")]
-    //    [DataType(DataType.PhoneNumber)]
-    //    public string PhoneNumber { get; set; }
-
-    //    //address section
-    //    public string Country { get; set; }
-    //    public string City { get; set; }
-    //    public string PostalCode { get; set; }
-    //    public string Street { get; set; }
-
-
-
-    //    [Required]
-    //    [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-    //    [DataType(DataType.Password)]
-    //    [Display(Name = "Password")]
-    //    public string Password { get; set; }
-
-    //    [DataType(DataType.Password)]
-    //    [Display(Name = "Confirm password")]
-    //    [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-    //    public string ConfirmPassword { get; set; }
-
-    //    [Required]
-    //    public string Role { get; set; }
-
-    //    [Required]
-    //    public bool Approved { get; set; }
-
-
-
-    //    [Required]
-    //    public bool Deleted { get; set; }
-    //}
+        public bool EmailConfirmed { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string PostalCode { get; set; }
+        public string Street { get; set; }
+        public string Role { get; set; }
+        public bool TwoFactorEnabled { get; set; }
+        public bool Approved { get; set; }
+        public bool Deleted { get; set; }
+    }
 
     public class RegisterExternalBindingModel
     {

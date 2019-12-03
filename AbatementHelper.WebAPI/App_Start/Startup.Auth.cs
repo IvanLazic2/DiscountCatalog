@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using AbatementHelper.WebAPI.Providers;
 using AbatementHelper.WebAPI.Models;
-using AbatementHelper.WebApi.Repositeories;
+using AbatementHelper.WebAPI.Repositories;
 
 namespace AbatementHelper.WebAPI
 {
     public partial class Startup
     {
+        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
         public static string PublicClientId { get; private set; }
@@ -49,15 +48,13 @@ namespace AbatementHelper.WebAPI
 
             //default role configuration
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
-
-            string[] roles = new string[] { "Admin", "User", "Store", "StoreAdmin" };
+            
+            string[] roles = new string[] { "Admin", "User", "Manager", "StoreAdmin" };
             foreach (var r in roles)
             {
-                if (!DataBaseReader.ReadRole(r).Success)
+                if (roleManager.FindByName(r) == null)
                 {
-                    var role = new IdentityRole();
-                    role.Name = r;
-                    roleManager.Create(role);
+                    roleManager.Create(new IdentityRole(r));
                 }
 
             }

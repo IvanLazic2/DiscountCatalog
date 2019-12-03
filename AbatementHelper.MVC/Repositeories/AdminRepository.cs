@@ -1,10 +1,13 @@
 ﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.CommonModels.WebApiModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -40,13 +43,13 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public DataBaseResultListOfUsers GetAllUsers(string role)
+        public WebApiListOfUsersResult GetAllUsers()
         {
-            DataBaseResultListOfUsers users = new DataBaseResultListOfUsers();
+            WebApiListOfUsersResult users = new WebApiListOfUsersResult();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/GetAllUsers/"+role);
+            var response = apiClient.GetAsync("api/Admin/GetAllUsers/");
             response.Wait();
 
             var result = response.Result;
@@ -55,7 +58,7 @@ namespace AbatementHelper.MVC.Repositeories
 
             if (result.IsSuccessStatusCode) //ovdje dobiva server error
             {
-                var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfUsers>();
+                var resultContent = result.Content.ReadAsAsync<WebApiListOfUsersResult>();
                 resultContent.Wait();
 
                 users = resultContent.Result;
@@ -64,31 +67,9 @@ namespace AbatementHelper.MVC.Repositeories
             return users;
         }
 
-        public DataBaseResultListOfStores GetAllStores()
+        public WebApiUser EditUser(string id)
         {
-            DataBaseResultListOfStores users = new DataBaseResultListOfStores();
-
-            AddTokenToHeader();
-
-            var response = apiClient.GetAsync("api/Admin/GetAllStores");
-            response.Wait();
-
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
-            {
-                var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfStores>();
-                resultContent.Wait();
-
-                users = resultContent.Result;
-            }
-
-            return users;
-        }
-
-        public DataBaseUser EditUser(string id)
-        {
-            DataBaseUser user = new DataBaseUser();
+            WebApiUser user = new WebApiUser();
 
             AddTokenToHeader();
 
@@ -98,7 +79,7 @@ namespace AbatementHelper.MVC.Repositeories
             var result = response.Result;
             if (result.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<DataBaseUser>();
+                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
                 resultContent.Wait();
 
                 user = resultContent.Result;
@@ -108,7 +89,7 @@ namespace AbatementHelper.MVC.Repositeories
 
         }
 
-        public bool EditUser(DataBaseUser user)
+        public bool EditUser(WebApiUser user)
         {
             AddTokenToHeader();
 
@@ -124,49 +105,37 @@ namespace AbatementHelper.MVC.Repositeories
             return false;
         }
 
-        public DataBaseStore EditStore(string id)
+        public WebApiUser DetailsUser(string id)
         {
-            DataBaseStore store = new DataBaseStore();
+            WebApiUser user = new WebApiUser();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/EditStore/" + id);
+            var response = apiClient.GetAsync("api/Admin/DetailsUser/" + id);
             response.Wait();
 
             var result = response.Result;
+
             if (result.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<DataBaseStore>();
+                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
                 resultContent.Wait();
 
-                store = resultContent.Result;
+                user = resultContent.Result;
             }
 
-            return store;
-
+            return user;
         }
 
-        public bool EditStore(DataBaseStore store)
+        public bool DeleteUser(WebApiUser user)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync("api/Admin/EditStore", store);
-            response.Wait();
+            var jsonContent = JsonConvert.SerializeObject(user);
 
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                return true;
-            }
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            return false;
-        }
-
-        public bool Delete(string role, string id)
-        {
-            AddTokenToHeader();
-
-            var response = apiClient.PutAsync("api/Admin/Delete/"  + role + "/" + id, null);
+            var response = apiClient.PutAsync("api/Admin/DeleteUser/", httpContent);
             response.Wait();
 
             var result = response.Result;
@@ -183,11 +152,11 @@ namespace AbatementHelper.MVC.Repositeories
             return false;
         }
 
-        public bool Restore(string role, string id)
+        public bool RestoreUser(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/Admin/Restore/" + role + "/" + id, null);
+            var response = apiClient.PutAsync("api/Admin/RestoreUser/" + id, null);
             response.Wait();
 
             var result = response.Result;

@@ -1,37 +1,38 @@
-﻿@model AbatementHelper.MVC.Models.User
+﻿@model AbatementHelper.CommonModels.Models.AuthenticationModel
 
 @{
-    ViewBag.Title = "PasswordLogin";
+    ViewBag.Title = "Login";
 }
 
-<h2>Enter password for @Model.UserName, @Model.Email</h2>
-
+<h2>Login</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-
+        <h4>AuthenticationModel</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-        <div class="text-danger">
-            @ViewBag.Message
+        <div class="form-group">
+            @Html.Label("Email or Username", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EmailOrUserName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EmailOrUserName, "", new { @class = "text-danger" })
+            </div>
         </div>
-
 
         <div class="form-group">
             @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", Type = "password" }})
                 @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Log in" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-default" />
             </div>
         </div>
     </div>
