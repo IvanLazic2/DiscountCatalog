@@ -154,9 +154,36 @@ namespace AbatementHelper.MVC.Repositories
 
             var result = request.Content.ReadAsAsync<AuthenticatedUser>();
 
-            Response resultModel = JsonConvert.DeserializeObject<Response>(response); 
+            Response resultModel = JsonConvert.DeserializeObject<Response>(response);
 
             return resultModel;
+        }
+
+        public WebApiUser Details()
+        {
+            WebApiUser user = new WebApiUser();
+
+            AddTokenToHeader();
+
+            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            if (id != null)
+            {
+                var response = apiClient.GetAsync("api/Account/Edit/" + id);
+                response.Wait();
+
+                var result = response.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<WebApiUser>();
+                    resultContent.Wait();
+
+                    user = resultContent.Result;
+                }
+            }
+
+            return user;
         }
 
         public WebApiUser Edit()
@@ -167,16 +194,19 @@ namespace AbatementHelper.MVC.Repositories
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var response = apiClient.GetAsync("api/Account/Edit/" + id);
-            response.Wait();
-
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
+            if (id != null)
             {
-                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
-                resultContent.Wait();
+                var response = apiClient.GetAsync("api/Account/Edit/" + id);
+                response.Wait();
 
-                user = resultContent.Result;
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<WebApiUser>();
+                    resultContent.Wait();
+
+                    user = resultContent.Result;
+                }
             }
 
             return user;
@@ -187,30 +217,46 @@ namespace AbatementHelper.MVC.Repositories
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
-            response.Wait();
-
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
+            if (user != null)
             {
-                return true;
+                var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
+                response.Wait();
+
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
+
+
 
             return false;
         }
 
-        public bool Delete(string id)
+        public bool Delete(WebApiUser user)
         {
             AddTokenToHeader();
 
-            var response = apiClient.DeleteAsync("api/Account/Delete/" + id);
-            response.Wait();
+            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
+            if (id != null)
             {
-                return true;
+                var response = apiClient.PutAsync("api/Account/Delete/" + id, null);
+                response.Wait();
+
+                var result = response.Result;
+
+
+                var resultString = result.ToString();
+
+
+                if (result.IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
+
             return false;
         }
 

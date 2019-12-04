@@ -19,6 +19,8 @@ using AbatementHelper.WebAPI.Results;
 using AbatementHelper.CommonModels.Models;
 using AbatementHelper.WebAPI.Repositories;
 using AbatementHelper.WebAPI.DataBaseModels;
+using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.WebAPI.Processors;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
@@ -462,48 +464,43 @@ namespace AbatementHelper.WebAPI.Controllers
 
         }
 
-        public IHttpActionResult Details()
+        [HttpGet]
+        [Route("Details/{id}")]
+        public WebApiUser Details(string id)
         {
+            WebApiUser user = UserProcessor.ApplicationUserToWebApiUser(entityReader.ReadUserById(id));
+
+            return user;
+        }
+
+        [HttpGet]
+        [Route("Edit/{id}")]
+        public WebApiUser Edit(string id)
+        {
+            WebApiUser user = new WebApiUser();
+
+            user = UserProcessor.ApplicationUserToWebApiUser(entityReader.ReadUserById(id));
+
+            return user;
+        }
+
+        [HttpPut]
+        [Route("Edit")]
+        public IHttpActionResult Edit(WebApiUser user)
+        {
+            entityReader.Edit(user);
+
             return Ok();
         }
 
-        //[HttpGet]
-        //[Route("Edit/{id}")]
-        //public DataBaseUser Edit(string id)
-        //{
-        //    DataBaseUser user = new DataBaseUser();
+        [HttpPut]
+        [Route("Delete/{id}")]
+        public IHttpActionResult Delete(string id)
+        {
+            entityReader.DeleteUser(id);
 
-        //    user = DataBaseReader.ReadUserById(id).Value;
-
-        //    return user;
-        //}
-
-        //[HttpPut]
-        //[Route("Edit")]
-        //public IHttpActionResult Edit(DataBaseUser user)
-        //{
-        //    DataBaseReader.EditUserPersonal(user);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("GetDelete/{id}")]
-        //public IHttpActionResult GetDelete(string id)
-        //{
-        //    return Ok();
-        //}
-
-        //[HttpDelete]
-        //[Route("Delete/{id}")]
-        //public IHttpActionResult Delete(DataBaseUser user)
-        //{
-        //    string id = 
-
-        //    DataBaseReader.Delete(id);
-
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
         protected override void Dispose(bool disposing)
         {

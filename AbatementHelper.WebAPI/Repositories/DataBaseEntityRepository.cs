@@ -14,7 +14,7 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class DataBaseEntityRepository
     {
-        
+
 
         public async Task<string> ReturnUserName(UserManager userManager, string usernameOrEmail)
         {
@@ -36,8 +36,8 @@ namespace AbatementHelper.WebAPI.Repositories
             using (var context = new ApplicationUserDbContext())
             {
                 var user = (from u in context.Users
-                             where u.Id == id
-                             select u).FirstOrDefault();
+                            where u.Id == id
+                            select u).FirstOrDefault();
 
                 return user;
             }
@@ -83,7 +83,33 @@ namespace AbatementHelper.WebAPI.Repositories
         {
             using (var context = new ApplicationUserDbContext())
             {
-                var result = context.Entry(UserProcessor.WebApiUserToApplicationUser(user)).State = System.Data.Entity.EntityState.Modified;
+                ApplicationUser userEntity = context.Users.Find(user.Id);
+                context.Users.Attach(userEntity);
+                userEntity.UserName = user.UserName;
+                userEntity.FirstName = user.FirstName;
+                userEntity.LastName = user.LastName;
+                userEntity.Email = user.Email;
+                userEntity.EmailConfirmed = user.EmailConfirmed;
+                userEntity.PhoneNumber = user.PhoneNumber;
+                userEntity.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                userEntity.Country = user.Country;
+                userEntity.City = user.City;
+                userEntity.PostalCode = user.PostalCode;
+                userEntity.Street = user.Street;
+                userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
+                userEntity.Approved = user.Approved;
+                userEntity.Deleted = user.Deleted;
+
+                if (user.Role != null)
+                {
+                    var roles = new UserManager().GetRoles(user.Id);
+                    if (roles[0] != user.Role)
+                    {
+                        new UserManager().RemoveFromRole(user.Id, roles[0]);
+                        new UserManager().AddToRole(user.Id, user.Role);
+                    }
+                }
+
                 context.SaveChanges();
             }
         }
@@ -93,6 +119,7 @@ namespace AbatementHelper.WebAPI.Repositories
             using (var context = new ApplicationUserDbContext())
             {
                 ApplicationUser user = context.Users.Find(id);
+                context.Users.Attach(user);
                 user.Deleted = true;
                 context.SaveChanges();
             }
@@ -103,7 +130,31 @@ namespace AbatementHelper.WebAPI.Repositories
             using (var context = new ApplicationUserDbContext())
             {
                 ApplicationUser user = context.Users.Find(id);
+                context.Users.Attach(user);
                 user.Deleted = false;
+                context.SaveChanges();
+            }
+        }
+
+        //User
+
+        public void Edit(WebApiUser user)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser userEntity = context.Users.Find(user.Id);
+                context.Users.Attach(userEntity);
+                userEntity.UserName = user.UserName;
+                userEntity.FirstName = user.FirstName;
+                userEntity.LastName = user.LastName;
+                userEntity.Email = user.Email;
+                userEntity.PhoneNumber = user.PhoneNumber;
+                userEntity.Country = user.Country;
+                userEntity.City = user.City;
+                userEntity.PostalCode = user.PostalCode;
+                userEntity.Street = user.Street;
+                userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
+
                 context.SaveChanges();
             }
         }

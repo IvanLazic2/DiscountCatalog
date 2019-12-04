@@ -224,10 +224,20 @@ namespace AbatementHelper.MVC.Controllers
 
         //Details
 
+        [HttpGet]
+        [Route("Details")]
+        public ActionResult Details()
+        {
+            WebApiUser user = account.Details();
+
+            return View(user);
+        }
+
         //Edit GET
 
         [HttpGet]
-        public ActionResult Edit(string id)
+        [Route("Edit")]
+        public ActionResult Edit()
         {
             WebApiUser user = new WebApiUser();
 
@@ -239,11 +249,14 @@ namespace AbatementHelper.MVC.Controllers
         //Edit POST
 
         [HttpPost]
+        [Route("Edit")]
         public ActionResult Edit(WebApiUser user)
         {
-            if (account.Edit(user))
+            var editUser = account.Edit(user);
+
+            if (editUser)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Details");
             }
 
             return View("~/Views/Shared/Error.cshtml", user); //za sad
@@ -252,17 +265,21 @@ namespace AbatementHelper.MVC.Controllers
         //Delete
 
         [HttpGet]
+        [Route("Delete")]
         public ActionResult Delete()
         {
-            return View();
+            WebApiUser user = account.Details();
+
+            return View(user);
         }
 
         [HttpPost]
-        public ActionResult Delete(string id)
+        [Route("Delete")]
+        public ActionResult Delete(WebApiUser user)
         {
-            account.Delete(id);
+            account.Delete(user);
 
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
 

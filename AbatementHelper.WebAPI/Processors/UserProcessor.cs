@@ -18,7 +18,7 @@ namespace AbatementHelper.WebAPI.Processors
             //var userRoleList = user.Roles.ToList();
             //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
             //var identityRole = roleManager.FindById(userRoleList[0].RoleId);
-   
+
 
             return new WebApiUser
             {
@@ -48,10 +48,17 @@ namespace AbatementHelper.WebAPI.Processors
             //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
             //var identityRole = roleManager.FindById(userRoleList[0].RoleId);
 
-            var roles = new UserManager().GetRoles(user.Id);
-            new UserManager().RemoveFromRole(user.Id, roles[0]);
+            if (user.Role != null)
+            {
+                var roles = new UserManager().GetRoles(user.Id);
+                new UserManager().RemoveFromRole(user.Id, roles[0]);
+                new UserManager().AddToRole(user.Id, user.Role);
+            }
+            else
+            {
+                return null;
+            }
 
-            new UserManager().AddToRole(user.Id, user.Role);
 
             return new ApplicationUser
             {
@@ -67,7 +74,7 @@ namespace AbatementHelper.WebAPI.Processors
                 City = user.City,
                 PostalCode = user.PostalCode,
                 Street = user.Street,
-                
+
                 TwoFactorEnabled = user.TwoFactorEnabled,
                 Approved = user.Approved,
                 Deleted = user.Deleted

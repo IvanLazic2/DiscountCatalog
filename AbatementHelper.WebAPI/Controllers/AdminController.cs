@@ -126,58 +126,5 @@ namespace AbatementHelper.WebAPI.Controllers
 
             return Ok();
         }
-
-
-
-
-        //[HttpPut]
-        //[Route("Delete/{role}/{id}")]
-        //public IHttpActionResult Delete(string role, string id)
-        //{
-        //    if (role == "User" || role == "StoreAdmin" || role == "Admin")
-        //    {
-        //        DataBaseReader.DeleteUser(id);
-        //        return Ok("User deleted");
-        //    }
-        //    else if (role == "Store")
-        //    {
-        //        DataBaseReader.DeleteStore(id);
-        //        return Ok("Store deleted");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("User does not exist");
-        //    }
-        //}
-
-        //[HttpPut]
-        //[Route("Restore/{role}/{id}")]
-        //public IHttpActionResult Restore(string role, string id)
-        //{
-        //    if (role == "User" || role == "StoreAdmin" || role == "Admin")
-        //    {
-        //        DataBaseReader.RestoreUser(id);
-        //        return Ok("User restored");
-        //    }
-        //    else if (role == "Store")
-        //    {
-        //        DataBaseReader.RestoreStore(id);
-        //        return Ok("Store restored");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("User does not exist");
-        //    }
-        //}
-
-
-
-
-
-
-
-
-
-
     }
 }

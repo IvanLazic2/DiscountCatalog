@@ -195,10 +195,10 @@
     <Compile Include="Models\UserForAuthentication.cs" />
     <Compile Include="Processors\ProductManagerProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositeories\AccountRepository.cs" />
-    <Compile Include="Repositeories\AdminRepository.cs" />
-    <Compile Include="Repositeories\ProductManagerRepository.cs" />
-    <Compile Include="Repositeories\StoreAdminRepository.cs" />
+    <Compile Include="Repositories\AccountRepository.cs" />
+    <Compile Include="Repositories\AdminRepository.cs" />
+    <Compile Include="Repositories\ProductManagerRepository.cs" />
+    <Compile Include="Repositories\StoreAdminRepository.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -243,12 +243,10 @@
     <Content Include="Views\AccountManager\Login.cshtml" />
     <Content Include="Views\AccountManager\Register.cshtml" />
     <Content Include="Views\User\AccountTypeSelection.cshtml" />
-    <Content Include="Views\User\UserRegistration.cshtml" />
     <Content Include="Views\Shared\_HeaderNavBar.cshtml" />
     <Content Include="Views\Shared\_Admin.cshtml" />
     <Content Include="Views\Shared\_StoreAdmin.cshtml" />
     <Content Include="Views\Shared\_User.cshtml" />
-    <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\Admin\GetDelete.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\StoreAdmin\RegisterStore.cshtml" />
@@ -262,6 +260,9 @@
     <Content Include="Views\Admin\EditUser.cshtml" />
     <Content Include="Views\Admin\DetailsUser.cshtml" />
     <Content Include="Views\Admin\DeleteUser.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\User\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
