@@ -73,7 +73,7 @@ namespace AbatementHelper.MVC.Repositeories
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/EditUser/" + id);
+            var response = apiClient.GetAsync("api/Admin/Edit/" + id);
             response.Wait();
 
             var result = response.Result;
@@ -93,7 +93,7 @@ namespace AbatementHelper.MVC.Repositeories
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync("api/Admin/EditUser", user);
+            var response = apiClient.PutAsJsonAsync("api/Admin/Edit", user);
             response.Wait();
 
             var result = response.Result;
@@ -111,7 +111,7 @@ namespace AbatementHelper.MVC.Repositeories
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/DetailsUser/" + id);
+            var response = apiClient.GetAsync("api/Admin/Details/" + id);
             response.Wait();
 
             var result = response.Result;
@@ -135,7 +135,7 @@ namespace AbatementHelper.MVC.Repositeories
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            var response = apiClient.PutAsync("api/Admin/DeleteUser/", httpContent);
+            var response = apiClient.PutAsync("api/Admin/Delete/", httpContent);
             response.Wait();
 
             var result = response.Result;
@@ -156,7 +156,7 @@ namespace AbatementHelper.MVC.Repositeories
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/Admin/RestoreUser/" + id, null);
+            var response = apiClient.PutAsync("api/Admin/Restore/" + id, null);
             response.Wait();
 
             var result = response.Result;

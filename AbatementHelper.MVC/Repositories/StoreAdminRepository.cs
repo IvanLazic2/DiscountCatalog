@@ -1,4 +1,5 @@
 ﻿using AbatementHelper.CommonModels.Models;
+using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using System;
@@ -43,10 +44,11 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<string> RegisterStore(Store store)
+        public async Task<string> CreateStore(WebApiStore store)
         {
-            //
             AddTokenToHeader();
+
+            store.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
             var jsonContent = JsonConvert.SerializeObject(store);
 
@@ -54,7 +56,7 @@ namespace AbatementHelper.MVC.Repositeories
 
             HttpResponseMessage response;
 
-            response = await apiClient.PostAsync("api/Account/RegisterStore", httpContent);
+            response = await apiClient.PostAsync("api/StoreAdmin/CreateStore", httpContent);
 
             RegisterSuccessful = response.IsSuccessStatusCode;
 
@@ -63,97 +65,99 @@ namespace AbatementHelper.MVC.Repositeories
             return await result;
         }
 
-        //public DataBaseResultListOfStores GetAllStores(string masterStoreID)
-        //{
-        //    DataBaseResultListOfStores stores = new DataBaseResultListOfStores();
+        public async Task<List<WebApiStore>> GetAllStores()
+        {
+            AddTokenToHeader();
 
-        //    AddTokenToHeader();
+            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-        //    var response = apiClient.GetAsync("api/StoreAdmin/GetAllStores/"+masterStoreID);
-        //    response.Wait();
+            List<WebApiStore> stores = new List<WebApiStore>();
 
-        //    var result = response.Result;
+            var response = apiClient.GetAsync("api/StoreAdmin/GetAllStores/" + storeAdminId);
+            response.Wait();
 
-        //    var resultString = response.Result.ToString();
+            var result = response.Result;
 
-        //    if (result.IsSuccessStatusCode)
-        //    {
-        //        var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfStores>();
-        //        resultContent.Wait();
+            var resultString = response.Result.ToString();
 
-        //        stores = resultContent.Result;
-        //    }
 
-        //    return stores;
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
+                resultContent.Wait();
 
-        //}
+                stores = resultContent.Result;
+            }
 
-        //public DataBaseResultListOfStores GetAllDeletedStores(string masterStoreID)
-        //{
-        //    DataBaseResultListOfStores stores = new DataBaseResultListOfStores();
+            return stores;
 
-        //    AddTokenToHeader();
+        }
 
-        //    var response = apiClient.GetAsync("api/StoreAdmin/GetAllDeletedStores/" + masterStoreID);
-        //    response.Wait();
+        public WebApiStore EditStore(string id)
+        {
+            WebApiStore store = new WebApiStore();
 
-        //    var result = response.Result;
+            AddTokenToHeader();
 
-        //    var resultString = response.Result.ToString();
+            var response = apiClient.GetAsync("api/StoreAdmin/EditStore/" + id);
+            response.Wait();
 
-        //    if (result.IsSuccessStatusCode)
-        //    {
-        //        var resultContent = result.Content.ReadAsAsync<DataBaseResultListOfStores>();
-        //        resultContent.Wait();
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<WebApiStore>();
+                resultContent.Wait();
 
-        //        stores = resultContent.Result;
-        //    }
+                store = resultContent.Result;
+            }
 
-        //    return stores;
+            return store;
+        }
 
-        //}
+        public bool EditStore(WebApiStore store)
+        {
+            AddTokenToHeader();
 
-        //public DataBaseStore Edit(string id)
-        //{
-        //    DataBaseStore store = new DataBaseStore();
+            var response = apiClient.PutAsJsonAsync("api/StoreAdmin/EditStore", store);
+            response.Wait();
 
-        //    AddTokenToHeader();
+            var result = response.Result;
+            if (result.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
 
-        //    var response = apiClient.GetAsync("api/StoreAdmin/Edit/" + id);
-        //    response.Wait();
+        public WebApiStore DetailsStore(string id)
+        {
+            WebApiStore store = new WebApiStore();
 
-        //    var result = response.Result;
-        //    if (result.IsSuccessStatusCode)
-        //    {
-        //        var resultContent = result.Content.ReadAsAsync<DataBaseStore>();
-        //        resultContent.Wait();
+            if (id != null)
+            {
+                AddTokenToHeader();
 
-        //        store = resultContent.Result;
-        //    }
+                var response = apiClient.GetAsync("api/StoreAdmin/DetailsStore/" + id);
+                response.Wait();
 
-        //    return store;
-        //}
+                var result = response.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<WebApiStore>();
+                    resultContent.Wait();
 
-        //public bool Edit(DataBaseStore store)
-        //{
-        //    AddTokenToHeader();
+                    store = resultContent.Result;
+                } 
+            }
 
-        //    var response = apiClient.PutAsJsonAsync<DataBaseStore>("api/StoreAdmin/Edit", store);
-        //    response.Wait();
-
-        //    var result = response.Result;
-        //    if (result.IsSuccessStatusCode)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
+            return store;
+        }
 
         public bool DeleteStore(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/StoreAdmin/Delete/" + id, null);
+            var response = apiClient.PutAsync("api/StoreAdmin/DeleteStore/" + id, null);
             response.Wait();
 
             var result = response.Result;
@@ -174,7 +178,7 @@ namespace AbatementHelper.MVC.Repositeories
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/StoreAdmin/Restore/" + id, null);
+            var response = apiClient.PutAsync("api/StoreAdmin/RestoreStore/" + id, null);
             response.Wait();
 
             var result = response.Result;
@@ -189,6 +193,34 @@ namespace AbatementHelper.MVC.Repositeories
             }
 
             return false;
+        }
+
+        public async Task<List<WebApiStore>> GetAllDeletedStores()
+        {
+            AddTokenToHeader();
+
+            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            List<WebApiStore> stores = new List<WebApiStore>();
+
+            var response = apiClient.GetAsync("api/StoreAdmin/GetAllDeletedStores/" + storeAdminId);
+            response.Wait();
+
+            var result = response.Result;
+
+            var resultString = response.Result.ToString();
+
+
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
+                resultContent.Wait();
+
+                stores = resultContent.Result;
+            }
+
+            return stores;
+
         }
     }
 }

@@ -1,11 +1,15 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.WebAPI.DataBaseModels;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -73,6 +77,8 @@ namespace AbatementHelper.WebAPI.Repositories
                 };
             }
         }
+
+        //admin
 
         public List<ApplicationUser> ReadAllUsers()
         {
@@ -144,6 +150,7 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 ApplicationUser userEntity = context.Users.Find(user.Id);
                 context.Users.Attach(userEntity);
+
                 userEntity.UserName = user.UserName;
                 userEntity.FirstName = user.FirstName;
                 userEntity.LastName = user.LastName;
@@ -154,7 +161,136 @@ namespace AbatementHelper.WebAPI.Repositories
                 userEntity.PostalCode = user.PostalCode;
                 userEntity.Street = user.Street;
                 userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
+  
+                context.SaveChanges();
+            }
+        }
 
+        //StoreAdmin
+
+        public async Task<StoreEntity> ReadStoreById(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                var store = await context.Stores.FindAsync(id);
+
+
+                return store;
+            }
+        }
+
+        public List<WebApiStore> GetAllStores(string storeAdminId)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                List<WebApiStore> stores = new List<WebApiStore>();
+
+                foreach (var store in context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId).ToList())
+                {
+                    store.StoreAdmin = context.Users.Find(storeAdminId);
+
+                    stores.Add(StoreProcessor.StoreEntityToWebApiStore(store)); // tu je nest null
+
+                }
+
+                return stores;
+            }
+        }
+
+        public void CreateStore(WebApiStore store)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
+                processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
+                context.Stores.Add(processedStore);
+
+                context.SaveChanges();
+
+                //try
+                //{
+                //    context.SaveChanges();
+                //}
+                //catch (DbEntityValidationException ex)
+                //{
+                //    foreach (DbEntityValidationResult item in ex.EntityValidationErrors)
+                //    {
+                //        // Get entry
+
+                //        DbEntityEntry entry = item.Entry;
+                //        string entityTypeName = entry.Entity.GetType().Name;
+
+                //        // Display or log error messages
+
+                //        foreach (DbValidationError subItem in item.ValidationErrors)
+                //        {
+                //            string message = string.Format("Error '{0}' occurred in {1} at {2}",
+                //                     subItem.ErrorMessage, entityTypeName, subItem.PropertyName);
+                //            Debug.WriteLine(message);
+                //        }
+                //    }
+                //}
+
+
+            }
+        }
+
+        public void EditStore(WebApiStore store)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                StoreEntity storeEntity = context.Stores.Find(store.Id);
+                context.Stores.Attach(storeEntity);
+
+                storeEntity.StoreName = store.StoreName;
+                storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
+                storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
+                storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
+                storeEntity.Country = store.Country;
+                storeEntity.City = store.City;
+                storeEntity.PostalCode = store.PostalCode;
+                storeEntity.Street = store.Street;
+
+                context.SaveChanges();
+            }
+        }
+
+        public void DeleteStore(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                StoreEntity store = context.Stores.Find(id);
+                context.Stores.Attach(store);
+                store.Deleted = true;
+                context.SaveChanges();
+            }
+        }
+
+        public List<WebApiStore> GetAllDeletedStores(string storeAdminId)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                List<WebApiStore> stores = new List<WebApiStore>();
+
+                foreach (var store in context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId && s.Deleted).ToList())
+                {
+                    store.StoreAdmin = context.Users.Find(storeAdminId);
+
+                    stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
+
+                }
+
+                return stores;
+            }
+        }
+
+        public void RestoreStore(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                StoreEntity store = context.Stores.Find(id);
+                context.Stores.Attach(store);
+                store.Deleted = false;
                 context.SaveChanges();
             }
         }

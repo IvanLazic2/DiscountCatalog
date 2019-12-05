@@ -180,6 +180,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductManagerController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -247,22 +248,25 @@
     <Content Include="Views\Shared\_Admin.cshtml" />
     <Content Include="Views\Shared\_StoreAdmin.cshtml" />
     <Content Include="Views\Shared\_User.cshtml" />
-    <Content Include="Views\Admin\GetDelete.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\StoreAdmin\RegisterStore.cshtml" />
-    <Content Include="Views\StoreAdmin\GetAllStores.cshtml" />
-    <Content Include="Views\StoreAdmin\Edit.cshtml" />
-    <Content Include="Views\StoreAdmin\GetAllDeletedStores.cshtml" />
     <Content Include="Views\Shared\_Store.cshtml" />
     <Content Include="Views\User\Registration.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
-    <Content Include="Views\Admin\GetAllUsers.cshtml" />
-    <Content Include="Views\Admin\EditUser.cshtml" />
-    <Content Include="Views\Admin\DetailsUser.cshtml" />
-    <Content Include="Views\Admin\DeleteUser.cshtml" />
+    <Content Include="Views\Admin\Edit.cshtml" />
+    <Content Include="Views\Admin\Details.cshtml" />
+    <Content Include="Views\Admin\Delete.cshtml" />
     <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Delete.cshtml" />
+    <Content Include="Views\StoreAdmin\CreateStore.cshtml" />
+    <Content Include="Views\StoreAdmin\Index.cshtml" />
+    <Content Include="Views\Admin\GetAllUsers.cshtml" />
+    <Content Include="Views\StoreAdmin\GetAllStores.cshtml" />
+    <Content Include="Views\StoreAdmin\EditStore.cshtml" />
+    <Content Include="Views\StoreAdmin\DetailsStore.cshtml" />
+    <Content Include="Views\StoreAdmin\DeleteStore.cshtml" />
+    <Content Include="Views\StoreAdmin\GetAllDeletedStores.cshtml" />
+    <Content Include="Views\Store\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

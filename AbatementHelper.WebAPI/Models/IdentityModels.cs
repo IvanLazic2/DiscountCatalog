@@ -59,8 +59,9 @@ namespace AbatementHelper.WebAPI.Models
         }
 
         public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<StoreEntity> Store { get; set; }
-        public DbSet<ManagerEntity> Manager { get; set; }
+        public DbSet<StoreEntity> Stores { get; set; }
+        public DbSet<ManagerEntity> Managers { get; set; }
+        public DbSet<ProductEntity> Product { get; set; }
     }
 
     public class UserManager : UserManager<ApplicationUser>

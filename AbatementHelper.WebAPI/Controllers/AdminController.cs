@@ -81,8 +81,8 @@ namespace AbatementHelper.WebAPI.Controllers
         //}
 
         [HttpGet]
-        [Route("EditUser/{id}")]
-        public WebApiUser EditUser(string id)
+        [Route("Edit/{id}")]
+        public WebApiUser Edit(string id)
         {
             //WebApiUser user = new WebApiUser();
 
@@ -92,8 +92,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("EditUser")]
-        public IHttpActionResult EditUser(WebApiUser user)
+        [Route("Edit")]
+        public IHttpActionResult Edit(WebApiUser user)
         {
             entityReader.EditUser(user);
 
@@ -101,8 +101,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("DetailsUser/{id}")]
-        public WebApiUser DetailsUser(string id)
+        [Route("Details/{id}")]
+        public WebApiUser Details(string id)
         {
             var user = entityReader.ReadUserById(id);
 
@@ -110,8 +110,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("DeleteUser")]
-        public IHttpActionResult DeleteUser(WebApiUser user)
+        [Route("Delete")]
+        public IHttpActionResult Delete(WebApiUser user)
         {
             entityReader.DeleteUser(user.Id);
 
@@ -119,8 +119,8 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("RestoreUser/{id}")]
-        public IHttpActionResult RestoreUser(string id)
+        [Route("Restore/{id}")]
+        public IHttpActionResult Restore(string id)
         {
             entityReader.RestoreUser(id);
 

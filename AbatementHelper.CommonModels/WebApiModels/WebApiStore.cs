@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbatementHelper.MVC.Models
+namespace AbatementHelper.CommonModels.WebApiModels
 {
-    public class dbstore
+    public class WebApiStore
     {
         public string Id { get; set; }
         public string StoreName { get; set; }
@@ -18,7 +18,6 @@ namespace AbatementHelper.MVC.Models
         public string PostalCode { get; set; }
         public string Street { get; set; }
         public string StoreAdminId { get; set; }
-        public List<string> Managers { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
     }

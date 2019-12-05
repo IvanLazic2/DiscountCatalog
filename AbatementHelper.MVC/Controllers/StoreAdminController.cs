@@ -8,116 +8,119 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Net.Http;
+using AbatementHelper.CommonModels.WebApiModels;
 
 namespace AbatementHelper.MVC.Controllers
 {
     [RoutePrefix("StoreAdmin")]
     public class StoreAdminController : Controller
     {
-        //[HttpGet]
-        //public ActionResult GetAllStores()
-        //{
-        //    string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
+        private StoreAdminRepository storeAdmin = new StoreAdminRepository();
 
-        //    List<DataBaseStore> stores;
-
-        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
-
-        //    ViewBag.Success = storeAdmin.GetAllStores(masterStoreID).Success;
-        //    ViewBag.Message = storeAdmin.GetAllStores(masterStoreID).Message;
-
-        //    stores = storeAdmin.GetAllStores(masterStoreID).Value;
-
-        //    return View(stores);
-        //}
-
-        //[HttpGet]
-        //public ActionResult GetAllDeletedStores()
-        //{
-        //    string masterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
-
-        //    List<DataBaseStore> stores;
-
-        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
-
-        //    ViewBag.Success = storeAdmin.GetAllDeletedStores(masterStoreID).Success;
-        //    ViewBag.Message = storeAdmin.GetAllDeletedStores(masterStoreID).Message;
-
-        //    stores = storeAdmin.GetAllDeletedStores(masterStoreID).Value;
-
-        //    return View(stores);
-        //}
-
-        //Registration action
         [HttpGet]
-        public ActionResult RegisterStore()
+        [Route("Index")]
+        public ActionResult Index()
         {
-            return View("~/Views/StoreAdmin/RegisterStore.cshtml");
+            return View();
         }
-        //Registration POST action
+
+        [HttpGet]
+        [Route("GetAllStores")]
+        public async Task<ActionResult> GetAllStores()
+        {
+            List<WebApiStore> stores;
+
+            stores = await storeAdmin.GetAllStores();
+
+            return View(stores);
+        }
+
+        [HttpGet]
+        [Route("CreateStore")]
+        public ActionResult CreateStore()
+        {
+            return View();
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RegisterStore([Bind(Exclude = "EmailConfirmed, ActivationCode")] Store store)
+        [Route("CreateStore")]
+        public async Task<ActionResult> CreateStore(WebApiStore store)
         {
-            store.MasterStoreID = System.Web.HttpContext.Current.Request.Cookies["UserID"].Value.ToString();
-            store.Email = System.Web.HttpContext.Current.Request.Cookies["Email"].Value.ToString();
+            await storeAdmin.CreateStore(store);
 
-            StoreAdminRepository register = new StoreAdminRepository();
-
-            var result = await register.RegisterStore(store);
-
-            if (register.RegisterSuccessful)
-            {
-                ViewBag.Message = "Registration Successful";
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.Message = "Register Unsuccessful";
-                return View("~/Views/Shared/Error.cshtml", store); //treba mijenjat
-            }
+            return RedirectToAction("GetAllStores");
         }
 
-        //[HttpGet]
-        //public ActionResult Edit(string id)
-        //{
-        //    DataBaseStore store = new DataBaseStore();
+        [HttpGet]
+        [Route("EditStore/{id}")]
+        public ActionResult EditStore(string id)
+        {
+            WebApiStore store = storeAdmin.EditStore(id);
 
-        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
+            return View(store);
+        }
 
-        //    store = storeAdmin.Edit(id);
+        [HttpPost]
+        [Route("EditStore")]
+        public ActionResult EditStore(WebApiStore store)
+        {
+            storeAdmin.EditStore(store);
 
-        //    return View(store);
-        //}
+            return RedirectToAction("GetAllStores");
+        }
 
-        //[HttpPost]
-        //public ActionResult Edit(DataBaseStore store)
-        //{
-        //    StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        [HttpGet]
+        [Route("DetailsStore/{id}")]
+        public ActionResult DetailsStore(string id)
+        {
+            WebApiStore store = storeAdmin.DetailsStore(id);
 
-        //    if (storeAdmin.Edit(store))
-        //    {
-        //        return RedirectToAction("GetAllStores");
-        //    }
-        //    return View(store);
-        //}
+            return View(store);
+        }
 
+        [HttpGet]
+        [Route("DeleteStore/{id}")]
         public ActionResult DeleteStore(string id)
         {
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
+            WebApiStore store = storeAdmin.DetailsStore(id);
 
-            storeAdmin.DeleteStore(id);
+            return View(store);
+        }
+
+        [HttpPost]
+        [Route("DeleteStore")]
+        public ActionResult DeleteStore(WebApiStore store)
+        {
+            storeAdmin.DeleteStore(store.Id);
 
             return RedirectToAction("GetAllStores");
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetAllDeletedStores()
+        {
+            List<WebApiStore> stores;
+
+            stores = await storeAdmin.GetAllDeletedStores();
+
+            return View(stores);
+        }
+
+        [HttpGet]
+        [Route("RestoreStore/{id}")]
         public ActionResult RestoreStore(string id)
         {
-            StoreAdminRepository storeAdmin = new StoreAdminRepository();
-
             storeAdmin.RestoreStore(id);
 
-            return RedirectToAction("GetAllStores");
+            return RedirectToAction("GetAllDeletedStores");
+        }
+
+        [HttpGet]
+        [Route("Select/{id}")]
+        public ActionResult Select()
+        {
+            //mozda u cookie spremit storeID
+            return RedirectToAction("Index", "Store");
         }
     }
 }

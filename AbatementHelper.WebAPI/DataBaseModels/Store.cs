@@ -8,7 +8,7 @@ namespace AbatementHelper.WebAPI.DataBaseModels
 {
     public class StoreEntity
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string StoreName { get; set; }
         public virtual ICollection<ManagerEntity> Managers { get; set; }
         public string WorkingHoursWeek { get; set; }
@@ -18,5 +18,9 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
+        public ApplicationUser StoreAdmin { get; set; }
+        public ICollection<ProductEntity> Products { get; set; }
+        public bool Approved { get; set; }
+        public bool Deleted { get; set; }
     }
 }

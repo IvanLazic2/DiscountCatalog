@@ -37,8 +37,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        [Route("EditUser/{id}")]
-        public ActionResult EditUser(string id)
+        [Route("Edit/{id}")]
+        public ActionResult Edit(string id)
         {
             WebApiUser user = new WebApiUser();
 
@@ -48,8 +48,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpPost]
-        [Route("EditUser")]
-        public ActionResult EditUser(WebApiUser user)
+        [Route("Edit")]
+        public ActionResult Edit(WebApiUser user)
         {
             admin.EditUser(user);
 
@@ -57,8 +57,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        [Route("DetailsUser/{id}")]
-        public ActionResult DetailsUser(string id)
+        [Route("Details/{id}")]
+        public ActionResult Details(string id)
         {
             WebApiUser user = admin.DetailsUser(id);
 
@@ -66,8 +66,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        [Route("DeleteUser/{id}")]
-        public ActionResult DeleteUser(string id)
+        [Route("Delete/{id}")]
+        public ActionResult Delete(string id)
         {
             WebApiUser user = admin.DetailsUser(id);
 
@@ -75,8 +75,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpPost]
-        [Route("DeleteUser")]
-        public ActionResult DeleteUser(WebApiUser user)
+        [Route("Delete")]
+        public ActionResult Delete(WebApiUser user)
         {
             admin.DeleteUser(user);
 
@@ -84,8 +84,8 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        [Route("RestoreUser/{id}")]
-        public ActionResult RestoreUser(string id)
+        [Route("Restore/{id}")]
+        public ActionResult Restore(string id)
         {
             admin.RestoreUser(id);
 

@@ -235,6 +235,7 @@
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DataBaseModels\Manager.cs" />
+    <Compile Include="DataBaseModels\Product.cs" />
     <Compile Include="DataBaseModels\Store.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -243,11 +244,28 @@
     <Compile Include="Migrations\201912021716132_initial.Designer.cs">
       <DependentUpon>201912021716132_initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201912040916279_initial1.cs" />
+    <Compile Include="Migrations\201912040916279_initial1.Designer.cs">
+      <DependentUpon>201912040916279_initial1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912041027219_i.cs" />
+    <Compile Include="Migrations\201912041027219_i.Designer.cs">
+      <DependentUpon>201912041027219_i.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912042127239_initial2.cs" />
+    <Compile Include="Migrations\201912042127239_initial2.Designer.cs">
+      <DependentUpon>201912042127239_initial2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912042130228_initial3.cs" />
+    <Compile Include="Migrations\201912042130228_initial3.Designer.cs">
+      <DependentUpon>201912042130228_initial3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
+    <Compile Include="Processors\StoreProcessor.cs" />
     <Compile Include="Processors\UserProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
@@ -355,6 +373,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201912021716132_initial.resx">
       <DependentUpon>201912021716132_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912040916279_initial1.resx">
+      <DependentUpon>201912040916279_initial1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912041027219_i.resx">
+      <DependentUpon>201912041027219_i.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912042127239_initial2.resx">
+      <DependentUpon>201912042127239_initial2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912042130228_initial3.resx">
+      <DependentUpon>201912042130228_initial3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

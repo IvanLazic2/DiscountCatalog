@@ -1,8 +1,11 @@
 ﻿using AbatementHelper.CommonModels.Models;
-
+using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.WebAPI.Processors;
+using AbatementHelper.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
@@ -12,56 +15,80 @@ namespace AbatementHelper.WebAPI.Controllers
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {
-        //[HttpGet]
-        //[Route("GetAllStores/{MasterStoreID}")]
-        //public DataBaseResultListOfStores GetAllStores(string masterStoreID)
-        //{
-        //    var stores = DataBaseReader.ReadAllStoresByMasterID(masterStoreID);
-        //    return stores;
-        //}
+        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
 
-        //[HttpGet]
-        //[Route("GetAllDeletedStores/{MasterStoreID}")]
-        //public DataBaseResultListOfStores GetAllDeletedStores(string masterStoreID)
-        //{
-        //    var stores = DataBaseReader.ReadDeletedStores(masterStoreID);
-        //    return stores;
-        //}
+        [HttpGet]
+        [Route("GetAllStores/{storeAdminId}")]
+        public List<WebApiStore> GetAllStores(string storeAdminId)
+        {
+            var stores = entityReader.GetAllStores(storeAdminId);
 
-        //[HttpGet]
-        //[Route("Edit/{id}")]
-        //public DataBaseStore Edit(string id)
-        //{
-        //    DataBaseStore store = new DataBaseStore();
+            return stores;
+        }
 
-        //    store = DataBaseReader.ReadStoreById(id).Value;
+        [HttpPost]
+        [Route("CreateStore")]
+        public IHttpActionResult CreateStore(WebApiStore store)
+        {
+            entityReader.CreateStore(store);
 
-        //    return store;
-        //}
+            return Ok();
+        }
 
-        //[HttpPut]
-        //[Route("Edit")]
-        //public IHttpActionResult Edit(DataBaseStore store)
-        //{
-        //    DataBaseReader.EditStore(store);
+        [HttpGet]
+        [Route("EditStore/{id}")]
+        public async Task<WebApiStore> EditStore(string id)
+        {
+            var store = await entityReader.ReadStoreById(id);
 
-        //    return Ok(store);
-        //}
+            return StoreProcessor.StoreEntityToWebApiStore(store);
+        }
 
-        //[HttpPut]
-        //[Route("Delete/{id}")]
-        //public IHttpActionResult DeleteStore(string id)
-        //{
-        //    DataBaseReader.DeleteStore(id);
-        //    return Ok("Store deleted");
-        //}
+        [HttpPut]
+        [Route("EditStore")]
+        public IHttpActionResult EditStore(WebApiStore store)
+        {
+            entityReader.EditStore(store);
 
-        //[HttpPut]
-        //[Route("Restore/{id}")]
-        //public IHttpActionResult RestoreStore(string id)
-        //{
-        //    DataBaseReader.RestoreStore(id);
-        //    return Ok("StoreRestored");
-        //}
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("DetailsStore/{id}")]
+        public async Task<WebApiStore> DetailsStore(string id)
+        {
+            WebApiStore store = StoreProcessor.StoreEntityToWebApiStore(await entityReader.ReadStoreById(id));
+
+            return store;
+        }
+
+        [HttpPut]
+        [Route("DeleteStore/{id}")]
+        public IHttpActionResult DeleteStore(string id)
+        {
+            entityReader.DeleteStore(id);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetAllDeletedStores/{storeAdminId}")]
+        public List<WebApiStore> GetAllDeletedStores(string storeAdminId)
+        {
+            var stores = entityReader.GetAllDeletedStores(storeAdminId);
+
+            return stores;
+        }
+
+        [HttpPut]
+        [Route("RestoreStore/{id}")]
+        public IHttpActionResult RestoreStore(string id)
+        {
+            entityReader.RestoreStore(id);
+
+            return Ok();
+        }
+
+        
     }
 }
