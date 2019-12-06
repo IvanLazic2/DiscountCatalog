@@ -17,6 +17,7 @@ namespace AbatementHelper.MVC.Repositeories
     public class AdminRepository
     {
         private HttpClient apiClient;
+        private Response responseModel = new Response();
 
         public AdminRepository()
         {
@@ -89,20 +90,22 @@ namespace AbatementHelper.MVC.Repositeories
 
         }
 
-        public bool EditUser(WebApiUser user)
+        public Response EditUser(WebApiUser user)
         {
-            AddTokenToHeader();
+            AddTokenToHeader();  
 
             var response = apiClient.PutAsJsonAsync("api/Admin/Edit", user);
             response.Wait();
 
             var result = response.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                return true;
-            }
 
-            return false;
+            var resultContent = result.Content.ReadAsAsync<Response>();
+            resultContent.Wait();
+
+            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
+            responseModel.Success = resultContent.Result.Success;
+
+            return responseModel;
         }
 
         public WebApiUser DetailsUser(string id)
@@ -140,10 +143,10 @@ namespace AbatementHelper.MVC.Repositeories
 
             var result = response.Result;
 
-            
+
             var resultString = result.ToString();
 
-            
+
             if (result.IsSuccessStatusCode)
             {
                 return true;

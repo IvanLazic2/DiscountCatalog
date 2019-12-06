@@ -60,18 +60,6 @@ namespace AbatementHelper.WebAPI.Controllers
             }
         }
 
-        //public ApplicationStoreManager StoreManager
-        //{
-        //    get
-        //    {
-        //        return _storeManager ?? Request.GetOwinContext().GetUserManager<ApplicationStoreManager>();
-        //    }
-        //    private set
-        //    {
-        //        _storeManager = value;
-        //    }
-        //}
-
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET api/Account/UserInfo
@@ -486,11 +474,9 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("Edit")]
-        public IHttpActionResult Edit(WebApiUser user)
+        public Response Edit(WebApiUser user)
         {
-            entityReader.Edit(user);
-
-            return Ok();
+            return entityReader.Edit(user);
         }
 
         [HttpPut]

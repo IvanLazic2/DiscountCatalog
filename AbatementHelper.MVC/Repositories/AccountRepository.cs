@@ -30,7 +30,7 @@ namespace AbatementHelper.MVC.Repositories
         public bool LoginSuccessful;
         public bool RegisterSuccessful;
         public string ResponseMessageText = null;
-        public Response responseModel;
+        Response responseModel = new Response();
 
         public AccountRepository()
         {
@@ -56,40 +56,6 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Clear();
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
-
-        //public async Task<Response> InitialLogin(string email)
-        //{
-        //    var data = new
-        //    {
-        //        Email = email
-        //    };
-
-        //    string jsonData = (new JavaScriptSerializer()).Serialize(data);
-
-        //    HttpContent httpContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-        //    var request = await apiClient.PostAsync("/api/Account/Authenticate/", httpContent);
-
-        //    var response = request.Content.ReadAsStringAsync();
-
-        //    string responseString = response.Result;
-
-        //    responseModel = JsonConvert.DeserializeObject<Response>(responseString);
-
-        //    ResponseMessageText = responseModel.ResponseMessage;
-
-        //    if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
-        //    {
-
-        //        LoginSuccessful = true;
-        //    }
-        //    else
-        //    {
-        //        LoginSuccessful = false;
-        //    }
-
-        //    return responseModel;
-        //}
 
         public async Task<Response> Login(string email, string userName, string password)
         {
@@ -213,25 +179,21 @@ namespace AbatementHelper.MVC.Repositories
 
         }
 
-        public bool Edit(WebApiUser user)
+        public Response Edit(WebApiUser user)
         {
             AddTokenToHeader();
 
-            if (user != null)
-            {
-                var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
-                response.Wait();
+            var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
+            response.Wait();
 
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-            }
+            var result = response.Result;
 
+            var resultContent = result.Content.ReadAsAsync<Response>();
 
+            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
+            responseModel.Success = resultContent.Result.Success;
 
-            return false;
+            return responseModel;
         }
 
         public bool Delete(WebApiUser user)

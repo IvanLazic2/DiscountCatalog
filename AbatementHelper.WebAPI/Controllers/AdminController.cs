@@ -40,46 +40,6 @@ namespace AbatementHelper.WebAPI.Controllers
             };
         }
 
-
-
-
-
-
-        //[HttpGet]
-        //[Route("GetAllStores")]
-        //public DataBaseResultListOfStores GetAllStores()
-        //{
-        //    var stores = DataBaseReader.ReadAllStores();
-        //    return stores;
-        //}
-
-
-        //[HttpPost]
-        //[Route("Approve")]
-        //public IHttpActionResult Approve(string email)
-        //{
-        //    var querry = DataBaseReader.UpdateDataBaseApproved(email, true);
-
-        //    if (querry.Success)
-        //    {
-        //        return Ok(querry.Message);
-        //    }
-        //    return BadRequest(querry.Message);
-        //}
-
-        //[HttpPost]
-        //[Route("Refuse")]
-        //public IHttpActionResult Refuse(string email)
-        //{
-        //    var querry = DataBaseReader.UpdateDataBaseApproved(email, false);
-
-        //    if (querry.Success)
-        //    {
-        //        return Ok(querry.Message);
-        //    }
-        //    return BadRequest(querry.Message);
-        //}
-
         [HttpGet]
         [Route("Edit/{id}")]
         public WebApiUser Edit(string id)
@@ -93,11 +53,9 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("Edit")]
-        public IHttpActionResult Edit(WebApiUser user)
+        public Response Edit(WebApiUser user)
         {
-            entityReader.EditUser(user);
-
-            return Ok();
+            return entityReader.EditUser(user);
         }
 
         [HttpGet]

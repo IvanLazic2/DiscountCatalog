@@ -28,11 +28,9 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPost]
         [Route("CreateStore")]
-        public IHttpActionResult CreateStore(WebApiStore store)
+        public Response CreateStore(WebApiStore store)
         {
-            entityReader.CreateStore(store);
-
-            return Ok();
+            return entityReader.CreateStore(store); ;
         }
 
         [HttpGet]
@@ -46,11 +44,9 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("EditStore")]
-        public IHttpActionResult EditStore(WebApiStore store)
+        public Response EditStore(WebApiStore store)
         {
-            entityReader.EditStore(store);
-
-            return Ok();
+            return entityReader.EditStore(store);
         }
 
         [HttpGet]

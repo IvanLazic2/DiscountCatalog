@@ -9,6 +9,7 @@ namespace AbatementHelper.CommonModels.Models
     public class Response
     {
         public int ResponseCode { get; set; }
+        public bool Success { get; set; }
         public string ResponseMessage { get; set; }
         public AuthenticatedUser User { get; set; }
     }

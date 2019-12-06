@@ -28,8 +28,11 @@ namespace AbatementHelper.MVC.Controllers
 
             var result = admin.GetAllUsers();
 
-            ViewBag.Success = result.Success;
-            ViewBag.Message = result.Message;
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
 
             users = result.Value;
 
@@ -51,7 +54,10 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Edit")]
         public ActionResult Edit(WebApiUser user)
         {
-            admin.EditUser(user);
+            Response editUserResponse = admin.EditUser(user);
+
+            TempData["Message"] = editUserResponse.ResponseMessage;
+            TempData["Success"] = editUserResponse.Success;
 
             return RedirectToAction("GetAllUsers");
         }

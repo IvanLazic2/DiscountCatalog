@@ -4,7 +4,23 @@
     ViewBag.Title = "GetAllStores";
 }
 
-<h2>GetAllStores</h2>
+@if (ViewBag.Success != null)
+{
+    if (ViewBag.Success)
+    {
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">
+            @ViewBag.Message
+        </div>
+    }
+}
+
+<h2>All stores</h2>
 
 <p>
     @Html.ActionLink("Create New", "CreateStore")

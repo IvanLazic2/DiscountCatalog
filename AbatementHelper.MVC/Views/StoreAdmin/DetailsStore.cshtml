@@ -4,7 +4,23 @@
     ViewBag.Title = "DetailsStore";
 }
 
-<h2>DetailsStore</h2>
+@if (ViewBag.Success != null)
+{
+    if (ViewBag.Success)
+    {
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">
+            @ViewBag.Message
+        </div>
+    }
+}
+
+<h2>@Model.StoreName - Details</h2>
 
 <div>
     <hr />

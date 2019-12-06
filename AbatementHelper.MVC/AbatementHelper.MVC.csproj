@@ -185,6 +185,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AuthenticationModelMVC.cs" />
     <Compile Include="Models\dbstore.cs" />
     <Compile Include="Models\dbuser.cs" />
     <Compile Include="Models\Extended\Address.cs" />
@@ -241,8 +242,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\ProductManager\ProductSaved.cshtml" />
     <Content Include="Views\ProductManager\RegisterProduct.cshtml" />
-    <Content Include="Views\AccountManager\Login.cshtml" />
-    <Content Include="Views\AccountManager\Register.cshtml" />
     <Content Include="Views\User\AccountTypeSelection.cshtml" />
     <Content Include="Views\Shared\_HeaderNavBar.cshtml" />
     <Content Include="Views\Shared\_Admin.cshtml" />
@@ -251,7 +250,6 @@
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Shared\_Store.cshtml" />
     <Content Include="Views\User\Registration.cshtml" />
-    <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
     <Content Include="Views\Admin\Details.cshtml" />
     <Content Include="Views\Admin\Delete.cshtml" />
@@ -267,12 +265,13 @@
     <Content Include="Views\StoreAdmin\DeleteStore.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllDeletedStores.cshtml" />
     <Content Include="Views\Store\Index.cshtml" />
+    <Content Include="Views\User\Login - Copy.cshtml" />
+    <Content Include="Views\User\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Files\" />
     <Folder Include="Views\Authentication\" />
-    <Folder Include="Views\Test\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

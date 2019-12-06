@@ -18,6 +18,7 @@ namespace AbatementHelper.MVC.Repositeories
     {
         private HttpClient apiClient;
         public bool RegisterSuccessful;
+        private Response responseModel = new Response();
 
         public StoreAdminRepository()
         {
@@ -44,7 +45,7 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<string> CreateStore(WebApiStore store)
+        public Response CreateStore(WebApiStore store)
         {
             AddTokenToHeader();
 
@@ -54,15 +55,17 @@ namespace AbatementHelper.MVC.Repositeories
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response;
+            var response = apiClient.PostAsync("api/StoreAdmin/CreateStore", httpContent);
+            response.Wait();
 
-            response = await apiClient.PostAsync("api/StoreAdmin/CreateStore", httpContent);
+            var result = response.Result;
 
-            RegisterSuccessful = response.IsSuccessStatusCode;
+            var resultContent = result.Content.ReadAsAsync<Response>();
 
-            var result = response.Content.ReadAsStringAsync();
+            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
+            responseModel.Success = resultContent.Result.Success;
 
-            return await result;
+            return responseModel;
         }
 
         public async Task<List<WebApiStore>> GetAllStores()
@@ -114,7 +117,7 @@ namespace AbatementHelper.MVC.Repositeories
             return store;
         }
 
-        public bool EditStore(WebApiStore store)
+        public Response EditStore(WebApiStore store)
         {
             AddTokenToHeader();
 
@@ -122,11 +125,13 @@ namespace AbatementHelper.MVC.Repositeories
             response.Wait();
 
             var result = response.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            return false;
+
+            var resultContent = result.Content.ReadAsAsync<Response>();
+
+            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
+            responseModel.Success = resultContent.Result.Success;
+
+            return responseModel;
         }
 
         public WebApiStore DetailsStore(string id)

@@ -1,6 +1,8 @@
 ﻿using AbatementHelper.WebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -9,6 +11,7 @@ namespace AbatementHelper.WebAPI.DataBaseModels
     public class StoreEntity
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        [Index(IsUnique = true), Required, StringLength(200)]
         public string StoreName { get; set; }
         public virtual ICollection<ManagerEntity> Managers { get; set; }
         public string WorkingHoursWeek { get; set; }

@@ -57,7 +57,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 return new WebApiResult()
                 {
                     Value = user.Email,
-                    Message = "Query successful",
+                    Message = "Query successfull",
                     Success = true
                 };
             }
@@ -72,7 +72,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 return new WebApiResult()
                 {
                     Value = user.UserName,
-                    Message = "Query successful",
+                    Message = "Query successfull",
                     Success = true
                 };
             }
@@ -85,39 +85,54 @@ namespace AbatementHelper.WebAPI.Repositories
             return new UserManager().Users.ToList();
         }
 
-        public void EditUser(WebApiUser user)
+        public Response EditUser(WebApiUser user)
         {
-            using (var context = new ApplicationUserDbContext())
+            Response response = new Response();
+
+            try
             {
-                ApplicationUser userEntity = context.Users.Find(user.Id);
-                context.Users.Attach(userEntity);
-                userEntity.UserName = user.UserName;
-                userEntity.FirstName = user.FirstName;
-                userEntity.LastName = user.LastName;
-                userEntity.Email = user.Email;
-                userEntity.EmailConfirmed = user.EmailConfirmed;
-                userEntity.PhoneNumber = user.PhoneNumber;
-                userEntity.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
-                userEntity.Country = user.Country;
-                userEntity.City = user.City;
-                userEntity.PostalCode = user.PostalCode;
-                userEntity.Street = user.Street;
-                userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
-                userEntity.Approved = user.Approved;
-                userEntity.Deleted = user.Deleted;
-
-                if (user.Role != null)
+                using (var context = new ApplicationUserDbContext())
                 {
-                    var roles = new UserManager().GetRoles(user.Id);
-                    if (roles[0] != user.Role)
-                    {
-                        new UserManager().RemoveFromRole(user.Id, roles[0]);
-                        new UserManager().AddToRole(user.Id, user.Role);
-                    }
-                }
+                    ApplicationUser userEntity = context.Users.Find(user.Id);
+                    context.Users.Attach(userEntity);
+                    userEntity.UserName = user.UserName;
+                    userEntity.FirstName = user.FirstName;
+                    userEntity.LastName = user.LastName;
+                    userEntity.Email = user.Email;
+                    userEntity.EmailConfirmed = user.EmailConfirmed;
+                    userEntity.PhoneNumber = user.PhoneNumber;
+                    userEntity.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                    userEntity.Country = user.Country;
+                    userEntity.City = user.City;
+                    userEntity.PostalCode = user.PostalCode;
+                    userEntity.Street = user.Street;
+                    userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
+                    userEntity.Approved = user.Approved;
+                    userEntity.Deleted = user.Deleted;
 
-                context.SaveChanges();
+                    if (user.Role != null)
+                    {
+                        var roles = new UserManager().GetRoles(user.Id);
+                        if (roles[0] != user.Role)
+                        {
+                            new UserManager().RemoveFromRole(user.Id, roles[0]);
+                            new UserManager().AddToRole(user.Id, user.Role);
+                        }
+                    }
+
+                    context.SaveChanges();
+
+                    response.ResponseMessage = "Edited successfully";
+                    response.Success = true;
+                }
             }
+            catch (DbUpdateException)
+            {
+                response.ResponseMessage = $"User {user.UserName} already exsists";
+                response.Success = false;
+            }
+
+            return response;
         }
 
         public void DeleteUser(string id)
@@ -144,26 +159,42 @@ namespace AbatementHelper.WebAPI.Repositories
 
         //User
 
-        public void Edit(WebApiUser user)
+        public Response Edit(WebApiUser user)
         {
-            using (var context = new ApplicationUserDbContext())
-            {
-                ApplicationUser userEntity = context.Users.Find(user.Id);
-                context.Users.Attach(userEntity);
+            Response response = new Response();
 
-                userEntity.UserName = user.UserName;
-                userEntity.FirstName = user.FirstName;
-                userEntity.LastName = user.LastName;
-                userEntity.Email = user.Email;
-                userEntity.PhoneNumber = user.PhoneNumber;
-                userEntity.Country = user.Country;
-                userEntity.City = user.City;
-                userEntity.PostalCode = user.PostalCode;
-                userEntity.Street = user.Street;
-                userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
-  
-                context.SaveChanges();
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ApplicationUser userEntity = context.Users.Find(user.Id);
+                    context.Users.Attach(userEntity);
+
+                    userEntity.UserName = user.UserName;
+                    userEntity.FirstName = user.FirstName;
+                    userEntity.LastName = user.LastName;
+                    userEntity.Email = user.Email;
+                    userEntity.PhoneNumber = user.PhoneNumber;
+                    userEntity.Country = user.Country;
+                    userEntity.City = user.City;
+                    userEntity.PostalCode = user.PostalCode;
+                    userEntity.Street = user.Street;
+                    userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
+
+                    context.SaveChanges();
+
+                    response.ResponseMessage = "Successfully edited";
+                    response.Success = true;
+                }
             }
+            catch (DbUpdateException)
+            {
+                response.ResponseMessage = $"UserName {user.UserName} already exists";
+                response.Success = false;
+            }
+
+            return response;
+
         }
 
         //StoreAdmin
@@ -197,62 +228,98 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public void CreateStore(WebApiStore store)
+        public Response CreateStore(WebApiStore store)
         {
-            using (var context = new ApplicationUserDbContext())
+            Response response = new Response();
+
+            try
             {
-                StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
-                processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
-                context.Stores.Add(processedStore);
+                using (var context = new ApplicationUserDbContext())
+                {
 
-                context.SaveChanges();
+                    StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
+                    processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
+                    context.Stores.Add(processedStore);
 
-                //try
-                //{
-                //    context.SaveChanges();
-                //}
-                //catch (DbEntityValidationException ex)
-                //{
-                //    foreach (DbEntityValidationResult item in ex.EntityValidationErrors)
-                //    {
-                //        // Get entry
+                    
 
-                //        DbEntityEntry entry = item.Entry;
-                //        string entityTypeName = entry.Entity.GetType().Name;
+                    context.SaveChanges();
 
-                //        // Display or log error messages
+                    response.ResponseMessage = "Successfully created";
+                    response.Success = true;
 
-                //        foreach (DbValidationError subItem in item.ValidationErrors)
-                //        {
-                //            string message = string.Format("Error '{0}' occurred in {1} at {2}",
-                //                     subItem.ErrorMessage, entityTypeName, subItem.PropertyName);
-                //            Debug.WriteLine(message);
-                //        }
-                //    }
-                //}
+                    //try
+                    //{
+                    //    context.SaveChanges();
+                    //}
+                    //catch (DbEntityValidationException ex)
+                    //{
+                    //    foreach (DbEntityValidationResult item in ex.EntityValidationErrors)
+                    //    {
+                    //        // Get entry
+
+                    //        DbEntityEntry entry = item.Entry;
+                    //        string entityTypeName = entry.Entity.GetType().Name;
+
+                    //        // Display or log error messages
+
+                    //        foreach (DbValidationError subItem in item.ValidationErrors)
+                    //        {
+                    //            string message = string.Format("Error '{0}' occurred in {1} at {2}",
+                    //                     subItem.ErrorMessage, entityTypeName, subItem.PropertyName);
+                    //            Debug.WriteLine(message);
+                    //        }
+                    //    }
+                    //}
 
 
+                }
             }
+            catch (Exception)
+            {
+                response.ResponseMessage = $"Store {store.StoreName} already exists";
+                response.Success = false;
+            }
+
+
+
+            return response;
+
         }
 
-        public void EditStore(WebApiStore store)
+        public Response EditStore(WebApiStore store)
         {
-            using (var context = new ApplicationUserDbContext())
+            Response response = new Response();
+
+            try
             {
-                StoreEntity storeEntity = context.Stores.Find(store.Id);
-                context.Stores.Attach(storeEntity);
+                using (var context = new ApplicationUserDbContext())
+                {
+                    StoreEntity storeEntity = context.Stores.Find(store.Id);
+                    context.Stores.Attach(storeEntity);
 
-                storeEntity.StoreName = store.StoreName;
-                storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
-                storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
-                storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
-                storeEntity.Country = store.Country;
-                storeEntity.City = store.City;
-                storeEntity.PostalCode = store.PostalCode;
-                storeEntity.Street = store.Street;
+                    storeEntity.StoreName = store.StoreName;
+                    storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
+                    storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
+                    storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
+                    storeEntity.Country = store.Country;
+                    storeEntity.City = store.City;
+                    storeEntity.PostalCode = store.PostalCode;
+                    storeEntity.Street = store.Street;
 
-                context.SaveChanges();
+                    context.SaveChanges();
+
+                    response.ResponseMessage = "Successfully edited";
+                    response.Success = true;
+                }
             }
+            catch (DbUpdateException)
+            {
+                response.ResponseMessage = $"Store {store.StoreName} already exists";
+                response.Success = false;
+            }
+
+            return response;
         }
 
         public void DeleteStore(string id)

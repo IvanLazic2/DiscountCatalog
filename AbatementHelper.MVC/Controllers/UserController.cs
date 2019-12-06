@@ -113,101 +113,6 @@ namespace AbatementHelper.MVC.Controllers
             }
         }
 
-
-
-
-
-
-
-
-
-
-        //public async Task<ActionResult> StoreSelect(string id)
-        //{
-        //    return View();
-        //}
-
-
-
-
-        //public ActionResult PasswordLogin(string email, string role)
-        //{
-        //    if(email != null && role != null)
-        //    {
-        //        if(role == "User")
-        //        {
-        //            return View("~/Views/User/UserPasswordLogin.cshtml");
-        //        }
-        //        else if(role == "Store")
-        //        {
-        //            return View();
-        //        }
-        //        else
-        //        {
-        //            return View("~/Views/Shared/Error.cshtml");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("InitialLogin", "User");
-        //    }
-
-
-        //    //if (TempData["Email"] != null)
-        //    //{
-        //        //return View();
-        //    //}
-
-        //    //ViewBag.Message = "Please entera an e-mail address";
-        //    //return RedirectToAction("InitialLogin", "User");
-        //}
-
-        //[HttpPost]
-        //public async Task<ActionResult> PasswordLogin(User user)
-        //{
-        //    AccountRepository authenticate = new AccountRepository();
-        //    var result = await authenticate.UserLogin(user.Email, user.Password);
-
-        //    if (authenticate.LoginSuccessful && authenticate.ResponseMessageText != null)
-        //    {
-        //        Response.Cookies.Add(new HttpCookie("Access_Token")
-        //        {
-        //            Value = result.User.Access_Token,
-        //            HttpOnly = true
-        //        });
-
-        //        Response.Cookies.Add(new HttpCookie("Role")
-        //        {
-        //            Value = result.User.Role,
-        //            HttpOnly = true
-        //        });
-
-        //        Response.Cookies.Add(new HttpCookie("UserName")
-        //        {
-        //            Value = result.User.UserName,
-        //            HttpOnly = true
-        //        });
-        //        Response.Cookies.Add(new HttpCookie("UserID")
-        //        {
-        //            Value = result.User.Id,
-        //            HttpOnly = true
-        //        });
-        //        Response.Cookies.Add(new HttpCookie("Email")
-        //        {
-        //            Value = result.User.Email,
-        //            HttpOnly = true
-        //        });
-
-        //        ViewBag.Message = authenticate.ResponseMessageText;
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    else
-        //    {
-        //        ViewBag.Message = authenticate.ResponseMessageText;
-        //        return View("~/Views/User/Login.cshtml", user);
-        //    }
-        //}
-
         //Logout
 
         public ActionResult Logout()
@@ -229,6 +134,12 @@ namespace AbatementHelper.MVC.Controllers
         public ActionResult Details()
         {
             WebApiUser user = account.Details();
+
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
 
             return View(user);
         }
@@ -252,14 +163,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Edit")]
         public ActionResult Edit(WebApiUser user)
         {
-            var editUser = account.Edit(user);
+            Response editResponse = account.Edit(user);
 
-            if (editUser)
-            {
-                return RedirectToAction("Details");
-            }
+            TempData["Message"] = editResponse.ResponseMessage;
+            TempData["Success"] = editResponse.Success;
 
-            return View("~/Views/Shared/Error.cshtml", user); //za sad
+            return RedirectToAction("Details");
         }
 
         //Delete

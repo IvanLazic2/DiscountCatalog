@@ -32,6 +32,12 @@ namespace AbatementHelper.MVC.Controllers
 
             stores = await storeAdmin.GetAllStores();
 
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
             return View(stores);
         }
 
@@ -44,9 +50,12 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("CreateStore")]
-        public async Task<ActionResult> CreateStore(WebApiStore store)
+        public ActionResult CreateStore(WebApiStore store)
         {
-            await storeAdmin.CreateStore(store);
+            Response createStoreResponse = storeAdmin.CreateStore(store);
+
+            TempData["Message"] = createStoreResponse.ResponseMessage;
+            TempData["Success"] = createStoreResponse.Success;
 
             return RedirectToAction("GetAllStores");
         }
@@ -64,7 +73,10 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditStore")]
         public ActionResult EditStore(WebApiStore store)
         {
-            storeAdmin.EditStore(store);
+            Response editStoreResponse = storeAdmin.EditStore(store);
+
+            TempData["Message"] = editStoreResponse.ResponseMessage;
+            TempData["Success"] = editStoreResponse.Success;
 
             return RedirectToAction("GetAllStores");
         }

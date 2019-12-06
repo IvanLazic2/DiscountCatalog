@@ -4,10 +4,24 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+@if (ViewBag.Success != null)
+{
+    if (ViewBag.Success)
+    {
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">
+            @ViewBag.Message
+        </div>
+    }
+}
 
+<h2>@Model.UserName - Details</h2>
 
-<h4>dbuser</h4>
 <hr />
 
 @if (Model != null)
@@ -129,7 +143,7 @@
         </dl>
     </div>
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        @Html.ActionLink("Edit", "Edit")
         @Html.ActionLink("Delete", "Delete")
     </p>
 }
