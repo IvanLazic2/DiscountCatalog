@@ -356,7 +356,7 @@ namespace AbatementHelper.WebAPI.Controllers
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
+            
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -416,40 +416,42 @@ namespace AbatementHelper.WebAPI.Controllers
 
             var userName = await entityReader.ReturnUserName(new UserManager(), model.EmailOrUserName);
 
+            var existingUser = Task.Run(() => entityReader.ReturnUser(userName));
+            existingUser.Wait();
+
+
+            if (existingUser.Result == null)
+            {
+                response.ResponseMessage = $"User {model.EmailOrUserName} does not exist.";
+                response.Success = false;
+
+                return response;
+            }
+
             var result = Task.Run(() => authenticate.Authenticate(userName, model.Password));
             result.Wait();
 
-            response.User = result.Result;
-
-            //var readuser = DataBaseReader.ReadUser(model.Email);  ovo treba
+            //var readuser = DataBaseReader.ReadUser(model.Email); 
 
             if (authenticate.LoginSuccessful)
             {
                 //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.OK, "Authentication successfull!");
-
+                response.User = result.Result;
                 response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
-                response.ResponseMessage = "Authentication Succesfull";
-
-                return response;
+                response.Success = true;
+                response.ResponseMessage = $"Logged in as {userName}";
             }
             else
             {
                 //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Incorrect password!");
 
                 response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+                response.Success = false;
                 response.ResponseMessage = "Incorrect password!";
-
-                return response;
             }
 
 
-            //user.ResponseMessage = Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Email address does not exist!");
-
-            response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
-            response.ResponseMessage = "Email address does not exist!";
-
             return response;
-
         }
 
         [HttpGet]

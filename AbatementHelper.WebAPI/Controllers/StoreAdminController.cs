@@ -85,6 +85,20 @@ namespace AbatementHelper.WebAPI.Controllers
             return Ok();
         }
 
-        
+        [HttpGet]
+        [Route("Select/{id}")]
+        public SelectedStore Select(string id)
+        {
+            return entityReader.SelectStore(id);
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("CreateManager")]
+        public IHttpActionResult CreateManager()
+        {
+            entityReader.CreateManager();
+
+            return Ok();
+        }
     }
 }

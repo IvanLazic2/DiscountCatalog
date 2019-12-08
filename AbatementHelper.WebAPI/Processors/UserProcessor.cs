@@ -14,7 +14,18 @@ namespace AbatementHelper.WebAPI.Processors
     {
         public static WebApiUser ApplicationUserToWebApiUser(ApplicationUser user)
         {
-            var roles = new UserManager().GetRoles(user.Id);
+            IList<string> roles = new List<string>();
+
+            UserManager userManager = new UserManager();
+            try
+            {
+                roles = userManager.GetRoles(user.Id);
+            }
+            finally
+            {
+                userManager.Dispose();
+            }
+            
             //var userRoleList = user.Roles.ToList();
             //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
             //var identityRole = roleManager.FindById(userRoleList[0].RoleId);
@@ -50,15 +61,20 @@ namespace AbatementHelper.WebAPI.Processors
 
             if (user.Role != null)
             {
-                var roles = new UserManager().GetRoles(user.Id);
-                new UserManager().RemoveFromRole(user.Id, roles[0]);
-                new UserManager().AddToRole(user.Id, user.Role);
-            }
-            else
-            {
-                return null;
-            }
+                UserManager userManager = new UserManager();
 
+                try
+                {
+                    var roles = userManager.GetRoles(user.Id);
+                    userManager.RemoveFromRole(user.Id, roles[0]);
+                    userManager.AddToRole(user.Id, user.Role);
+                }
+                finally
+                {
+                    userManager.Dispose();
+                }
+                
+            }
 
             return new ApplicationUser
             {

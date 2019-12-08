@@ -45,8 +45,6 @@ namespace AbatementHelper.WebAPI.Repositories
 
             response = await apiClient.PostAsync("/token", data);
 
-            var boi = response.Content.ReadAsStringAsync();
-
             LoginSuccessful = response.IsSuccessStatusCode;
 
             var result = await response.Content.ReadAsAsync<AuthenticatedUser>();
@@ -54,7 +52,5 @@ namespace AbatementHelper.WebAPI.Repositories
             return result;
 
         }
-
-
     }
 }

@@ -13,7 +13,7 @@ using AbatementHelper.CommonModels.WebApiModels;
 
 namespace AbatementHelper.MVC.Controllers
 {
-    public class UserController : Controller
+    public class UserController : Controller //promjenit u accountcontroller
     {
         private AccountRepository account = new AccountRepository();
         private Response response = new Response();
@@ -77,7 +77,10 @@ namespace AbatementHelper.MVC.Controllers
         {
             var result = await account.Login(user);
 
-            if (account.LoginSuccessful)
+            TempData["Message"] = result.ResponseMessage;
+            TempData["Success"] = result.Success;
+
+            if (result.Success)
             {
                 Response.Cookies.Add(new HttpCookie("Access_Token")
                 {
@@ -109,7 +112,13 @@ namespace AbatementHelper.MVC.Controllers
             }
             else
             {
-                return RedirectToAction("Login");
+                if (TempData["Message"] != null && TempData["Success"] != null)
+                {
+                    ViewBag.Message = TempData["Message"].ToString();
+                    ViewBag.Success = (bool)TempData["Success"];
+                }
+
+                return View();
             }
         }
 

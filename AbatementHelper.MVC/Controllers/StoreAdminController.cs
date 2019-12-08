@@ -129,10 +129,39 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("Select/{id}")]
-        public ActionResult Select()
+        public ActionResult Select(string id)
         {
-            //mozda u cookie spremit storeID
-            return RedirectToAction("Index", "Store");
+            if (id != null)
+            {
+                var store = storeAdmin.Select(id);
+
+                if (store != null)
+                {
+                    Response.Cookies.Add(new HttpCookie("StoreID")
+                    {
+                        Value = store.Id,
+                        HttpOnly = true
+                    });
+                    Response.Cookies.Add(new HttpCookie("StoreName")
+                    {
+                        Value = store.StoreName,
+                        HttpOnly = true
+                    });
+
+                    return RedirectToAction("Index", "Store");
+                }
+            }
+
+            return RedirectToAction("GetAllStores");
         }
+
+        [HttpGet]
+        [Route("CreateManager")]
+        public ActionResult CreateManager()
+        {
+            return View();
+        }
+
+        
     }
 }

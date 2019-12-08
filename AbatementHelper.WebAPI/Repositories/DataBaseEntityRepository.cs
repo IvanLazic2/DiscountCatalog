@@ -18,7 +18,7 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class DataBaseEntityRepository
     {
-
+        private UserManager userManager = new UserManager();
 
         public async Task<string> ReturnUserName(UserManager userManager, string usernameOrEmail)
         {
@@ -197,6 +197,13 @@ namespace AbatementHelper.WebAPI.Repositories
 
         }
 
+        public async Task<ApplicationUser> ReturnUser(string userName)
+        {
+            var user = new UserManager().FindByNameAsync(userName);
+
+            return await user;
+        }
+
         //StoreAdmin
 
         public async Task<StoreEntity> ReadStoreById(string id)
@@ -361,6 +368,52 @@ namespace AbatementHelper.WebAPI.Repositories
                 context.SaveChanges();
             }
         }
+
+        public SelectedStore SelectStore(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                var store = context.Stores.Find(id);
+
+                return new SelectedStore
+                {
+                    Id = store.Id,
+                    StoreName = store.StoreName
+                };
+            }
+        }
+        
+        public Response CreateManager()
+        {
+            Response response = new Response();
+            var context = new ApplicationUserDbContext();
+
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+            }
+
+            //try
+            //{
+            //    userManager.Create(new ApplicationUser(), "");
+            //    response.ResponseMessage = "Succes";
+            //}
+            //catch (Exception)
+            //{
+            //    response.ResponseMessage = "Error";   
+            //}
+            //finally
+            //{
+            //    userManager.Dispose();
+            //}
+
+            return response;
+        } 
+
     }
 
 

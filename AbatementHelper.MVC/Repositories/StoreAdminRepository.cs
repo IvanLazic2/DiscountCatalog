@@ -213,9 +213,6 @@ namespace AbatementHelper.MVC.Repositeories
 
             var result = response.Result;
 
-            var resultString = response.Result.ToString();
-
-
             if (result.IsSuccessStatusCode)
             {
                 var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
@@ -226,6 +223,28 @@ namespace AbatementHelper.MVC.Repositeories
 
             return stores;
 
+        }
+
+        public SelectedStore Select(string id)
+        {
+            AddTokenToHeader();
+
+            SelectedStore store = new SelectedStore();
+
+            var response = apiClient.GetAsync("api/StoreAdmin/Select/" + id);
+            response.Wait();
+
+            var result = response.Result;
+
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<SelectedStore>();
+                resultContent.Wait();
+
+                store = resultContent.Result;
+            }
+
+            return store;
         }
     }
 }
