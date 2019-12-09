@@ -162,7 +162,7 @@ namespace AbatementHelper.WebAPI.Repositories
         public Response Edit(WebApiUser user)
         {
             Response response = new Response();
-
+            //mozda dodat uservalidator.validateuser u sve edit ********************************************************************
             try
             {
                 using (var context = new ApplicationUserDbContext())
@@ -386,11 +386,13 @@ namespace AbatementHelper.WebAPI.Repositories
         public Response CreateManager()
         {
             Response response = new Response();
-            var context = new ApplicationUserDbContext();
 
             try
             {
+                using (var context = new ApplicationUserDbContext())
+                {
 
+                }
             }
             catch (Exception)
             {

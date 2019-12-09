@@ -4,17 +4,20 @@
     ViewBag.Title = "DetailsUser";
 }
 
-@if (ViewBag.Success)
+@if (ViewBag.Success != null)
 {
-    <div class="text-danger">
-        ViewBag.Message
-    </div>
-}
-else
-{
-    <div class="text-success">
-        @ViewBag.Message
-    </div>
+    if (ViewBag.Success)
+    {
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">
+            @ViewBag.Message
+        </div>
+    }
 }
 
 <h2>@Model.UserName - Details</h2>
