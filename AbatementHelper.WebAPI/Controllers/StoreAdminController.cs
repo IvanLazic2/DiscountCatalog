@@ -1,5 +1,8 @@
-﻿using AbatementHelper.CommonModels.Models;
+﻿using AbatementHelper.CommonModels.CreateModels;
+using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.WebAPI.DataBaseModels;
+using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
 using System;
@@ -15,13 +18,13 @@ namespace AbatementHelper.WebAPI.Controllers
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {
-        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        private StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
         [HttpGet]
         [Route("GetAllStores/{storeAdminId}")]
         public List<WebApiStore> GetAllStores(string storeAdminId)
         {
-            var stores = entityReader.GetAllStores(storeAdminId);
+            var stores = storeAdminRepository.GetAllStores(storeAdminId);
 
             return stores;
         }
@@ -30,30 +33,32 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("CreateStore")]
         public Response CreateStore(WebApiStore store)
         {
-            return entityReader.CreateStore(store); ;
+            return storeAdminRepository.CreateStore(store); ;
         }
 
         [HttpGet]
         [Route("EditStore/{id}")]
         public async Task<WebApiStore> EditStore(string id)
         {
-            var store = await entityReader.ReadStoreById(id);
+            var store = await storeAdminRepository.ReadStoreById(id);
 
-            return StoreProcessor.StoreEntityToWebApiStore(store);
+            var processedStore = StoreProcessor.StoreEntityToWebApiStore(store);
+
+            return processedStore;
         }
 
         [HttpPut]
         [Route("EditStore")]
         public Response EditStore(WebApiStore store)
         {
-            return entityReader.EditStore(store);
+            return storeAdminRepository.EditStore(store);
         }
 
         [HttpGet]
         [Route("DetailsStore/{id}")]
         public async Task<WebApiStore> DetailsStore(string id)
         {
-            WebApiStore store = StoreProcessor.StoreEntityToWebApiStore(await entityReader.ReadStoreById(id));
+            WebApiStore store = StoreProcessor.StoreEntityToWebApiStore(await storeAdminRepository.ReadStoreById(id));
 
             return store;
         }
@@ -62,7 +67,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("DeleteStore/{id}")]
         public IHttpActionResult DeleteStore(string id)
         {
-            entityReader.DeleteStore(id);
+            storeAdminRepository.DeleteStore(id);
 
             return Ok();
         }
@@ -71,7 +76,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("GetAllDeletedStores/{storeAdminId}")]
         public List<WebApiStore> GetAllDeletedStores(string storeAdminId)
         {
-            var stores = entityReader.GetAllDeletedStores(storeAdminId);
+            var stores = storeAdminRepository.GetAllDeletedStores(storeAdminId);
 
             return stores;
         }
@@ -80,7 +85,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("RestoreStore/{id}")]
         public IHttpActionResult RestoreStore(string id)
         {
-            entityReader.RestoreStore(id);
+            storeAdminRepository.RestoreStore(id);
 
             return Ok();
         }
@@ -89,16 +94,86 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("Select/{id}")]
         public SelectedStore Select(string id)
         {
-            return entityReader.SelectStore(id);
+            return storeAdminRepository.SelectStore(id);
         }
-        [AllowAnonymous]
+
+        [HttpGet]
+        [Route("GetAllManagers/{storeAdminId}")]
+        public List<WebApiManager> GetAllManagers(string storeAdminId)
+        {
+            List<WebApiManager> managers = storeAdminRepository.GetAllManagers(storeAdminId);
+
+            return managers;
+        }
+
+
         [HttpPost]
         [Route("CreateManager")]
-        public IHttpActionResult CreateManager()
+        public Response CreateManager(CreateManagerModel manager)
         {
-            entityReader.CreateManager();
+            return storeAdminRepository.CreateManager(manager, manager.Password);
+        }
+
+        [HttpGet]
+        [Route("DetailsManager/{id}")]
+        public async Task<WebApiUser> DetailsManager(string id)
+        {
+            return UserProcessor.ApplicationUserToWebApiUser(await storeAdminRepository.ReadUserById(id));
+        }
+
+        [HttpGet]
+        [Route("EditManager/{id}")]
+        public async Task<WebApiUser> EditManager(string id)
+        {
+            return UserProcessor.ApplicationUserToWebApiUser(await storeAdminRepository.ReadUserById(id));
+        }
+
+        [HttpPut]
+        [Route("EditManager")]
+        public async Task<Response> EditManager(WebApiManager manager)
+        {
+            return await storeAdminRepository.EditManager(manager);
+        }
+
+        [HttpPut]
+        [Route("DeleteManager/{id}")]
+        public IHttpActionResult DeleteManager(string id)
+        {
+            storeAdminRepository.DeleteManager(id);
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetAllDeletedManagers/{storeAdminId}")]
+        public List<WebApiManager> GetAllDeletedManagers(string storeAdminId)
+        {
+            return storeAdminRepository.GetAllDeletedManagers(storeAdminId);
+        }
+
+        [HttpPut]
+        [Route("RestoreManager/{id}")]
+        public IHttpActionResult RestoreManager(string id)
+        {
+            storeAdminRepository.RestoreManager(id);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetAllAssignedStores/{id}")]
+        public List<WebApiStore> GetAllAssignedStores(string id)
+        {
+            return storeAdminRepository.GetAllAssignedStores(id);
+        }
+
+        [HttpPost]
+        [Route("AssignStore/{managerId}/{storeId}")]
+        public Response AssignStore(string managerId, string storeId)
+        {
+            Response response = storeAdminRepository.AssignStore(managerId, storeId);
+
+            return response;
         }
     }
 }

@@ -18,6 +18,8 @@ namespace AbatementHelper.WebAPI.Models
     public class ApplicationUser : IdentityUser
     {
         public override string Id { get; set; } = Guid.NewGuid().ToString();
+        [Index(IsUnique = true)]
+        [EmailAddress]
         public override string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -29,6 +31,11 @@ namespace AbatementHelper.WebAPI.Models
         public bool Deleted { get; set; }
 
         //public ICollection<Address> Addresses { get; set; }
+
+        public ApplicationUser()
+        {
+            
+        }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
@@ -68,6 +75,12 @@ namespace AbatementHelper.WebAPI.Models
     {
         public UserManager()
             : base(new UserStore<ApplicationUser>(new ApplicationUserDbContext()))
+        {
+
+        }
+
+        public UserManager(IUserStore<ApplicationUser> userStore)
+            :this()
         {
 
         }

@@ -240,24 +240,26 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201912092225436_initial.cs" />
-    <Compile Include="Migrations\201912092225436_initial.Designer.cs">
-      <DependentUpon>201912092225436_initial.cs</DependentUpon>
+    <Compile Include="Migrations\201912112215176_initial.cs" />
+    <Compile Include="Migrations\201912112215176_initial.Designer.cs">
+      <DependentUpon>201912112215176_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Processors\ExceptionProcessor.cs" />
+    <Compile Include="Processors\ManagerProcessor.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
     <Compile Include="Processors\StoreProcessor.cs" />
     <Compile Include="Processors\UserProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Repositories\AuthenticationManagerRepository.cs" />
-    <Compile Include="Repositories\DataBaseEntityRepository.cs" />
-    <Compile Include="Repositories\DataBaseReader.cs" />
-    <Compile Include="Repositories\EntityRegistrationRepository.cs" />
+    <Compile Include="Repositories\AdminRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="Repositories\StoreAdminRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -355,8 +357,8 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201912092225436_initial.resx">
-      <DependentUpon>201912092225436_initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201912112215176_initial.resx">
+      <DependentUpon>201912112215176_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

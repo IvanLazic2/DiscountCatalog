@@ -28,7 +28,7 @@ namespace AbatementHelper.WebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
-        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        private UserRepository userRepository = new UserRepository();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
@@ -414,9 +414,9 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             //var user = await ReturnUserName(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationUserDbContext())), "aaa@aaa.aaa", "Aaa123");
 
-            var userName = await entityReader.ReturnUserName(new UserManager(), model.EmailOrUserName);
+            var userName = await userRepository.ReturnUserName(new UserManager(), model.EmailOrUserName);
 
-            var existingUser = Task.Run(() => entityReader.ReturnUser(userName));
+            var existingUser = Task.Run(() => userRepository.ReturnUser(userName));
             existingUser.Wait();
 
 
@@ -458,7 +458,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("Details/{id}")]
         public WebApiUser Details(string id)
         {
-            WebApiUser user = UserProcessor.ApplicationUserToWebApiUser(entityReader.ReadUserById(id));
+            WebApiUser user = UserProcessor.ApplicationUserToWebApiUser(userRepository.ReadUserById(id));
 
             return user;
         }
@@ -469,23 +469,23 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             WebApiUser user = new WebApiUser();
 
-            user = UserProcessor.ApplicationUserToWebApiUser(entityReader.ReadUserById(id));
+            user = UserProcessor.ApplicationUserToWebApiUser(userRepository.ReadUserById(id));
 
             return user;
         }
 
         [HttpPut]
         [Route("Edit")]
-        public Response Edit(WebApiUser user)
+        public async Task<Response> Edit(WebApiUser user)
         {
-            return entityReader.Edit(user);
+            return await userRepository.Edit(user);
         }
 
         [HttpPut]
         [Route("Delete/{id}")]
         public IHttpActionResult Delete(string id)
         {
-            entityReader.DeleteUser(id);
+            userRepository.Delete(id);
 
             return Ok();
         }

@@ -13,7 +13,7 @@ namespace AbatementHelper.WebAPI.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201912092225436_initial"; }
+            get { return "201912112215176_initial"; }
         }
         
         string IMigrationMetadata.Source

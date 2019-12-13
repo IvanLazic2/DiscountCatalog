@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Net.Http;
 using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.CommonModels.CreateModels;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -45,6 +46,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateStore")]
         public ActionResult CreateStore()
         {
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
             return View();
         }
 
@@ -155,13 +162,169 @@ namespace AbatementHelper.MVC.Controllers
             return RedirectToAction("GetAllStores");
         }
 
+        //GetAllManagers
+        [HttpGet]
+        [Route("GetAllManagers")]
+        public async Task<ActionResult> GetAllManagers()
+        {
+            List<WebApiManager> managers;
+
+            managers = await storeAdmin.GetAllManagers();
+
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
+            return View(managers);
+        }
+
         [HttpGet]
         [Route("CreateManager")]
         public ActionResult CreateManager()
         {
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
             return View();
         }
 
-        
+        [HttpPost]
+        [Route("CreateManager")]
+        public ActionResult CreateManager(CreateManagerModel manager)
+        {
+            var response = storeAdmin.CreateManager(manager);
+
+            TempData["Message"] = response.ResponseMessage;
+            TempData["Success"] = response.Success;
+
+            if (response.Success)
+            {
+                return RedirectToAction("GetAllManagers");
+            }
+            else
+            {
+                return RedirectToAction("CreateManager");
+            }
+        }
+
+        [HttpGet]
+        [Route("DetailsManager/{id}")]
+        public ActionResult DetailsManager(string id)
+        {
+            WebApiManager manager = storeAdmin.DetailsManager(id);
+
+
+
+            return View(manager);
+        }
+
+        [HttpGet]
+        [Route("EditManager/{id}")]
+        public ActionResult EditManager(string id)
+        {
+            WebApiManager manager = storeAdmin.EditManager(id);
+
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
+            return View(manager);
+        }
+
+        [HttpPost]
+        [Route("EditManager")]
+        public ActionResult EditManager(WebApiManager manager)
+        {
+            Response editManagerResponse = storeAdmin.EditManager(manager);
+
+            TempData["Message"] = editManagerResponse.ResponseMessage;
+            TempData["Success"] = editManagerResponse.Success;
+
+            if (editManagerResponse.Success)
+            {
+                return RedirectToAction("GetAllManagers");
+            }
+            else
+            {
+                return RedirectToAction("EditManager");
+            }
+            
+        }
+
+        [HttpGet]
+        [Route("DeleteManager/{id}")]
+        public ActionResult DeleteManager(string id)
+        {
+            WebApiManager manager = storeAdmin.DetailsManager(id);
+
+            return View(manager);
+        }
+
+        [HttpPost]
+        [Route("DeleteManager")]
+        public ActionResult DeleteManager(WebApiManager manager)
+        {
+            if (storeAdmin.DeleteManager(manager.Id))
+            {
+                return RedirectToAction("GetAllManagers");
+            }
+            else
+            {
+                return RedirectToAction("Delete");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllDeletedManager")]
+        public async Task<ActionResult> GetAllDeletedManagers()
+        {
+            List<WebApiManager> managers = await storeAdmin.GetAllDeletedManagers();
+
+            return View(managers);
+        }
+
+        [HttpGet]
+        [Route("RestoreManager/{id}")]
+        public ActionResult RestoreManager(string id)
+        {
+            storeAdmin.RestoreManager(id);
+
+            return RedirectToAction("GetAllDeletedManagers");
+        }
+
+        [HttpGet]
+        [Route("GetAllAssignedStores/{id}")]
+        public ActionResult GetAllAssignedStores(string id)
+        {
+            List<WebApiStore> stores = storeAdmin.GetAllAssignedStores(id);
+
+            return View(stores);
+        }
+
+        [HttpGet]
+        [Route("AssignStores")]
+        public async Task<ActionResult> AssignStores()
+        {
+            List<WebApiStore> stores = await storeAdmin.GetAllStores();
+
+            return View(stores);
+        }
+
+        [HttpPost]
+        [Route("AssignStore")]
+        public ActionResult AssignStore()
+        {
+            return View();
+        }
+        //AssignStore
+
+        //UnassignStore
     }
 }

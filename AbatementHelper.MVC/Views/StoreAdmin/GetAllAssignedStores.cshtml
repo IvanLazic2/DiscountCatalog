@@ -1,29 +1,13 @@
 ﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
 
 @{
-    ViewBag.Title = "GetAllStores";
+    ViewBag.Title = "GetAllAssignedStores";
 }
 
-@if (ViewBag.Success != null)
-{
-    if (ViewBag.Success)
-    {
-        <div class="text-success">
-            @ViewBag.Message
-        </div>
-    }
-    else
-    {
-        <div class="text-danger">
-            @ViewBag.Message
-        </div>
-    }
-}
-
-<h2>All stores</h2>
+<h2>All Assigned Stores</h2>
 
 <p>
-    @Html.ActionLink("Create New", "CreateStore")
+    @Html.ActionLink("Assign New", "AssignStores")
 </p>
 <table class="table">
     <tr>
@@ -51,15 +35,8 @@
         <th>
             @Html.DisplayNameFor(model => model.Street)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Approved)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Managers)
-        </th>
         <th></th>
     </tr>
-
     @if (Model != null)
     {
         foreach (var item in Model)
@@ -92,38 +69,7 @@
                         @Html.DisplayFor(modelItem => item.Street)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Approved)
-                    </td>
-                    <td>
-                        @*@item.ManagersUserNames.Aggregate((a, b) => a = a + ", " + b).ToString()*@
-
-                        @{
-                            //var managers = new System.Text.StringBuilder();
-
-                            //foreach (var manager in item.Managers)
-                            //{
-                            //    if (managers.Length > 1)
-                            //    {
-                            //        managers.Append(", ");
-                            //    }
-
-                            //    managers.Append(manager.UserName);
-                            //}
-
-                            foreach (var manager in item.Managers)
-                            {
-                                @Html.ActionLink(manager.UserName+" ", "DetailsManager", new { id = manager.Id });
-                            }
-                        }
-
-                        
-
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
-                        @Html.ActionLink("Details", "DetailsStore", new { id = item.Id })
-                        @Html.ActionLink("Delete", "DeleteStore", new { id = item.Id })
-                        @Html.ActionLink("Select", "Select", new { id = item.Id })
+                        @Html.ActionLink("Unassign", "UnassignStore", new { id = item.Id }) |
                     </td>
                 </tr>
             }
@@ -132,7 +78,4 @@
     }
 
 
-
 </table>
-
-@Html.ActionLink("All deleted stores", "GetAllDeletedStores")

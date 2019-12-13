@@ -18,13 +18,13 @@ namespace AbatementHelper.WebAPI.Controllers
     [RoutePrefix("api/Admin")]
     public class AdminController : ApiController
     {
-        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        private AdminRepository adminRepository = new AdminRepository();
 
         [HttpGet]
         [Route("GetAllUsers")]
         public WebApiListOfUsersResult GetAllUsers()
         {
-            var users = entityReader.ReadAllUsers();
+            var users = adminRepository.ReadAllUsers();
 
             List<WebApiUser> processedUsers = new List<WebApiUser>();
 
@@ -42,11 +42,11 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("Edit/{id}")]
-        public WebApiUser Edit(string id)
+        public async Task<WebApiUser> Edit(string id)
         {
             //WebApiUser user = new WebApiUser();
 
-            var user = entityReader.ReadUserById(id);
+            var user = await adminRepository.ReadUserById(id);
 
             return UserProcessor.ApplicationUserToWebApiUser(user);
         }
@@ -55,14 +55,14 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("Edit")]
         public Response Edit(WebApiUser user)
         {
-            return entityReader.EditUser(user);
+            return adminRepository.Edit(user);
         }
 
         [HttpGet]
         [Route("Details/{id}")]
-        public WebApiUser Details(string id)
+        public async Task<WebApiUser> Details(string id)
         {
-            var user = entityReader.ReadUserById(id);
+            var user = await adminRepository.ReadUserById(id);
 
             return UserProcessor.ApplicationUserToWebApiUser(user);
         }
@@ -71,7 +71,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("Delete")]
         public IHttpActionResult Delete(WebApiUser user)
         {
-            entityReader.DeleteUser(user.Id);
+            adminRepository.Delete(user.Id);
 
             return Ok();
         }
@@ -80,7 +80,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("Restore/{id}")]
         public IHttpActionResult Restore(string id)
         {
-            entityReader.RestoreUser(id);
+            adminRepository.Restore(id);
 
             return Ok();
         }

@@ -13,7 +13,7 @@ namespace AbatementHelper.WebAPI
 {
     public partial class Startup
     {
-        private DataBaseEntityRepository entityReader = new DataBaseEntityRepository();
+        private UserRepository entityReader = new UserRepository();
 
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 

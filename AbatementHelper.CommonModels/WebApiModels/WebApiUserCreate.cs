@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AbatementHelper.CommonModels.WebApiModels
 {
-    public class WebApiUserCreate
-    {
-        public WebApiUser User { get; set; }
-        public string Password { get; set; }
-    }
+    //public class WebApiUserCreate
+    //{
+    //    public WebApiUser User { get; set; }
+    //    public string Password { get; set; }
+    //}
 }
