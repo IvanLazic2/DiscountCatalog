@@ -25,5 +25,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool TwoFactorEnabled { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
+        public List<WebApiStore> Stores { get; set; } = new List<WebApiStore>();
     }
 }

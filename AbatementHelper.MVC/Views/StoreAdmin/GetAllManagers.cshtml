@@ -105,6 +105,14 @@
                         @Html.DisplayFor(modelItem => item.TwoFactorEnabled)
                     </td>
                     <td>
+                        @{
+                            foreach (var store in item.Stores)
+                            {
+                                @Html.ActionLink(store.StoreName + " ", "DetailsStore", new { id = store.Id });
+                            }
+                        }
+                    </td>
+                    <td>
                         @Html.ActionLink("Edit", "EditManager", new { id = item.Id }) |
                         @Html.ActionLink("Details", "DetailsManager", new { id = item.Id }) |
                         @Html.ActionLink("Delete", "DeleteManager", new { id = item.Id }) |

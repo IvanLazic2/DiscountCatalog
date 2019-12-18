@@ -20,10 +20,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public string StoreAdminId { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-
-        public List<string> ManagersUserNames { get; set; } = new List<string>();
         public List<WebApiManager> Managers { get; set; } = new List<WebApiManager>();
-
-        
     }
 }

@@ -11,10 +11,11 @@ namespace AbatementHelper.WebAPI.DataBaseModels
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         
-        public virtual ApplicationUser User { get; set; }
+        public ApplicationUser User { get; set; }
         
-        public virtual ApplicationUser StoreAdmin { get; set; }
-        public virtual ICollection<StoreEntity> Stores { get; set; }
+        public ApplicationUser StoreAdmin { get; set; }
+        public ICollection<StoreEntity> Stores { get; set; }
+
     }
 
 

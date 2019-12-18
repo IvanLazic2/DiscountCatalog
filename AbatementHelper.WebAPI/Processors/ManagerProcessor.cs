@@ -3,6 +3,7 @@ using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Repositories;
+using AutoMapper;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -59,45 +60,34 @@ namespace AbatementHelper.WebAPI.Processors
             };
         }
 
-        public static WebApiManager ApplicationUserToWebApiManager(ApplicationUser manager)
+        public static WebApiManager ManagerEntityToWebApiManager(ManagerEntity manager)
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
-            ApplicationUser storeAdmin = storeAdminRepository.GetStoreAdminByManagerId(manager.Id);
+
+            var config = new MapperConfiguration(c => {
+                c.CreateMap<ManagerEntity, WebApiManager>();
+            });
+
+            IMapper mapper = config.CreateMapper();
+            WebApiManager webApiManager = mapper.Map<ManagerEntity, WebApiManager>(manager);
 
             IList<string> roles = new List<string>();
 
             UserManager userManager = new UserManager();
             try
             {
-                roles = userManager.GetRoles(manager.Id);
+                roles = userManager.GetRoles(manager.User.Id);
             }
             finally
             {
                 userManager.Dispose();
             }
 
-            return new WebApiManager
-            {
-                Id = manager.Id,
-                UserName = manager.UserName,
-                FirstName = manager.FirstName,
-                LastName = manager.LastName,
-                Email = manager.Email,
-                EmailConfirmed = manager.EmailConfirmed,
-                PhoneNumber = manager.PhoneNumber,
-                PhoneNumberConfirmed = manager.PhoneNumberConfirmed,
-                StoreAdminName = storeAdmin.UserName,
-                Country = manager.Country,
-                City = manager.City,
-                PostalCode = manager.PostalCode,
-                Street = manager.Street,
-                Role = roles[0],
-                TwoFactorEnabled = manager.TwoFactorEnabled,
-                Approved = manager.Approved,
-                Deleted = manager.Deleted
-            };
+            
+           
+            return webApiManager;
         }
 
-       
+
     }
 }

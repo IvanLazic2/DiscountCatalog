@@ -51,6 +51,7 @@ namespace AbatementHelper.WebAPI.Models
         public ApplicationUserDbContext()
             : base("DefaultConnection")
         {
+            this.Configuration.LazyLoadingEnabled = false;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

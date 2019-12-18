@@ -95,29 +95,12 @@
                         @Html.DisplayFor(modelItem => item.Approved)
                     </td>
                     <td>
-                        @*@item.ManagersUserNames.Aggregate((a, b) => a = a + ", " + b).ToString()*@
-
                         @{
-                            //var managers = new System.Text.StringBuilder();
-
-                            //foreach (var manager in item.Managers)
-                            //{
-                            //    if (managers.Length > 1)
-                            //    {
-                            //        managers.Append(", ");
-                            //    }
-
-                            //    managers.Append(manager.UserName);
-                            //}
-
                             foreach (var manager in item.Managers)
                             {
                                 @Html.ActionLink(manager.UserName+" ", "DetailsManager", new { id = manager.Id });
                             }
                         }
-
-                        
-
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditStore", new { id = item.Id })

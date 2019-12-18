@@ -12,6 +12,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Data.Entity;
 
 namespace AbatementHelper.WebAPI.Repositories
 {
@@ -38,7 +39,8 @@ namespace AbatementHelper.WebAPI.Repositories
         {
             using (var context = new ApplicationUserDbContext())
             {
-                var store = await context.Stores.FindAsync(id);
+                var store = context.Stores.Find(id);
+                context.Stores.Include(s => s.Managers).ToList();
 
                 return store;
             }
@@ -54,6 +56,8 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     ManagerEntity manager = context.Managers.Find(id);
 
+                    context.Entry(manager).Reference(m => m.User).Load();
+
                     user = manager.User;
                 }
             }
@@ -63,6 +67,21 @@ namespace AbatementHelper.WebAPI.Repositories
             }
 
             return user;
+        }
+
+        public ManagerEntity FindManagerByUserId(string id)
+        {
+            ManagerEntity manager = new ManagerEntity();
+            List<StoreEntity> stores = new List<StoreEntity>();
+
+            using (var context = new ApplicationUserDbContext())
+            {
+                manager = context.Managers.Include(m => m.Stores)
+                                          .Include(m => m.StoreAdmin).FirstOrDefault(m => m.User.Id == id);
+
+            }
+
+            return manager;
         }
 
         //public List<string> GetManagerUserNames(StoreEntity store)
@@ -92,14 +111,45 @@ namespace AbatementHelper.WebAPI.Repositories
         //    return managersUserNames;
         //}
 
-        public ApplicationUser GetStoreAdminByManagerId(string id)
+
+
+        public List<WebApiManager> GetStoreManagers(string id)
         {
+            List<WebApiManager> webApiManagers = new List<WebApiManager>();
+
             using (var context = new ApplicationUserDbContext())
             {
-                var manager = context.Managers.Where(m => m.User.Id == id).FirstOrDefault();
-                return manager.StoreAdmin;
+                StoreEntity store = context.Stores.Find(id);
+                context.Stores.Include(s => s.Managers).ToList();
+
+                foreach (var manager in store.Managers)
+                {
+                    context.Entry(manager).Reference(m => m.User).Load();
+
+                    webApiManagers.Add
+                    (
+                        new WebApiManager
+                        {
+                            Id = manager.User.Id,
+                            UserName = manager.User.UserName
+                        }
+                    );
+                }
             }
+
+            return webApiManagers;
         }
+
+
+
+        //public ApplicationUser GetStoreAdminByManagerId(string id)
+        //{
+        //    using (var context = new ApplicationUserDbContext())
+        //    {
+        //        var manager = context.Managers.Where(m => m.User.Id == id).Include(m => m.StoreAdmin).FirstOrDefault();
+        //        return manager.StoreAdmin;
+        //    }
+        //}
 
         public List<WebApiStore> GetAllStores(string storeAdminId)
         {
@@ -110,11 +160,13 @@ namespace AbatementHelper.WebAPI.Repositories
                 using (var context = new ApplicationUserDbContext())
                 {
 
-                    foreach (var store in context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId).ToList())
+                    foreach (var store in context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId).Include(s => s.Managers).ToList())
                     {
+                        //context.Stores.Include(s => s.Managers);
+
                         store.StoreAdmin = context.Users.Find(storeAdminId);
 
-                        stores.Add(StoreProcessor.StoreEntityToWebApiStoreParameters(store));
+                        stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
 
                     }
 
@@ -282,7 +334,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                 foreach (var manager in context.Managers.Where(s => s.StoreAdmin.Id == storeAdminId).ToList())
                 {
-                    managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(manager.User));
+                    //managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(manager.User));  JOS CEMO VIDIT STA S TIME
                 }
 
                 return managers;
@@ -393,7 +445,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     ApplicationUser user = context.Users.Find(manager.User.Id);
                     if (user.Deleted)
                     {
-                        managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(user));
+                        //managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(user)); OVO ISTO MORAMO VIDIT KAK CEMO 
                     }
                 }
 
