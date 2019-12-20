@@ -84,35 +84,6 @@ namespace AbatementHelper.WebAPI.Repositories
             return manager;
         }
 
-        //public List<string> GetManagerUserNames(StoreEntity store)
-        //{
-        //    List<string> managersUserNames = new List<string>();
-
-        //    try
-        //    {
-        //        using (var context = new ApplicationUserDbContext())
-        //        {
-        //            var managerList = context.Stores.Find(store.Id).Managers;
-
-        //            foreach (var manager in managerList)
-        //            {
-        //                var managerUserName = context.Users.Find(manager.User.Id);
-
-        //                managersUserNames.Add(managerUserName.UserName);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //    }
-
-
-
-        //    return managersUserNames;
-        //}
-
-
-
         public List<WebApiManager> GetStoreManagers(string id)
         {
             List<WebApiManager> webApiManagers = new List<WebApiManager>();
@@ -140,16 +111,30 @@ namespace AbatementHelper.WebAPI.Repositories
             return webApiManagers;
         }
 
+        public List<WebApiStore> GetManagerStores(string id)
+        {
+            List<WebApiStore> webApiStores = new List<WebApiStore>();
 
+            using (var context = new ApplicationUserDbContext())
+            {
+                ManagerEntity manager = context.Managers.Find(id);
+                context.Managers.Include(m => m.Stores).ToList();
 
-        //public ApplicationUser GetStoreAdminByManagerId(string id)
-        //{
-        //    using (var context = new ApplicationUserDbContext())
-        //    {
-        //        var manager = context.Managers.Where(m => m.User.Id == id).Include(m => m.StoreAdmin).FirstOrDefault();
-        //        return manager.StoreAdmin;
-        //    }
-        //}
+                foreach (var store in manager.Stores)
+                {
+                    webApiStores.Add
+                    (
+                        new WebApiStore
+                        {
+                            Id = store.Id,
+                            StoreName = store.StoreName
+                        }
+                    );
+                }
+            }
+
+            return webApiStores;
+        }
 
         public List<WebApiStore> GetAllStores(string storeAdminId)
         {
@@ -164,10 +149,12 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         //context.Stores.Include(s => s.Managers);
 
-                        store.StoreAdmin = context.Users.Find(storeAdminId);
+                        if (!store.Deleted && !store.Approved)
+                        {
+                            store.StoreAdmin = context.Users.Find(storeAdminId);
 
-                        stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
-
+                            stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
+                        }
                     }
 
                 }
@@ -231,10 +218,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 response.Success = false;
             }
 
-
-
             return response;
-
         }
 
         public Response EditStore(WebApiStore store)
@@ -332,9 +316,18 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 List<WebApiManager> managers = new List<WebApiManager>();
 
-                foreach (var manager in context.Managers.Where(s => s.StoreAdmin.Id == storeAdminId).ToList())
+                List<ManagerEntity> managerEntites = context.Managers.Where(s => s.StoreAdmin.Id == storeAdminId).ToList();
+
+                foreach (var manager in managerEntites)
                 {
-                    //managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(manager.User));  JOS CEMO VIDIT STA S TIME
+                    context.Entry(manager).Reference(m => m.User).Load();
+                    context.Entry(manager).Collection(m => m.Stores).Load();
+
+                    if (!manager.User.Deleted && !manager.User.Approved)
+                    {
+                        //context.Entry(manager).Reference(m => m.User).Load();
+                        managers.Add(ManagerProcessor.ManagerEntityToWebApiManager(manager));
+                    }
                 }
 
                 return managers;
@@ -442,10 +435,11 @@ namespace AbatementHelper.WebAPI.Repositories
 
                 foreach (var manager in managerEntityList)
                 {
-                    ApplicationUser user = context.Users.Find(manager.User.Id);
-                    if (user.Deleted)
+                    context.Entry(manager).Reference(m => m.User).Load();
+
+                    if (manager.User.Deleted)
                     {
-                        //managers.Add(ManagerProcessor.ApplicationUserToWebApiManager(user)); OVO ISTO MORAMO VIDIT KAK CEMO 
+                        managers.Add(ManagerProcessor.ManagerEntityToWebApiManager(manager));
                     }
                 }
 
@@ -464,22 +458,50 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public List<WebApiStore> GetAllAssignedStores(string managerId)
+        public List<WebApiManagerStore> GetAllManagerStores(string managerId)
         {
-            List<WebApiStore> stores = new List<WebApiStore>();
+            List<WebApiManagerStore> managerStores = new List<WebApiManagerStore>();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
                     ApplicationUser user = context.Users.Find(managerId);
-                    ManagerEntity manager = context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefault();
 
-                    List<StoreEntity> storeEntities = manager.Stores.ToList();
+                    ManagerEntity managerEntity = context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefault();
+                    context.Entry(managerEntity).Collection(m => m.Stores).Load();
+                    context.Entry(managerEntity).Reference(m => m.StoreAdmin).Load();
+
+                    List<StoreEntity> storeEntities = context.Stores.ToList();
 
                     foreach (var store in storeEntities)
                     {
-                        stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
+                        context.Entry(store).Reference(s => s.StoreAdmin).Load();
+
+                        StoreEntity storeEntity = managerEntity.Stores.Where(s => s.Id == store.Id).FirstOrDefault();
+
+                        if (store.StoreAdmin.Id == managerEntity.StoreAdmin.Id)
+                        {
+                            if (storeEntity != null)
+                            {
+                                managerStores.Add(new WebApiManagerStore
+                                {
+                                    Store = StoreProcessor.StoreEntityToWebApiStore(storeEntity),
+                                    Manager = ManagerProcessor.ManagerEntityToWebApiManager(managerEntity),
+                                    Assigned = true
+                                });
+                            }
+                            else
+                            {
+                                managerStores.Add(new WebApiManagerStore
+                                {
+                                    Store = StoreProcessor.StoreEntityToWebApiStore(store),
+                                    Manager = ManagerProcessor.ManagerEntityToWebApiManager(managerEntity),
+                                    Assigned = false
+                                });
+                            }
+                        }
+
                     }
                 }
 
@@ -489,10 +511,10 @@ namespace AbatementHelper.WebAPI.Repositories
 
             }
 
-            return stores;
+            return managerStores;
         }
 
-        public Response AssignStore(string managerId, string storeId)
+        public Response AssignStore(WebApiStoreAssign storeAssign)
         {
             Response response = new Response();
 
@@ -500,17 +522,52 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    ApplicationUser user = context.Users.Find(managerId);
-                    ManagerEntity managerEntity = context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefault();
+                    ApplicationUser user = context.Users.Find(storeAssign.ManagerId);
+                    ManagerEntity manager = context.Managers.FirstOrDefault(m => m.User.Id == storeAssign.ManagerId);
 
-                    StoreEntity store = context.Stores.Find(storeId);
+                    context.Entry(manager).Collection(m => m.Stores).Load();
 
-                    context.Managers.Attach(managerEntity);
-                    managerEntity.Stores.Add(store);
+                    StoreEntity store = context.Stores.Find(storeAssign.StoreId);
+
+                    context.Managers.Attach(manager);
+                    manager.Stores.Add(store);
 
                     context.SaveChanges();
 
                     response.ResponseMessage = "Store assigned successfully";
+                    response.Success = true;
+                }
+            }
+            catch (Exception exception)
+            {
+
+            }
+
+            return response;
+        }
+
+        public Response UnassignStore(WebApiStoreAssign storeUnassign)
+        {
+            Response response = new Response();
+
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ApplicationUser user = context.Users.Find(storeUnassign.ManagerId);
+                    ManagerEntity manager = context.Managers.FirstOrDefault(m => m.User.Id == storeUnassign.ManagerId);
+
+                    context.Entry(manager).Collection(m => m.Stores).Load();
+
+                    StoreEntity store = context.Stores.Find(storeUnassign.StoreId);
+
+                    context.Managers.Attach(manager);
+                    manager.Stores.Remove(store);
+                    //manager.Stores.Add(store);
+
+                    context.SaveChanges();
+
+                    response.ResponseMessage = "Store unassigned successfully";
                     response.Success = true;
                 }
             }

@@ -255,7 +255,7 @@ namespace AbatementHelper.MVC.Controllers
             {
                 return RedirectToAction("EditManager");
             }
-            
+
         }
 
         [HttpGet]
@@ -300,31 +300,49 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllAssignedStores/{id}")]
-        public ActionResult GetAllAssignedStores(string id)
+        [Route("GetAllManagerStores/{id}")]
+        public ActionResult GetAllManagerStores(string id)
         {
-            List<WebApiStore> stores = storeAdmin.GetAllAssignedStores(id);
+            //jos dodat error messages
+            WebApiManager manager = storeAdmin.DetailsManager(id);
+
+            if (manager != null)
+            {
+                Response.Cookies.Add(new HttpCookie("ManagerID")
+                {
+                    Value = manager.Id,
+                    HttpOnly = true
+                });
+                Response.Cookies.Add(new HttpCookie("ManagerUserName")
+                {
+                    Value = manager.UserName,
+                    HttpOnly = true
+                });
+            }
+
+            List<WebApiManagerStore> stores = storeAdmin.GetAllManagerStores(id);
 
             return View(stores);
         }
 
         [HttpGet]
-        [Route("AssignStores")]
-        public async Task<ActionResult> AssignStores()
+        [Route("AssignStore/{managerId}/{storeId}")]
+        public ActionResult AssignStore(string managerId, string storeId)
         {
-            List<WebApiStore> stores = await storeAdmin.GetAllStores();
+            storeAdmin.AssignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
 
-            return View(stores);
+            return RedirectToAction("GetAllManagerStores", new { id = managerId });
         }
 
-        [HttpPost]
-        [Route("AssignStore")]
-        public ActionResult AssignStore()
+        [HttpGet]
+        [Route("UnassignStore/{managerId}/{storeId}")]
+        public ActionResult UnassignStore(string managerId, string storeId)
         {
-            return View();
-        }
-        //AssignStore
+            storeAdmin.UnassignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
 
-        //UnassignStore
+            return RedirectToAction("GetAllManagerStores", new { id = managerId });
+
+
+        }
     }
 }

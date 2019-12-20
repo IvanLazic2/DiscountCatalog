@@ -430,21 +430,21 @@ namespace AbatementHelper.MVC.Repositeories
             return manager;
         }
 
-        public List<WebApiStore> GetAllAssignedStores(string id)
+        public List<WebApiManagerStore> GetAllManagerStores(string id)
         {
-            List<WebApiStore> stores = new List<WebApiStore>();
+            List<WebApiManagerStore> stores = new List<WebApiManagerStore>();
 
             if (id != null)
             {
                 AddTokenToHeader();
 
-                var response = apiClient.GetAsync("api/StoreAdmin/GetAllAssignedStores/" + id);
+                var response = apiClient.GetAsync("api/StoreAdmin/GetAllManagerStores/" + id);
                 response.Wait();
 
                 var result = response.Result;
                 if (result.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
+                    var resultContent = result.Content.ReadAsAsync<List<WebApiManagerStore>>();
                     resultContent.Wait();
 
                     stores = resultContent.Result;
@@ -454,15 +454,71 @@ namespace AbatementHelper.MVC.Repositeories
             return stores;
         }
 
-        public Response AssignStore(string managerId, string storeId)
+        //public List<WebApiStore> GetAllNotAssignedStores(string id)
+        //{
+        //    List<WebApiStore> stores = new List<WebApiStore>();
+
+        //    if (id != null)
+        //    {
+        //        AddTokenToHeader();
+
+        //        var response = apiClient.GetAsync("api/StoreAdmin/GetAllNotAssignedStores/" + id);
+        //        response.Wait();
+
+        //        var result = response.Result;
+        //        if (result.IsSuccessStatusCode)
+        //        {
+        //            var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
+        //            resultContent.Wait();
+
+        //            stores = resultContent.Result;
+        //        }
+        //    }
+
+        //    return stores;
+        //}
+
+        public Response AssignStore(WebApiStoreAssign storeAssign)
         {
             Response response = new Response();
 
-            if (managerId != null && storeId != null)
+            if (storeAssign.ManagerId != null && storeAssign.StoreId != null)
             {
                 AddTokenToHeader();
 
-                var apiResponse = apiClient.PostAsync("api/StoreAdmin/AssignStore/" + managerId + "/" + storeId, null);
+                var jsonContent = JsonConvert.SerializeObject(storeAssign);
+
+                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var apiResponse = apiClient.PostAsync("api/StoreAdmin/AssignStore/", httpContent);
+                apiResponse.Wait();
+
+                var result = apiResponse.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<Response>();
+                    resultContent.Wait();
+
+                    response = resultContent.Result;
+                }
+            }
+
+            return response;
+        }
+
+        public Response UnassignStore(WebApiStoreAssign storeUnassign)
+        {
+            Response response = new Response();
+
+            if (storeUnassign.ManagerId != null && storeUnassign.StoreId != null)
+            {
+                AddTokenToHeader();
+
+                var jsonContent = JsonConvert.SerializeObject(storeUnassign);
+
+                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var apiResponse = apiClient.PostAsync("api/StoreAdmin/UnassignStore/", httpContent);
                 apiResponse.Wait();
 
                 var result = apiResponse.Result;

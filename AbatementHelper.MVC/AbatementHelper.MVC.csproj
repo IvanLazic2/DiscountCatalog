@@ -275,7 +275,7 @@
     <Content Include="Views\StoreAdmin\EditManager.cshtml" />
     <Content Include="Views\StoreAdmin\DeleteManager.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllDeletedManagers.cshtml" />
-    <Content Include="Views\StoreAdmin\GetAllAssignedStores.cshtml" />
+    <Content Include="Views\StoreAdmin\GetAllManagerStores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

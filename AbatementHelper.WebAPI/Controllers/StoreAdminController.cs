@@ -14,7 +14,7 @@ using System.Web.Http;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-    [Authorize(Roles = "StoreAdmin")]
+    //[Authorize(Roles = "StoreAdmin")]
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {
@@ -161,17 +161,26 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllAssignedStores/{id}")]
-        public List<WebApiStore> GetAllAssignedStores(string id)
+        [Route("GetAllManagerStores/{id}")]
+        public List<WebApiManagerStore> GetAllAssignedStores(string id)
         {
-            return storeAdminRepository.GetAllAssignedStores(id);
+            return storeAdminRepository.GetAllManagerStores(id);
         }
 
         [HttpPost]
-        [Route("AssignStore/{managerId}/{storeId}")]
-        public Response AssignStore(string managerId, string storeId)
+        [Route("AssignStore")]
+        public Response AssignStore(WebApiStoreAssign storeAssign)
         {
-            Response response = storeAdminRepository.AssignStore(managerId, storeId);
+            Response response = storeAdminRepository.AssignStore(storeAssign);
+
+            return response;
+        }
+
+        [HttpPost]
+        [Route("UnassignStore")]
+        public Response UnassignStore(WebApiStoreAssign storeUnassign)
+        {
+            Response response = storeAdminRepository.UnassignStore(storeUnassign);
 
             return response;
         }

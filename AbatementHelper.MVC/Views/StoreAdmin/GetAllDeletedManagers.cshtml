@@ -6,32 +6,32 @@
 
 <h2>All deleted managers</h2>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.UserName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StoreAdminName)
-        </th>
-        <th></th>
-    </tr>
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StoreAdminName)
+            </th>
+            <th></th>
+        </tr>
 
-    @if (Model != null)
-    {
-        foreach (var item in Model)
+        @foreach (var item in Model)
         {
             if (item.Deleted)
             {
@@ -61,10 +61,9 @@
             }
 
         }
-    }
 
+    </table>
+}
 
-
-</table>
 
 @Html.ActionLink("All managers", "GetAllManagers")

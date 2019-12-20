@@ -64,16 +64,12 @@ namespace AbatementHelper.WebAPI.Processors
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
-            var config = new MapperConfiguration(c => {
-                c.CreateMap<ManagerEntity, WebApiManager>();
-            });
-
-            IMapper mapper = config.CreateMapper();
-            WebApiManager webApiManager = mapper.Map<ManagerEntity, WebApiManager>(manager);
+            WebApiManager webApiManager = new WebApiManager();
 
             IList<string> roles = new List<string>();
 
             UserManager userManager = new UserManager();
+
             try
             {
                 roles = userManager.GetRoles(manager.User.Id);
@@ -83,8 +79,24 @@ namespace AbatementHelper.WebAPI.Processors
                 userManager.Dispose();
             }
 
+            var config = new MapperConfiguration(c => {
+                c.CreateMap<ApplicationUser, WebApiManager>()
+                    .ForMember(m => m.Stores, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            try
+            {
+                webApiManager = mapper.Map<ApplicationUser, WebApiManager>(manager.User);
+                webApiManager.Stores = storeAdminRepository.GetManagerStores(manager.Id);
+            }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
             
-           
             return webApiManager;
         }
 

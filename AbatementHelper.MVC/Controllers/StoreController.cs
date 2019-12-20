@@ -13,6 +13,20 @@ namespace AbatementHelper.MVC.Controllers
             return View();
         }
 
+        //GetAllProducts
+
+        //CreateProduct
+
+        //EditProduct
+
+        //ProductDetails
+
+        //DeleteProduct
+
+        //RestoreProduct
+
+
+
 
     }
 }

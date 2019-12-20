@@ -60,12 +60,14 @@
     <Compile Include="Models\AuthenticationModel.cs" />
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="WebApiModels\WebApiManager.cs" />
+    <Compile Include="WebApiModels\WebApiManagerStores.cs" />
     <Compile Include="WebApiModels\WebApiResultModels.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Processors\ModelProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApiModels\WebApiStore.cs" />
+    <Compile Include="WebApiModels\WebApiStoreAssign.cs" />
     <Compile Include="WebApiModels\WebApiUser.cs" />
     <Compile Include="WebApiModels\WebApiUserCreate.cs" />
   </ItemGroup>

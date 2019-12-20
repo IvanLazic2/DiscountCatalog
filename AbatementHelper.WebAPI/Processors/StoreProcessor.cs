@@ -15,7 +15,7 @@ namespace AbatementHelper.WebAPI.Processors
         public static WebApiStore StoreEntityToWebApiStore(StoreEntity store)
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
-            List<WebApiManager> managers = new List<WebApiManager>();
+            
             WebApiStore webApiStore = new WebApiStore();
 
             var config = new MapperConfiguration(c => {

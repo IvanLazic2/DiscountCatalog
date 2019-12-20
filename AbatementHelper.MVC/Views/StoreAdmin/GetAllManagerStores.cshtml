@@ -1,0 +1,89 @@
+﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiManagerStore>
+
+@{
+    ViewBag.Title = "GetAllAssignedStores";
+}
+
+<h2>Assign or unassign stores </h2>
+
+@if (Model != null)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.StoreName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.WorkingHoursWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.WorkingHoursWeekends)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.WorkingHoursHolidays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Store.Street)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            if (!item.Store.Deleted)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.StoreName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeek)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeekends)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursHolidays)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.Country)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.City)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.PostalCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Store.Street)
+                    </td>
+                    <td>
+                        @if (item.Assigned)
+                        {
+                            @Html.ActionLink("Unassign", "UnassignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Assign", "AssignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                        }
+                    </td>
+                </tr>
+            }
+
+        }
+
+    </table>
+}
+
+@Html.ActionLink("Back to the list", "GetAllManagers")
+
+

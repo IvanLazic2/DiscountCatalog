@@ -6,38 +6,39 @@
 
 <h2>Deleted stores</h2>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.StoreName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeek)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Country)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PostalCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Street)
-        </th>
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StoreName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkingHoursWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Street)
+            </th>
 
-        <th></th>
-    </tr>
-    @if (Model != null)
-    {
-        foreach (var item in Model)
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
         {
             if (item.Deleted)
             {
@@ -73,9 +74,13 @@
             }
 
         }
-    }
 
+    </table>
+}
+else
+{
+    //displayat da nema obrisanih storova
+}
 
-</table>
 
 @Html.ActionLink("All stores", "GetAllStores")
