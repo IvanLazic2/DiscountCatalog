@@ -219,7 +219,6 @@ namespace AbatementHelper.MVC.Controllers
             WebApiManager manager = storeAdmin.DetailsManager(id);
 
 
-
             return View(manager);
         }
 
@@ -329,7 +328,10 @@ namespace AbatementHelper.MVC.Controllers
         [Route("AssignStore/{managerId}/{storeId}")]
         public ActionResult AssignStore(string managerId, string storeId)
         {
-            storeAdmin.AssignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+            Response assignStoreResponse = storeAdmin.AssignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+
+            TempData["Message"] = assignStoreResponse.ResponseMessage;
+            TempData["Success"] = assignStoreResponse.Success;
 
             return RedirectToAction("GetAllManagerStores", new { id = managerId });
         }
@@ -338,11 +340,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("UnassignStore/{managerId}/{storeId}")]
         public ActionResult UnassignStore(string managerId, string storeId)
         {
-            storeAdmin.UnassignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+            Response storeUnassignResponse = storeAdmin.UnassignStore(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+
+            TempData["Message"] = storeUnassignResponse.ResponseMessage;
+            TempData["Success"] = storeUnassignResponse.Success;
 
             return RedirectToAction("GetAllManagerStores", new { id = managerId });
-
-
         }
     }
 }

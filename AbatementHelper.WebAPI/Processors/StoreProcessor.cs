@@ -28,7 +28,11 @@ namespace AbatementHelper.WebAPI.Processors
             try
             {
                 webApiStore = mapper.Map<StoreEntity, WebApiStore>(store);
-                webApiStore.Managers = storeAdminRepository.GetStoreManagers(store.Id);
+
+                if (store.Managers != null)
+                {
+                    webApiStore.Managers = storeAdminRepository.GetStoreManagers(store.Id);
+                }
             }
             catch (Exception exception)
             {

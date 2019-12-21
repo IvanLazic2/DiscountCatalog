@@ -1,0 +1,96 @@
+﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
+
+@{
+    ViewBag.Title = "GetAllStores";
+}
+
+@if (ViewBag.Success != null)
+{
+    if (ViewBag.Success)
+    {
+        <div class="text-success">
+            @ViewBag.Message
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">
+            @ViewBag.Message
+        </div>
+    }
+}
+
+<h2>All stores</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.StoreName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.WorkingHoursWeek)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Country)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.City)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Street)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Approved)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkingHoursWeek)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkingHoursWeekends)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkingHoursHolidays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Street)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Approved)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
+                @Html.ActionLink("Details", "DetailsStore", new { id = item.Id })
+                @Html.ActionLink("Abandon", "AbandonStore", new { id = item.Id })
+                @Html.ActionLink("Select", "Select", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>

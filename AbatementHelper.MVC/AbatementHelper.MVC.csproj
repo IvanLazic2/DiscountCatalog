@@ -201,6 +201,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
     <Compile Include="Repositories\AdminRepository.cs" />
+    <Compile Include="Repositories\ManagerRepository.cs" />
     <Compile Include="Repositories\ProductManagerRepository.cs" />
     <Compile Include="Repositories\StoreAdminRepository.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
@@ -276,12 +277,15 @@
     <Content Include="Views\StoreAdmin\DeleteManager.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllDeletedManagers.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllManagerStores.cshtml" />
+    <Content Include="Views\Manager\GetAllStores.cshtml" />
+    <Content Include="Views\Manager\EditStore.cshtml" />
+    <Content Include="Views\Manager\DetailsStore.cshtml" />
+    <Content Include="Views\Manager\AbandonStore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Files\" />
     <Folder Include="Views\Authentication\" />
-    <Folder Include="Views\Manager\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -231,6 +231,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -253,6 +254,7 @@
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Repositories\AuthenticationManagerRepository.cs" />
     <Compile Include="Repositories\AdminRepository.cs" />
+    <Compile Include="Repositories\ManagerRepository.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="Repositories\StoreAdminRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
@@ -321,6 +323,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Login\" />
+    <Folder Include="Views\Manager\" />
     <Folder Include="Views\StoreAdmin\" />
   </ItemGroup>
   <ItemGroup>
