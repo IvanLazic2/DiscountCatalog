@@ -1,4 +1,6 @@
-﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiManager>
+﻿@model PagedList.IPagedList<AbatementHelper.CommonModels.WebApiModels.WebApiManager>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "GetAllDeletedManagers";
@@ -6,27 +8,37 @@
 
 <h2>All deleted managers</h2>
 
+
+
 @if (Model != null && Model.Count() != 0)
 {
+    using (Html.BeginForm("GetAllDeletedManagers", "StoreAdmin", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                @Html.ActionLink("UserName", "GetAllDeletedManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                FirstName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                LastName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
+                PhoneNumber
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StoreAdminName)
+                StoreAdminName
             </th>
             <th></th>
         </tr>
@@ -64,6 +76,15 @@
 
     </table>
 }
-
+else
+{
+    <p class="text-danger">- No deleted managers</p>
+}
 
 @Html.ActionLink("All managers", "GetAllManagers")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllDeletedManagers",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

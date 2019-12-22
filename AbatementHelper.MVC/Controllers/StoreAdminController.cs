@@ -10,6 +10,8 @@ using System.Web.Mvc;
 using System.Net.Http;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.CommonModels.CreateModels;
+using PagedList;
+using AbatementHelper.MVC.Extensions;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -25,10 +27,24 @@ namespace AbatementHelper.MVC.Controllers
             return View();
         }
 
-        [HttpGet]
+        //[HttpGet]
         [Route("GetAllStores")]
-        public async Task<ActionResult> GetAllStores()
+        public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiStore> stores;
 
             stores = await storeAdmin.GetAllStores();
@@ -39,7 +55,25 @@ namespace AbatementHelper.MVC.Controllers
                 ViewBag.Success = (bool)TempData["Success"];
             }
 
-            return View(stores);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                stores = stores.Where(u => u.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    stores = stores.OrderByDescending(u => u.StoreName).ToList();
+                    break;
+                default:
+                    stores = stores.OrderBy(u => u.StoreName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(stores.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -116,13 +150,46 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAllDeletedStores()
+        [Route("GetAllDeletedStores")]
+        public async Task<ActionResult> GetAllDeletedStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiStore> stores;
 
             stores = await storeAdmin.GetAllDeletedStores();
 
-            return View(stores);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                stores = stores.Where(u => u.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    stores = stores.OrderByDescending(u => u.StoreName).ToList();
+                    break;
+                default:
+                    stores = stores.OrderBy(u => u.StoreName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(stores.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -162,11 +229,24 @@ namespace AbatementHelper.MVC.Controllers
             return RedirectToAction("GetAllStores");
         }
 
-        //GetAllManagers
-        [HttpGet]
+        //[HttpGet]
         [Route("GetAllManagers")]
-        public async Task<ActionResult> GetAllManagers()
+        public async Task<ActionResult> GetAllManagers(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiManager> managers;
 
             managers = await storeAdmin.GetAllManagers();
@@ -177,7 +257,25 @@ namespace AbatementHelper.MVC.Controllers
                 ViewBag.Success = (bool)TempData["Success"];
             }
 
-            return View(managers);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                managers = managers.Where(u => u.UserName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    managers = managers.OrderByDescending(u => u.UserName).ToList();
+                    break;
+                default:
+                    managers = managers.OrderBy(u => u.UserName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(managers.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -280,13 +378,46 @@ namespace AbatementHelper.MVC.Controllers
             }
         }
 
-        [HttpGet]
+        //[HttpGet]
         [Route("GetAllDeletedManager")]
-        public async Task<ActionResult> GetAllDeletedManagers()
+        public async Task<ActionResult> GetAllDeletedManagers(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiManager> managers = await storeAdmin.GetAllDeletedManagers();
 
-            return View(managers);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                managers = managers.Where(u => u.UserName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    managers = managers.OrderByDescending(u => u.UserName).ToList();
+                    break;
+                default:
+                    managers = managers.OrderBy(u => u.UserName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(managers.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -300,8 +431,22 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("GetAllManagerStores/{id}")]
-        public ActionResult GetAllManagerStores(string id)
+        public ActionResult GetAllManagerStores(string id, string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             //jos dodat error messages
             WebApiManager manager = storeAdmin.DetailsManager(id);
 
@@ -321,7 +466,25 @@ namespace AbatementHelper.MVC.Controllers
 
             List<WebApiManagerStore> stores = storeAdmin.GetAllManagerStores(id);
 
-            return View(stores);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                stores = stores.Where(u => u.Store.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    stores = stores.OrderByDescending(u => u.Store.StoreName).ToList();
+                    break;
+                default:
+                    stores = stores.OrderBy(u => u.Store.StoreName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(stores.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]

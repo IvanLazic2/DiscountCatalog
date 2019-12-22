@@ -1,4 +1,6 @@
-﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
+﻿@model PagedList.IPagedList<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "GetAllDeletedStores";
@@ -8,31 +10,39 @@
 
 @if (Model != null && Model.Count() != 0)
 {
+    using (Html.BeginForm("GetAllDeletedStores", "StoreAdmin", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.StoreName)
+                @Html.ActionLink("StoreName", "GetAllDeletedStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.WorkingHoursWeek)
+                WorkingHoursWeek
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
+                WorkingHoursWeekends
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
+                WorkingHoursHolidays
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Country)
+                Country
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.City)
+                City
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PostalCode)
+                PostalCode
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Street)
+                Street
             </th>
 
             <th></th>
@@ -79,8 +89,14 @@
 }
 else
 {
-    //displayat da nema obrisanih storova
+    <p class="text-danger">- No deleted stores</p>
 }
 
-
 @Html.ActionLink("All stores", "GetAllStores")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllDeletedStores",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+

@@ -1,11 +1,13 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Repositories;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AbatementHelper.MVC.Extensions;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -19,9 +21,23 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         //GetAllStores
-
-        public ActionResult GetAllStores()
+        [Route("GetAllStores")]
+        public ActionResult GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiStore> stores = manager.GetAllStores();
 
             if (TempData["Message"] != null && TempData["Success"] != null)
@@ -30,7 +46,25 @@ namespace AbatementHelper.MVC.Controllers
                 ViewBag.Success = (bool)TempData["Success"];
             }
 
-            return View(stores);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                stores = stores.Where(u => u.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    stores = stores.OrderByDescending(u => u.StoreName).ToList();
+                    break;
+                default:
+                    stores = stores.OrderBy(u => u.StoreName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(stores.ToPagedList(pageNumber, pageSize));
         }
 
         //Select

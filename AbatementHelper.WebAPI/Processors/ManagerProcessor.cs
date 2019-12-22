@@ -47,7 +47,7 @@ namespace AbatementHelper.WebAPI.Processors
         {
             return new ApplicationUser
             {
-                UserName = manager.UserName,
+                UserName = manager.Email.Split('@')[0],
                 FirstName = manager.FirstName,
                 LastName = manager.LastName,
                 Email = manager.Email,

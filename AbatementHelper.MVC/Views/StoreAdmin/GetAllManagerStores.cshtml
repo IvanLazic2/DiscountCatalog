@@ -1,38 +1,49 @@
-﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiManagerStore>
+﻿@model PagedList.IPagedList<AbatementHelper.CommonModels.WebApiModels.WebApiManagerStore>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "GetAllAssignedStores";
 }
 
-<h2>Assign or unassign stores </h2>
+<h2>Assign or unassign stores for @Model.ToList().First().Manager.UserName</h2>
 
-@if (Model != null)
+
+@if (Model != null && Model.Count() != 0)
 {
+    using (Html.BeginForm("GetAllManagerStores", "StoreAdmin", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Store.StoreName)
+                @Html.ActionLink("StoreName", "GetAllManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.WorkingHoursWeek)
+                WorkingHoursWeek
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.WorkingHoursWeekends)
+                WorkingHoursWeekends
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.WorkingHoursHolidays)
+                WorkingHoursHolidays
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.Country)
+                Country
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.City)
+                City
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.PostalCode)
+                PostalCode
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Store.Street)
+                Street
             </th>
             <th></th>
         </tr>
@@ -83,7 +94,17 @@
 
     </table>
 }
+else
+{
+    <p class="text-danger">- No stores</p>
+}
 
 @Html.ActionLink("Back to the list", "GetAllManagers")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllManagerStores",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
 

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AbatementHelper.MVC.Extensions;
+using PagedList;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -20,10 +22,24 @@ namespace AbatementHelper.MVC.Controllers
             return View();
         }
 
-        [HttpGet]
+        //[HttpGet]
         [Route("GetAllUsers")]
-        public ActionResult GetAllUsers()
+        public ActionResult GetAllUsers(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiUser> users;
 
             var result = admin.GetAllUsers();
@@ -36,7 +52,25 @@ namespace AbatementHelper.MVC.Controllers
 
             users = result.Value;
 
-            return View(users);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                users = users.Where(u => u.UserName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    users = users.OrderByDescending(u => u.UserName).ToList();
+                    break;
+                default:
+                    users = users.OrderBy(u => u.UserName).ToList();
+                    break;
+            }
+
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
+
+            return View(users.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]

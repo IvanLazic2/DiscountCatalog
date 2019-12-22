@@ -4,21 +4,7 @@
     ViewBag.Title = "EditManager";
 }
 
-@if (ViewBag.Success != null)
-{
-    if (ViewBag.Success)
-    {
-        <div class="text-success">
-            @ViewBag.Message
-        </div>
-    }
-    else
-    {
-        <div class="text-danger">
-            @ViewBag.Message
-        </div>
-    }
-}
+
 
 <h2>Edit @Model.UserName</h2>
 

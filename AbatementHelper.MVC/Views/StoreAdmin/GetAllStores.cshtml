@@ -1,23 +1,9 @@
-﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
+﻿@model PagedList.IPagedList<AbatementHelper.CommonModels.WebApiModels.WebApiStore>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "GetAllStores";
-}
-
-@if (ViewBag.Success != null)
-{
-    if (ViewBag.Success)
-    {
-        <div class="text-success">
-            @ViewBag.Message
-        </div>
-    }
-    else
-    {
-        <div class="text-danger">
-            @ViewBag.Message
-        </div>
-    }
 }
 
 <h2>All stores</h2>
@@ -25,44 +11,53 @@
 <p>
     @Html.ActionLink("Create New", "CreateStore")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.StoreName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeek)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Country)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PostalCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Street)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Approved)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Managers)
-        </th>
-        <th></th>
-    </tr>
 
-    @if (Model != null)
+@if (true)
+{
+    using (Html.BeginForm("GetAllStores", "StoreAdmin", FormMethod.Get))
     {
-        foreach (var item in Model)
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("StoreName", "GetAllStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+            </th>
+            <th>
+                WorkingHoursWeek
+            </th>
+            <th>
+                WorkingHoursWeekends
+            </th>
+            <th>
+                WorkingHoursHolidays
+            </th>
+            <th>
+                Country
+            </th>
+            <th>
+                City
+            </th>
+            <th>
+                PostalCode
+            </th>
+            <th>
+                Street
+            </th>
+            <th>
+                Approved
+            </th>
+            <th>
+                Managers
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
         {
             if (!item.Deleted)
             {
@@ -98,7 +93,7 @@
                         @{
                             foreach (var manager in item.Managers)
                             {
-                                @Html.ActionLink(manager.UserName+" ", "DetailsManager", new { id = manager.Id });
+                                @Html.ActionLink(manager.UserName + " ", "DetailsManager", new { id = manager.Id });
                             }
                         }
                     </td>
@@ -112,10 +107,18 @@
             }
 
         }
-    }
 
-
-
-</table>
+    </table>
+}
+else
+{
+    <p class="text-danger">- No stores</p>
+}
 
 @Html.ActionLink("All deleted stores", "GetAllDeletedStores")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllManagers",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

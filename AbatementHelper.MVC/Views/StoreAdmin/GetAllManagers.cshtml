@@ -1,23 +1,9 @@
-﻿@model IEnumerable<AbatementHelper.CommonModels.WebApiModels.WebApiManager>
+﻿@model PagedList.IPagedList<AbatementHelper.CommonModels.WebApiModels.WebApiManager>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "GetAllManagers";
-}
-
-@if (ViewBag.Success != null)
-{
-    if (ViewBag.Success)
-    {
-        <div class="text-success">
-            @ViewBag.Message
-        </div>
-    }
-    else
-    {
-        <div class="text-danger">
-            @ViewBag.Message
-        </div>
-    }
 }
 
 <h2>All managers</h2>
@@ -28,40 +14,48 @@
 
 @if (Model != null && Model.Count() != 0)
 {
+    using (Html.BeginForm("GetAllManagers", "StoreAdmin", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserName)
+                @Html.ActionLink("UserName", "GetAllManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                FirstName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                LastName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
+                PhoneNumber
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StoreAdminName)
+                StoreAdminName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Country)
+                Country
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.City)
+                City
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PostalCode)
+                PostalCode
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Street)
+                Street
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TwoFactorEnabled)
+                TwoFactorEnabled
             </th>
             <th></th>
         </tr>
@@ -114,9 +108,9 @@
                         }
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "EditManager", new { id = item.Id }) 
-                        @Html.ActionLink("Details", "DetailsManager", new { id = item.Id }) 
-                        @Html.ActionLink("Delete", "DeleteManager", new { id = item.Id }) 
+                        @Html.ActionLink("Edit", "EditManager", new { id = item.Id })
+                        @Html.ActionLink("Details", "DetailsManager", new { id = item.Id })
+                        @Html.ActionLink("Delete", "DeleteManager", new { id = item.Id })
                         @Html.ActionLink("Assign stores", "GetAllManagerStores", new { id = item.Id })
                     </td>
                 </tr>
@@ -125,5 +119,16 @@
 
     </table>
 }
+else
+{
+    <p class="text-danger">- No registered managers</p>
+}
 
 @Html.ActionLink("All deleted managers", "GetAllDeletedManagers")
+
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllManagers",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
