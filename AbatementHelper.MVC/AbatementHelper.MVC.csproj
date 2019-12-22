@@ -204,6 +204,7 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserForAuthentication.cs" />
     <Compile Include="Models\manager.cs" />
+    <Compile Include="Models\dbproduct.cs" />
     <Compile Include="Processors\ProductManagerProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Repositories\ManagerRepository.cs" />
     <Compile Include="Repositories\ProductManagerRepository.cs" />
     <Compile Include="Repositories\StoreAdminRepository.cs" />
+    <Compile Include="Repositories\StoreRepository.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +291,7 @@
     <Content Include="Views\Manager\EditStore.cshtml" />
     <Content Include="Views\Manager\DetailsStore.cshtml" />
     <Content Include="Views\Manager\AbandonStore.cshtml" />
+    <Content Include="Views\Store\GetAllProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

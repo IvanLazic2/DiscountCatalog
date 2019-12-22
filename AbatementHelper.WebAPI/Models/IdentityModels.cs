@@ -57,8 +57,16 @@ namespace AbatementHelper.WebAPI.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<WebApiUserInfo>().HasOptional(i => i.User).WithMany().HasForeignKey(k => k.UserId);
-            //modelBuilder.Entity<ApplicationUser>().HasOptional(u => u.Address).WithRequired(a => a.User);
+
+            modelBuilder.Entity<ManagerEntity>()
+                .HasRequired(m => m.User)
+                .WithMany()
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ManagerEntity>()
+                .HasRequired(m => m.StoreAdmin)
+                .WithMany()
+                .WillCascadeOnDelete(false);
         }
 
         public static ApplicationUserDbContext Create()
@@ -69,7 +77,7 @@ namespace AbatementHelper.WebAPI.Models
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<StoreEntity> Stores { get; set; }
         public DbSet<ManagerEntity> Managers { get; set; }
-        public DbSet<ProductEntity> Product { get; set; }
+        public DbSet<ProductEntity> Products { get; set; }
     }
 
     public class UserManager : UserManager<ApplicationUser>

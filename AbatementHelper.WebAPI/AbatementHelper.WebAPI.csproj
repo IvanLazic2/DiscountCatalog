@@ -234,12 +234,17 @@
     <Compile Include="Controllers\ManagerController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
-    <Compile Include="DataBaseModels\Manager.cs" />
+    <Compile Include="DataBaseModels\ManagerEntity.cs" />
     <Compile Include="DataBaseModels\Product.cs" />
-    <Compile Include="DataBaseModels\Store.cs" />
+    <Compile Include="DataBaseModels\StoreEntity.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912221636423_int.cs" />
+    <Compile Include="Migrations\201912221636423_int.Designer.cs">
+      <DependentUpon>201912221636423_int.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -255,8 +260,8 @@
     <Compile Include="Repositories\AuthenticationManagerRepository.cs" />
     <Compile Include="Repositories\AdminRepository.cs" />
     <Compile Include="Repositories\ManagerRepository.cs" />
-    <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="Repositories\StoreAdminRepository.cs" />
+    <Compile Include="Repositories\StoreRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
@@ -325,6 +330,7 @@
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Manager\" />
     <Folder Include="Views\StoreAdmin\" />
+    <Folder Include="Views\Store\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -354,6 +360,11 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201912221636423_int.resx">
+      <DependentUpon>201912221636423_int.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

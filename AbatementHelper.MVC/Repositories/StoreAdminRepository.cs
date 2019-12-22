@@ -18,7 +18,6 @@ namespace AbatementHelper.MVC.Repositeories
     public class StoreAdminRepository
     {
         private HttpClient apiClient;
-        public bool RegisterSuccessful;
         private Response responseModel = new Response();
 
         public StoreAdminRepository()

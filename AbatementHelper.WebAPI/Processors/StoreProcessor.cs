@@ -15,10 +15,11 @@ namespace AbatementHelper.WebAPI.Processors
         public static WebApiStore StoreEntityToWebApiStore(StoreEntity store)
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
-            
+
             WebApiStore webApiStore = new WebApiStore();
 
-            var config = new MapperConfiguration(c => {
+            var config = new MapperConfiguration(c =>
+            {
                 c.CreateMap<StoreEntity, WebApiStore>()
                     .ForMember(s => s.Managers, act => act.Ignore());
             });

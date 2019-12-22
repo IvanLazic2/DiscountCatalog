@@ -21,6 +21,7 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
+        [Required]
         public ApplicationUser StoreAdmin { get; set; }
         public ICollection<ProductEntity> Products { get; set; }
         public bool Approved { get; set; }
