@@ -17,6 +17,8 @@ namespace AbatementHelper.WebAPI.Processors
         {
             WebApiProduct webApiProduct = new WebApiProduct();
 
+            StoreRepository storeRepository = new StoreRepository();
+
             var config = new MapperConfiguration(c =>
             {
                 c.CreateMap<ProductEntity, WebApiProduct>()
@@ -28,6 +30,13 @@ namespace AbatementHelper.WebAPI.Processors
             try
             {
                 webApiProduct = mapper.Map<ProductEntity, WebApiProduct>(product);
+
+                if (product.Store != null)
+                {
+                    webApiProduct.Store = StoreProcessor.StoreEntityToWebApiStore(product.Store);
+                }
+
+                
             }
             catch (Exception exception)
             {
@@ -46,8 +55,9 @@ namespace AbatementHelper.WebAPI.Processors
 
         var config = new MapperConfiguration(c =>
             {
-                c.CreateMap<WebApiProduct, ProductEntity > ()
-                    .ForMember(s => s.Store, act => act.Ignore());
+                c.CreateMap<WebApiProduct, ProductEntity>()
+                    .ForMember(s => s.Store, act => act.Ignore())
+                    .ForMember(s => s.Id, act => act.Ignore());
             });
 
             IMapper mapper = config.CreateMapper();

@@ -46,7 +46,10 @@ namespace AbatementHelper.MVC.Repositories
         {
             AddTokenToHeader();
 
-            product.Store.Id = HttpContext.Current.Request.Cookies["StoreID"].Value;
+            product.Store = new WebApiStore
+            {
+                Id = HttpContext.Current.Request.Cookies["StoreID"].Value
+            };
 
             var jsonContent = JsonConvert.SerializeObject(product);
 

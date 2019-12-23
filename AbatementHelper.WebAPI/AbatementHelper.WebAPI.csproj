@@ -232,19 +232,18 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ManagerController.cs" />
-    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DataBaseModels\ManagerEntity.cs" />
-    <Compile Include="DataBaseModels\Product.cs" />
+    <Compile Include="DataBaseModels\ProductEntity.cs" />
     <Compile Include="DataBaseModels\StoreEntity.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201912221636423_int.cs" />
-    <Compile Include="Migrations\201912221636423_int.Designer.cs">
-      <DependentUpon>201912221636423_int.cs</DependentUpon>
+    <Compile Include="Migrations\201912221935599_int.cs" />
+    <Compile Include="Migrations\201912221935599_int.Designer.cs">
+      <DependentUpon>201912221935599_int.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -362,8 +361,8 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201912221636423_int.resx">
-      <DependentUpon>201912221636423_int.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201912221935599_int.resx">
+      <DependentUpon>201912221935599_int.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

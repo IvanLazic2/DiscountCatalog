@@ -22,14 +22,17 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    List<ProductEntity> productEntities = new List<ProductEntity>();
+                    //List<ProductEntity> productEntities = new List<ProductEntity>();
 
-                    productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved).ToList();
+                    var productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved);
+
+                    
 
                     if (productEntities != null)
                     {
                         foreach (var product in productEntities)
                         {
+                            product.Store = GetStore(id);
                             products.Add(ProductProcessor.ProductEntityToWebApiProduct(product));
                         }
                     }
@@ -65,6 +68,18 @@ namespace AbatementHelper.WebAPI.Repositories
                     ProductEntity processedProduct = ProductProcessor.WebApiProductToProductEntity(product);
                     processedProduct.Store = context.Stores.Find(product.Store.Id);
 
+                    processedProduct.Deleted = false;
+                    processedProduct.Approved = true;
+
+                    if (DateTime.Compare(processedProduct.DiscountDateEnd, DateTime.Now) >= 0)
+                    {
+                        processedProduct.Expired = false;
+                    }
+                    else
+                    {
+                        processedProduct.Expired = true;
+                    }
+
                     processedProduct.DateCreated = DateTime.Now;
 
                     context.Products.Add(processedProduct);
@@ -75,7 +90,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     response.Success = true;
                 }
             }
-            catch (DbUpdateException exception)
+            catch (Exception exception)
             {
                 response.ResponseMessage = exception.InnerException.InnerException.Message;
                 response.Success = false;
