@@ -26,7 +26,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     var productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved);
 
-                    
+
 
                     if (productEntities != null)
                     {
@@ -65,29 +65,37 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    ProductEntity processedProduct = ProductProcessor.WebApiProductToProductEntity(product);
-                    processedProduct.Store = context.Stores.Find(product.Store.Id);
-
-                    processedProduct.Deleted = false;
-                    processedProduct.Approved = true;
-
-                    if (DateTime.Compare(processedProduct.DiscountDateEnd, DateTime.Now) >= 0)
+                    if (product.ProductNewPrice < product.ProductOldPrice)
                     {
-                        processedProduct.Expired = false;
+                        ProductEntity processedProduct = ProductProcessor.WebApiProductToProductEntity(product);
+                        processedProduct.Store = context.Stores.Find(product.Store.Id);
+
+                        processedProduct.Deleted = false;
+                        processedProduct.Approved = true;
+
+                        if (DateTime.Compare(processedProduct.DiscountDateEnd, DateTime.Now) >= 0)
+                        {
+                            processedProduct.Expired = false;
+                        }
+                        else
+                        {
+                            processedProduct.Expired = true;
+                        }
+
+                        processedProduct.DateCreated = DateTime.Now;
+
+                        context.Products.Add(processedProduct);
+
+                        context.SaveChanges();
+
+                        response.ResponseMessage = "Successfully created";
+                        response.Success = true;
                     }
                     else
                     {
-                        processedProduct.Expired = true;
+                        response.ResponseMessage = "New price has to be a discount!";
+                        response.Success = false;
                     }
-
-                    processedProduct.DateCreated = DateTime.Now;
-
-                    context.Products.Add(processedProduct);
-
-                    context.SaveChanges();
-
-                    response.ResponseMessage = "Successfully created";
-                    response.Success = true;
                 }
             }
             catch (Exception exception)
@@ -107,24 +115,32 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    ProductEntity productEntity = context.Products.Find(product.Id);
-                    context.Products.Attach(productEntity);
+                    if (product.ProductNewPrice < product.ProductOldPrice)
+                    {
+                        ProductEntity productEntity = context.Products.Find(product.Id);
+                        context.Products.Attach(productEntity);
 
-                    productEntity.ProductName = product.ProductName;
-                    productEntity.CompanyName = product.CompanyName;
-                    productEntity.ProductOldPrice = product.ProductOldPrice;
-                    productEntity.ProductNewPrice = product.ProductNewPrice;
-                    productEntity.DiscountPercentage = product.DiscountPercentage;
-                    productEntity.DiscountDateBegin = product.DiscountDateBegin;
-                    productEntity.DiscountDateEnd = product.DiscountDateEnd;
-                    productEntity.Quantity = product.Quantity;
-                    productEntity.Description = product.Description;
-                    productEntity.Note = product.Note;
+                        productEntity.ProductName = product.ProductName;
+                        productEntity.CompanyName = product.CompanyName;
+                        productEntity.ProductOldPrice = product.ProductOldPrice;
+                        productEntity.ProductNewPrice = product.ProductNewPrice;
+                        productEntity.DiscountPercentage = product.DiscountPercentage;
+                        productEntity.DiscountDateBegin = product.DiscountDateBegin;
+                        productEntity.DiscountDateEnd = product.DiscountDateEnd;
+                        productEntity.Quantity = product.Quantity;
+                        productEntity.Description = product.Description;
+                        productEntity.Note = product.Note;
 
-                    context.SaveChanges();
+                        context.SaveChanges();
 
-                    response.ResponseMessage = "Successfully edited.";
-                    response.Success = true;
+                        response.ResponseMessage = "Successfully edited.";
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.ResponseMessage = "New price has to be a discount!";
+                        response.Success = false;
+                    }
                 }
             }
             catch (DbUpdateException exception)
@@ -219,7 +235,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 throw;
             }

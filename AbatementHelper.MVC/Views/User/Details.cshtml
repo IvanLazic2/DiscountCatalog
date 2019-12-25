@@ -11,6 +11,14 @@
 
 @if (Model != null)
 {
+    using (Html.BeginForm("UploadUserImage", "User", FormMethod.Post,
+                            new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">Upload Image:</label>
+        <input type="file" name="file" id="file" style="width: 100%;" />
+        <input type="submit" value="Upload" class="submit" />
+    }
+
     <div>
         <dl class="dl-horizontal">
             <dt>

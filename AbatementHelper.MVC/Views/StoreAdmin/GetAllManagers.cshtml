@@ -57,6 +57,9 @@
             <th>
                 TwoFactorEnabled
             </th>
+            <th>
+                Stores
+            </th>
             <th></th>
         </tr>
 
@@ -103,7 +106,7 @@
                         @{
                             foreach (var store in item.Stores)
                             {
-                                @Html.ActionLink(store.StoreName + " ", "DetailsStore", new { id = store.Id });
+                                @Html.ActionLink(store.StoreName + " ", "DetailsStore", new { id = store.Id })
                             }
                         }
                     </td>

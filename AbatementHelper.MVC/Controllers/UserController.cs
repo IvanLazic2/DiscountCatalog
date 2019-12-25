@@ -10,6 +10,7 @@ using System.Web.Security;
 using AbatementHelper.CommonModels.Models;
 using System.Web.Routing;
 using AbatementHelper.CommonModels.WebApiModels;
+using System.IO;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -151,6 +152,29 @@ namespace AbatementHelper.MVC.Controllers
             }
 
             return View(user);
+        }
+
+        public ActionResult UploadUserImage(HttpPostedFileBase file)
+        {
+            if (file != null)
+            {
+                // ZA SPREMANJE NA SERVER
+                //string image = System.IO.Path.GetFileName(file.FileName);
+                //string path = System.IO.Path.Combine(Server.MapPath("sad tu napisem path npr. ~/images/user il tak nest"), image);
+                //file.SaveAs(path);
+
+                //ZA SPREMANJE NA BAZU
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.InputStream.CopyTo(ms);
+                    byte[] array = ms.GetBuffer();
+
+                    //sad tu pozovem repository 
+                }
+
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         //Edit GET

@@ -135,7 +135,7 @@ namespace AbatementHelper.MVC.Repositories
 
             if (id != null)
             {
-                var response = apiClient.GetAsync("api/Account/Edit/" + id);
+                var response = apiClient.GetAsync("api/Account/Details/" + id);
                 response.Wait();
 
                 var result = response.Result;

@@ -7,13 +7,13 @@ namespace AbatementHelper.WebAPI.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class _int : IMigrationMetadata
+    public sealed partial class uii : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(_int));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(uii));
         
         string IMigrationMetadata.Id
         {
-            get { return "201912221935599_int"; }
+            get { return "201912251454219_uii"; }
         }
         
         string IMigrationMetadata.Source

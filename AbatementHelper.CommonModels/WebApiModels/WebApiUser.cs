@@ -24,7 +24,9 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public string Role { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public bool Approved { get; set; }
-        public bool Deleted { get; set; } 
+        public bool Deleted { get; set; }
+
+        public byte[] Image { get; set; }
     }
 
     

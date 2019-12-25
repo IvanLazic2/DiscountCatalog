@@ -30,6 +30,8 @@ namespace AbatementHelper.WebAPI.Models
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
 
+        public byte[] UserImage { get; set; }
+
         //public ICollection<Address> Addresses { get; set; }
 
         public ApplicationUser()

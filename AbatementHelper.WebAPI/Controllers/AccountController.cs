@@ -24,7 +24,7 @@ using AbatementHelper.WebAPI.Processors;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-    [Authorize(Roles = "Admin, User, StoreAdmin, Store")]
+    [Authorize(Roles = "Admin, User, StoreAdmin, Manager")]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
@@ -461,6 +461,15 @@ namespace AbatementHelper.WebAPI.Controllers
             WebApiUser user = UserProcessor.ApplicationUserToWebApiUser(userRepository.ReadUserById(id));
 
             return user;
+        }
+
+        [HttpPost]
+        [Route("PostUserImage")]
+        public Response PostUserImage(WebApiUser user)
+        {
+            Response response = userRepository.UploadUserImage(user);
+
+            return response;
         }
 
         [HttpGet]

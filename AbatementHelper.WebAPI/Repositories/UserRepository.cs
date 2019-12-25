@@ -110,6 +110,35 @@ namespace AbatementHelper.WebAPI.Repositories
 
         }
 
+        public Response UploadUserImage(WebApiUser user)
+        {
+            Response response = new Response();
+
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ApplicationUser applicationUser = context.Users.Find(user.Id);
+
+                    applicationUser.UserImage = user.Image;
+
+                    context.Users.Attach(applicationUser);
+
+                    context.SaveChanges();
+                }
+
+                response.ResponseMessage = "Successfully edited.";
+                response.Success = true;
+            }
+            catch (Exception exception)
+            {
+                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Success = false;
+            }
+
+            return response;
+        }
+
         public async Task<ApplicationUser> ReturnUser(string userName)
         {
             var user = userManager.FindByNameAsync(userName);
