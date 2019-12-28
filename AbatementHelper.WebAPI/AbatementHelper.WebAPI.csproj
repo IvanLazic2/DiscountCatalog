@@ -254,6 +254,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Processors\ExceptionProcessor.cs" />
+    <Compile Include="Processors\ImageProcessor.cs" />
     <Compile Include="Processors\ManagerProcessor.cs" />
     <Compile Include="Processors\ProductProcessor.cs" />
     <Compile Include="Processors\StoreProcessor.cs" />

@@ -1,10 +1,12 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Models;
+using AbatementHelper.WebAPI.Processors;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -114,29 +116,50 @@ namespace AbatementHelper.WebAPI.Repositories
         {
             Response response = new Response();
 
-            try
+            byte[] image = user.UserImage;
+
+            if (ImageProcessor.IsValid(image))
             {
-                using (var context = new ApplicationUserDbContext())
+                try
                 {
-                    ApplicationUser applicationUser = context.Users.Find(user.Id);
+                    using (var context = new ApplicationUserDbContext())
+                    {
+                        ApplicationUser applicationUser = context.Users.Find(user.Id);
 
-                    applicationUser.UserImage = user.Image;
+                        context.Users.Attach(applicationUser);
+                        applicationUser.UserImage = image;
 
-                    context.Users.Attach(applicationUser);
-
-                    context.SaveChanges();
+                        context.SaveChanges();
+                    } 
+                }
+                catch (Exception exception)
+                {
+                    response.ResponseMessage = exception.InnerException.InnerException.Message;
+                    response.Success = false;
                 }
 
                 response.ResponseMessage = "Successfully edited.";
                 response.Success = true;
             }
-            catch (Exception exception)
+            else
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.ResponseMessage = "Invalid image type";
                 response.Success = false;
             }
+            
 
             return response;
+        }
+
+        public byte[] GetUserImage(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser user = context.Users.Find(id);
+
+                return user.UserImage;
+            }
+
         }
 
         public async Task<ApplicationUser> ReturnUser(string userName)

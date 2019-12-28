@@ -48,7 +48,8 @@ namespace AbatementHelper.WebAPI.Processors
                 Role = roles[0],
                 TwoFactorEnabled = user.TwoFactorEnabled,
                 Approved = user.Approved,
-                Deleted = user.Deleted
+                Deleted = user.Deleted,
+                UserImage = user.UserImage
             };
         }
 
@@ -93,7 +94,8 @@ namespace AbatementHelper.WebAPI.Processors
 
                 TwoFactorEnabled = user.TwoFactorEnabled,
                 Approved = user.Approved,
-                Deleted = user.Deleted
+                Deleted = user.Deleted,
+                UserImage = user.UserImage
             };
         }
     }

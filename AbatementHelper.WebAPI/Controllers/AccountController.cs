@@ -21,10 +21,13 @@ using AbatementHelper.WebAPI.Repositories;
 using AbatementHelper.WebAPI.DataBaseModels;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Processors;
+using System.Drawing;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
-    [Authorize(Roles = "Admin, User, StoreAdmin, Manager")]
+    //[Authorize(Roles = "Admin, User, StoreAdmin, Manager")]
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
@@ -463,13 +466,22 @@ namespace AbatementHelper.WebAPI.Controllers
             return user;
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("PostUserImage")]
         public Response PostUserImage(WebApiUser user)
         {
             Response response = userRepository.UploadUserImage(user);
 
             return response;
+        }
+
+        [HttpGet]
+        [Route("GetUserImage/{id}")]
+        public byte[] GetUserImage(string id)
+        {
+            byte[] byteArray = userRepository.GetUserImage(id);
+
+            return ImageProcessor.CreateThumbnail(byteArray);
         }
 
         [HttpGet]

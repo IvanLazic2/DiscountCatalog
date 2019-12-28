@@ -11,6 +11,7 @@ using AbatementHelper.CommonModels.Models;
 using System.Web.Routing;
 using AbatementHelper.CommonModels.WebApiModels;
 using System.IO;
+using System.Drawing;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -83,6 +84,12 @@ namespace AbatementHelper.MVC.Controllers
 
             if (result.Success)
             {
+                string[] myCookies = Request.Cookies.AllKeys;
+                foreach (string cookie in myCookies)
+                {
+                    Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
+                }
+
                 Response.Cookies.Add(new HttpCookie("Access_Token")
                 {
                     Value = result.User.Access_Token,
@@ -169,12 +176,27 @@ namespace AbatementHelper.MVC.Controllers
                     file.InputStream.CopyTo(ms);
                     byte[] array = ms.GetBuffer();
 
-                    //sad tu pozovem repository 
+                    float mb = (array.Length / 1024f) / 1024f; 
+
+                    if (mb < 1)
+                    {
+                        account.PostUserImage(array);
+                    }
+
+                    //provjerit velicinu i nes smislit kako resizat sliku
                 }
 
             }
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [Route("GetUserImage/{id}")]
+        public ActionResult GetUserImage(string id)
+        {
+            byte[] byteArray = account.GetUserImage(id);
+
+            return File(byteArray, "image/png");
         }
 
         //Edit GET

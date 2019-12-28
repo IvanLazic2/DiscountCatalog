@@ -29,6 +29,10 @@
                         {
                             Html.RenderPartial("_StoreAdmin");
                         }
+                        if (Request.Cookies["Role"].Value == "Manager")
+                        {
+                            Html.RenderPartial("_Manager");
+                        }
                         if (Request.Cookies["Role"].Value == "Store")
                         {
                             Html.RenderPartial("_Store");

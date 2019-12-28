@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -152,6 +153,49 @@ namespace AbatementHelper.MVC.Repositories
             return user;
         }
 
+        public Response PostUserImage(byte[] array)
+        {
+            WebApiUser user = new WebApiUser();
+
+            if (array != null)
+            {
+                AddTokenToHeader();
+
+                user.Id = HttpContext.Current.Request.Cookies["UserID"].Value;
+                user.UserImage = array;
+
+                var response = apiClient.PutAsJsonAsync("api/Account/PostUserImage", user);
+                response.Wait();
+
+                var result = response.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<Response>();
+                    resultContent.Wait();
+
+                    responseModel = resultContent.Result;
+                }
+            }
+
+            return responseModel;
+        }
+
+        public byte[] GetUserImage(string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/Account/GetUserImage/" + id);
+            response.Wait();
+
+            var result = response.Result;
+
+            var resultContent = result.Content.ReadAsAsync<byte[]>();
+            //resultContent.Wait();
+
+            return resultContent.Result;
+        }
+
         public WebApiUser Edit()
         {
             WebApiUser user = new WebApiUser();
@@ -190,8 +234,7 @@ namespace AbatementHelper.MVC.Repositories
 
             var resultContent = result.Content.ReadAsAsync<Response>();
 
-            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
-            responseModel.Success = resultContent.Result.Success;
+            responseModel = resultContent.Result;
 
             return responseModel;
         }
