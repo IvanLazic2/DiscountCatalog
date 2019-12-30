@@ -12,6 +12,8 @@ using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.CommonModels.CreateModels;
 using PagedList;
 using AbatementHelper.MVC.Extensions;
+using System.IO;
+using AbatementHelper.MVC.Processors;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -120,6 +122,46 @@ namespace AbatementHelper.MVC.Controllers
             TempData["Success"] = editStoreResponse.Success;
 
             return RedirectToAction("GetAllStores");
+        }
+
+        [Route("PostStoreImage")]
+        public ActionResult PostStoreImage(HttpPostedFileBase file)
+        {
+            if (file != null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.InputStream.CopyTo(ms);
+                    byte[] array = ms.GetBuffer();
+
+                    float mb = (array.Length / 1024f) / 1024f;
+
+                    if (mb < 1)
+                    {
+                        storeAdmin.PostStoreImage(array);
+                    }
+                    else
+                    {
+                        byte[] arrayScaled = ImageProcessor.To1MB(array);
+                        float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
+
+                        if (arrayScaled != null)
+                        {
+                            storeAdmin.PostStoreImage(arrayScaled);
+                        }
+                    }
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Route("GetStoreImage/{id}")]
+        public ActionResult GetStoreImage(string id)
+        {
+            byte[] byteArray = storeAdmin.GetStoreImage(id);
+
+            return File(byteArray, "image/png");
         }
 
         [HttpGet]

@@ -242,5 +242,55 @@ namespace AbatementHelper.WebAPI.Repositories
 
             return products;
         }
+
+        public Response PostProductImage(WebApiProduct product)
+        {
+            Response response = new Response();
+
+            byte[] image = product.ProductImage;
+
+            if (ImageProcessor.IsValid(image))
+            {
+                try
+                {
+                    using (var context = new ApplicationUserDbContext())
+                    {
+                        ProductEntity productEntity = context.Products.Find(product.Id);
+
+                        context.Products.Attach(productEntity);
+                        productEntity.ProductImage = image;
+
+                        context.SaveChanges();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    response.ResponseMessage = exception.InnerException.InnerException.Message;
+                    response.Success = false;
+                }
+
+                response.ResponseMessage = "Successfully uploaded.";
+                response.Success = true;
+            }
+            else
+            {
+                response.ResponseMessage = "Invalid image type";
+                response.Success = false;
+            }
+
+
+            return response;
+        }
+
+        public byte[] GetProductImage(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ProductEntity product = context.Products.Find(id);
+
+                return product.ProductImage;
+            }
+
+        }
     }
 }

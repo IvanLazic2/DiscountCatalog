@@ -54,6 +54,24 @@ namespace AbatementHelper.WebAPI.Controllers
             return storeAdminRepository.EditStore(store);
         }
 
+        [HttpPut]
+        [Route("PostStoreImage")]
+        public Response PostStoreImage(WebApiStore store)
+        {
+            Response response = storeAdminRepository.PostStoreImage(store);
+
+            return response;
+        }
+
+        [HttpGet]
+        [Route("GetStoreImage/{id}")]
+        public byte[] GetUserImage(string id)
+        {
+            byte[] byteArray = storeAdminRepository.GetStoreImage(id);
+
+            return ImageProcessor.CreateThumbnail(byteArray);
+        }
+
         [HttpGet]
         [Route("DetailsStore/{id}")]
         public async Task<WebApiStore> DetailsStore(string id)

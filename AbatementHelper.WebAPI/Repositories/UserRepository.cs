@@ -112,7 +112,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
         }
 
-        public Response UploadUserImage(WebApiUser user)
+        public Response PostUserImage(WebApiUser user)
         {
             Response response = new Response();
 
@@ -138,7 +138,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     response.Success = false;
                 }
 
-                response.ResponseMessage = "Successfully edited.";
+                response.ResponseMessage = "Successfully uploaded.";
                 response.Success = true;
             }
             else

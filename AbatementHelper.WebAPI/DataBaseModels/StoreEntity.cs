@@ -26,6 +26,6 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         public ICollection<ProductEntity> Products { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-
+        public byte[] StoreImage { get; set; }
     }
 }

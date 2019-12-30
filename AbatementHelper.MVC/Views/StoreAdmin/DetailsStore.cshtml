@@ -8,92 +8,111 @@
 
 <h2>@Model.StoreName - Details</h2>
 
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.StoreName)
-        </dt>
+@if (Model != null)
+{
+    using (Html.BeginForm("PostStoreImage", "StoreAdmin", FormMethod.Post,
+                            new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">Upload Image:</label>
+        <input type="file" name="file" id="file" style="width: 100%;" />
+        <input type="submit" value="Upload" class="submit" />
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.StoreName)
-        </dd>
+    <div>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeek)
-        </dt>
+            </dt>
+            <dd>
+                <div style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); width: 100px; height: 100px;"></div>
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.StoreName)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.WorkingHoursWeek)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.StoreName)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.WorkingHoursWeek)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.WorkingHoursWeekends)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.WorkingHoursWeek)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.WorkingHoursWeekends)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.WorkingHoursHolidays)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.WorkingHoursWeekends)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Country)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.WorkingHoursHolidays)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Country)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.WorkingHoursHolidays)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.City)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.Country)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.City)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Country)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.PostalCode)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.City)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.PostalCode)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.City)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Street)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Street)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.PostalCode)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.StoreAdminId)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.Street)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.StoreAdminId)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Street)
+            </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Approved)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.StoreAdminId)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Approved)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.StoreAdminId)
+            </dd>
 
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "EditStore", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "GetAllStores")
-</p>
+            <dt>
+                @Html.DisplayNameFor(model => model.Approved)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Approved)
+            </dd>
+
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "EditStore", new { id = Model.Id }) |
+        @Html.ActionLink("Back to List", "GetAllStores")
+    </p>
+}
+
+

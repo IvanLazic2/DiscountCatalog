@@ -80,6 +80,8 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool Deleted { get; set; }
         public DateTime DateCreated { get; set; }
 
+        public byte[] ProductImage { get; set; }
+
         public WebApiProduct()
         {
             ProductOldPriceString = ProductOldPrice.ToString() + Currency;

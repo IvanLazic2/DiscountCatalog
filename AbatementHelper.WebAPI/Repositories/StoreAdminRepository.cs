@@ -256,6 +256,56 @@ namespace AbatementHelper.WebAPI.Repositories
             return response;
         }
 
+        public Response PostStoreImage(WebApiStore store)
+        {
+            Response response = new Response();
+
+            byte[] image = store.StoreImage;
+
+            if (ImageProcessor.IsValid(image))
+            {
+                try
+                {
+                    using (var context = new ApplicationUserDbContext())
+                    {
+                        StoreEntity storeEntity = context.Stores.Find(store.Id);
+
+                        context.Stores.Attach(storeEntity);
+                        storeEntity.StoreImage = image;
+
+                        context.SaveChanges();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    response.ResponseMessage = exception.InnerException.InnerException.Message;
+                    response.Success = false;
+                }
+
+                response.ResponseMessage = "Successfully uploaded.";
+                response.Success = true;
+            }
+            else
+            {
+                response.ResponseMessage = "Invalid image type";
+                response.Success = false;
+            }
+
+
+            return response;
+        }
+
+        public byte[] GetStoreImage(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                StoreEntity store = context.Stores.Find(id);
+
+                return store.StoreImage;
+            }
+
+        }
+
         public void DeleteStore(string id)
         {
             using (var context = new ApplicationUserDbContext())

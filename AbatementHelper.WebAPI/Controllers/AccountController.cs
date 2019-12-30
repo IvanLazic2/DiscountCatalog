@@ -470,7 +470,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("PostUserImage")]
         public Response PostUserImage(WebApiUser user)
         {
-            Response response = userRepository.UploadUserImage(user);
+            Response response = userRepository.PostUserImage(user);
 
             return response;
         }

@@ -3,9 +3,11 @@ using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Repositories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AbatementHelper.MVC.Processors;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -48,6 +50,12 @@ namespace AbatementHelper.MVC.Controllers
         {
             WebApiProduct product = store.ProductDetails(id);
 
+            Response.Cookies.Add(new HttpCookie("ProductID")
+            {
+                Value = product.Id,
+                HttpOnly = true
+            });
+
             return View(product);
         }
 
@@ -66,7 +74,56 @@ namespace AbatementHelper.MVC.Controllers
         {
             WebApiProduct product = store.ProductDetails(id);
 
+            Response.Cookies.Add(new HttpCookie("ProductID")
+            {
+                Value = product.Id,
+                HttpOnly = true
+            });
+
             return View(product);
+        }
+
+        [Route("UploadProductImage")]
+        public ActionResult PostProductImage(HttpPostedFileBase file)
+        {
+            if (file != null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.InputStream.CopyTo(ms);
+                    byte[] array = ms.GetBuffer();
+
+                    float mb = (array.Length / 1024f) / 1024f;
+
+                    if (mb < 1)
+                    {
+                        store.PostProductImage(array);
+                    }
+                    else
+                    {
+                        byte[] arrayScaled = ImageProcessor.To1MB(array);
+                        float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
+
+                        if (arrayScaled != null)
+                        {
+                            store.PostProductImage(arrayScaled);
+                        }
+                    }
+
+                }
+
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [Route("GetProductImage/{id}")]
+        public ActionResult GetProductImage(string id)
+        {
+            byte[] byteArray = store.GetProductImage(id);
+
+            return File(byteArray, "image/png");
         }
 
         [HttpGet]

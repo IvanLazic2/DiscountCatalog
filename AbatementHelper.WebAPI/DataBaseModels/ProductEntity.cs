@@ -32,5 +32,6 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         public bool Deleted { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
+        public byte[] ProductImage { get; set; }
     }
 }

@@ -120,6 +120,48 @@ namespace AbatementHelper.MVC.Repositories
             return product;
         }
 
+        public Response PostProductImage(byte[] array)
+        {
+            WebApiProduct product = new WebApiProduct();
+
+
+            AddTokenToHeader();
+
+            product.Id = HttpContext.Current.Request.Cookies["ProductID"].Value;
+            product.ProductImage = array;
+
+            var response = apiClient.PutAsJsonAsync("api/Store/PostProductImage", product);
+            response.Wait();
+
+            var result = response.Result;
+
+            if (result.IsSuccessStatusCode)
+            {
+                var resultContent = result.Content.ReadAsAsync<Response>();
+                resultContent.Wait();
+
+                responseModel = resultContent.Result;
+            }
+
+
+            return responseModel;
+        }
+
+        public byte[] GetProductImage(string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/Store/GetProductImage/" + id);
+            response.Wait();
+
+            var result = response.Result;
+
+            var resultContent = result.Content.ReadAsAsync<byte[]>();
+            //resultContent.Wait();
+
+            return resultContent.Result;
+        }
+
         public Response EditProduct(WebApiProduct product)
         {
             AddTokenToHeader();

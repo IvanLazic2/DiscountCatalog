@@ -12,7 +12,7 @@
 
 @if (Model != null)
 {
-    using (Html.BeginForm("UploadUserImage", "User", FormMethod.Post,
+    using (Html.BeginForm("PostUserImage", "User", FormMethod.Post,
                             new { enctype = "multipart/form-data" }))
     {
         <label for="file">Upload Image:</label>
@@ -37,7 +37,7 @@
 
             </dt>
             <dd>
-                <img src="@Url.Action("GetUserImage", "User", new { id = Model.Id })" alt="" />
+                <div style="background-image: url(@Url.Action("GetUserImage", "User", new { id = Model.Id })); width: 100px; height: 100px;"></div>
             </dd>
 
             <dt>

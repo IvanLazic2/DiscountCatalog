@@ -21,5 +21,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public List<WebApiManager> Managers { get; set; } = new List<WebApiManager>();
+        public byte[] StoreImage { get; set; }
     }
 }

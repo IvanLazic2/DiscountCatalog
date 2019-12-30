@@ -12,6 +12,7 @@ using System.Web.Routing;
 using AbatementHelper.CommonModels.WebApiModels;
 using System.IO;
 using System.Drawing;
+using AbatementHelper.MVC.Processors;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -161,7 +162,8 @@ namespace AbatementHelper.MVC.Controllers
             return View(user);
         }
 
-        public ActionResult UploadUserImage(HttpPostedFileBase file)
+        [Route("PostUserImage")]
+        public ActionResult PostUserImage(HttpPostedFileBase file)
         {
             if (file != null)
             {
@@ -182,8 +184,17 @@ namespace AbatementHelper.MVC.Controllers
                     {
                         account.PostUserImage(array);
                     }
+                    else
+                    {
+                        byte[] arrayScaled = ImageProcessor.To1MB(array);
+                        float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
 
-                    //provjerit velicinu i nes smislit kako resizat sliku
+                        if (arrayScaled != null)
+                        {
+                            account.PostUserImage(arrayScaled);
+                        }
+                    }
+                    
                 }
 
             }

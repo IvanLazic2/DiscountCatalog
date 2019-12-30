@@ -134,6 +134,49 @@ namespace AbatementHelper.MVC.Repositeories
             return responseModel;
         }
 
+        public Response PostStoreImage(byte[] array)
+        {
+            WebApiStore store = new WebApiStore();
+
+            if (array != null)
+            {
+                AddTokenToHeader();
+
+                store.Id = HttpContext.Current.Request.Cookies["StoreID"].Value;
+                store.StoreImage = array;
+
+                var response = apiClient.PutAsJsonAsync("api/StoreAdmin/PostStoreImage", store);
+                response.Wait();
+
+                var result = response.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var resultContent = result.Content.ReadAsAsync<Response>();
+                    resultContent.Wait();
+
+                    responseModel = resultContent.Result;
+                }
+            }
+
+            return responseModel;
+        }
+
+        public byte[] GetStoreImage(string id)
+        {
+            AddTokenToHeader();
+
+            var response = apiClient.GetAsync("api/StoreAdmin/GetStoreImage/" + id);
+            response.Wait();
+
+            var result = response.Result;
+
+            var resultContent = result.Content.ReadAsAsync<byte[]>();
+            //resultContent.Wait();
+
+            return resultContent.Result;
+        }
+
         public WebApiStore DetailsStore(string id)
         {
             WebApiStore store = new WebApiStore();
