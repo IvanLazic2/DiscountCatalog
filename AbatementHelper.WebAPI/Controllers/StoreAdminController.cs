@@ -21,184 +21,212 @@ namespace AbatementHelper.WebAPI.Controllers
         private StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
         [HttpGet]
-        [Route("GetAllStores/{storeAdminId}")]
-        public List<WebApiStore> GetAllStores(string storeAdminId)
+        [Route("GetAllStoresAsync/{storeAdminId}")]
+        public async Task<List<WebApiStore>> GetAllStoresAsync(string storeAdminId)
         {
-            var stores = storeAdminRepository.GetAllStores(storeAdminId);
+            var stores = await storeAdminRepository.GetAllStoresAsync(storeAdminId);
 
             return stores;
         }
 
         [HttpPost]
-        [Route("CreateStore")]
-        public Response CreateStore(WebApiStore store)
+        [Route("CreateStoreAsync")]
+        public async Task<Response> CreateStoreAsync(WebApiStore store)
         {
-            return storeAdminRepository.CreateStore(store); ;
+            return await storeAdminRepository.CreateStoreAsync(store); ;
         }
 
         [HttpGet]
-        [Route("EditStore/{id}")]
+        [Route("EditStoreAsync/{id}")]
         public async Task<WebApiStore> EditStore(string id)
         {
-            var store = await storeAdminRepository.ReadStoreById(id);
+            var store = await storeAdminRepository.ReadStoreByIdAsync(id);
 
-            var processedStore = StoreProcessor.StoreEntityToWebApiStore(store);
+            var processedStore = await StoreProcessor.StoreEntityToWebApiStoreAsync(store);
 
             return processedStore;
         }
 
         [HttpPut]
-        [Route("EditStore")]
-        public Response EditStore(WebApiStore store)
+        [Route("EditStoreAsync")]
+        public async Task<Response> EditStoreAsync(WebApiStore store)
         {
-            return storeAdminRepository.EditStore(store);
+            return await storeAdminRepository.EditStoreAsync(store);
         }
 
         [HttpPut]
-        [Route("PostStoreImage")]
-        public Response PostStoreImage(WebApiStore store)
+        [Route("PostStoreImageAsync")]
+        public async Task<Response> PostStoreImageAsync(WebApiPostImage store)
         {
-            Response response = storeAdminRepository.PostStoreImage(store);
+            Response response = await storeAdminRepository.PostStoreImageAsync(store);
 
             return response;
         }
 
         [HttpGet]
-        [Route("GetStoreImage/{id}")]
-        public byte[] GetUserImage(string id)
+        [Route("GetStoreImageAsync/{id}")]
+        public async Task<byte[]> GetStoreImageAsync(string id)
         {
-            byte[] byteArray = storeAdminRepository.GetStoreImage(id);
+            byte[] byteArray = await storeAdminRepository.GetStoreImageAsync(id);
 
             return ImageProcessor.CreateThumbnail(byteArray);
         }
 
         [HttpGet]
-        [Route("DetailsStore/{id}")]
+        [Route("DetailsStoreAsync/{id}")]
         public async Task<WebApiStore> DetailsStore(string id)
         {
-            WebApiStore store = StoreProcessor.StoreEntityToWebApiStore(await storeAdminRepository.ReadStoreById(id));
+            StoreEntity storeEntity = await storeAdminRepository.ReadStoreByIdAsync(id);
+
+            WebApiStore store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity);
 
             return store;
         }
 
         [HttpPut]
-        [Route("DeleteStore/{id}")]
-        public IHttpActionResult DeleteStore(string id)
+        [Route("DeleteStoreAsync/{id}")]
+        public async Task<IHttpActionResult> DeleteStoreAsync(string id)
         {
-            storeAdminRepository.DeleteStore(id);
+            await storeAdminRepository.DeleteStoreAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("GetAllDeletedStores/{storeAdminId}")]
-        public List<WebApiStore> GetAllDeletedStores(string storeAdminId)
+        [Route("GetAllDeletedStoresAsync/{storeAdminId}")]
+        public async Task<List<WebApiStore>> GetAllDeletedStoresAsync(string storeAdminId)
         {
-            var stores = storeAdminRepository.GetAllDeletedStores(storeAdminId);
+            var stores = await storeAdminRepository.GetAllDeletedStoresAsync(storeAdminId);
 
             return stores;
         }
 
         [HttpPut]
-        [Route("RestoreStore/{id}")]
-        public IHttpActionResult RestoreStore(string id)
+        [Route("RestoreStoreAsync/{id}")]
+        public async Task<IHttpActionResult> RestoreStoreAsync(string id)
         {
-            storeAdminRepository.RestoreStore(id);
+            await storeAdminRepository.RestoreStoreAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("Select/{id}")]
-        public SelectedStore Select(string id)
+        [Route("SelectAsync/{id}")]
+        public async Task<SelectedStore> SelectAsync(string id)
         {
-            return storeAdminRepository.SelectStore(id);
+            return await storeAdminRepository.SelectStoreAsync(id);
         }
 
         [HttpGet]
-        [Route("GetAllManagers/{storeAdminId}")]
-        public List<WebApiManager> GetAllManagers(string storeAdminId)
+        [Route("GetAllManagersAsync/{storeAdminId}")]
+        public async Task<List<WebApiManager>> GetAllManagersAsync(string storeAdminId)
         {
-            List<WebApiManager> managers = storeAdminRepository.GetAllManagers(storeAdminId);
+            List<WebApiManager> managers = await storeAdminRepository.GetAllManagersAsync(storeAdminId);
 
             return managers;
         }
 
 
         [HttpPost]
-        [Route("CreateManager")]
-        public Response CreateManager(CreateManagerModel manager)
+        [Route("CreateManagerAsync")]
+        public async Task<Response> CreateManagerAsync(CreateManagerModel manager)
         {
-            return storeAdminRepository.CreateManager(manager, manager.Password);
+            return await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
         }
 
         [HttpGet]
-        [Route("DetailsManager/{id}")]
+        [Route("DetailsManagerAsync/{id}")]
         public async Task<WebApiUser> DetailsManager(string id)
         {
-            return UserProcessor.ApplicationUserToWebApiUser(await storeAdminRepository.ReadUserById(id));
+            ApplicationUser user = await storeAdminRepository.ReadUserById(id);
+
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
+
+            return webApiUser;
         }
 
         [HttpGet]
-        [Route("EditManager/{id}")]
+        [Route("EditManagerAsync/{id}")]
         public async Task<WebApiUser> EditManager(string id)
         {
-            return UserProcessor.ApplicationUserToWebApiUser(await storeAdminRepository.ReadUserById(id));
+            ApplicationUser user = await storeAdminRepository.ReadUserById(id);
+
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
+
+            return webApiUser;
         }
 
         [HttpPut]
-        [Route("EditManager")]
+        [Route("EditManagerAsync")]
         public async Task<Response> EditManager(WebApiManager manager)
         {
             return await storeAdminRepository.EditManager(manager);
         }
 
         [HttpPut]
-        [Route("DeleteManager/{id}")]
-        public IHttpActionResult DeleteManager(string id)
+        [Route("PostManagerImageAsync")]
+        public async Task<Response> PostManagerImageAsync(WebApiPostImage manager)
         {
-            storeAdminRepository.DeleteManager(id);
+            Response response = await storeAdminRepository.PostManagerImageAsync(manager);
 
-            return Ok();
+            return response;
         }
 
         [HttpGet]
-        [Route("GetAllDeletedManagers/{storeAdminId}")]
-        public List<WebApiManager> GetAllDeletedManagers(string storeAdminId)
+        [Route("GetManagerImageAsync/{id}")]
+        public async Task<byte[]> GetManagerImageAsync(string id)
         {
-            return storeAdminRepository.GetAllDeletedManagers(storeAdminId);
+            byte[] byteArray = await storeAdminRepository.GetManagerImageAsync(id);
+
+            return ImageProcessor.CreateThumbnail(byteArray);
         }
 
         [HttpPut]
-        [Route("RestoreManager/{id}")]
-        public IHttpActionResult RestoreManager(string id)
+        [Route("DeleteManagerAsync/{id}")]
+        public async Task<IHttpActionResult> DeleteManagerAsync(string id)
         {
-            storeAdminRepository.RestoreManager(id);
+            await storeAdminRepository.DeleteManagerAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("GetAllManagerStores/{id}")]
-        public List<WebApiManagerStore> GetAllAssignedStores(string id)
+        [Route("GetAllDeletedManagersAsync/{storeAdminId}")]
+        public async Task<List<WebApiManager>> GetAllDeletedManagersAsync(string storeAdminId)
         {
-            return storeAdminRepository.GetAllManagerStores(id);
+            return await storeAdminRepository.GetAllDeletedManagersAsync(storeAdminId);
+        }
+
+        [HttpPut]
+        [Route("RestoreManagerAsync/{id}")]
+        public async Task<IHttpActionResult> RestoreManagerAsync(string id)
+        {
+            await storeAdminRepository.RestoreManagerAsync(id);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetAllManagerStoresAsync/{id}")]
+        public async Task<List<WebApiManagerStore>> GetAllAssignedStoresAsync(string id)
+        {
+            return await storeAdminRepository.GetAllManagerStoresAsync(id);
         }
 
         [HttpPost]
-        [Route("AssignStore")]
-        public Response AssignStore(WebApiStoreAssign storeAssign)
+        [Route("AssignStoreAsync")]
+        public async Task<Response> AssignStoreAsync(WebApiStoreAssign storeAssign)
         {
-            Response response = storeAdminRepository.AssignStore(storeAssign);
+            Response response = await storeAdminRepository.AssignStoreAsync(storeAssign);
 
             return response;
         }
 
         [HttpPost]
-        [Route("UnassignStore")]
-        public Response UnassignStore(WebApiStoreAssign storeUnassign)
+        [Route("UnassignStoreAsync")]
+        public async Task<Response> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            Response response = storeAdminRepository.UnassignStore(storeUnassign);
+            Response response = await storeAdminRepository.UnassignStoreAsync(storeUnassign);
 
             return response;
         }

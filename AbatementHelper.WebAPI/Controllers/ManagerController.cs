@@ -17,52 +17,51 @@ namespace AbatementHelper.WebAPI.Controllers
         ManagerRepository manager = new ManagerRepository();
 
         [HttpGet]
-        [Route("GetAllStores/{managerId}")]
-        public List<WebApiStore> GetAllStores(string managerId)
+        [Route("GetAllStoresAsync/{managerId}")]
+        public async Task<List<WebApiStore>> GetAllStoresAsync(string managerId)
         {
-            var stores = manager.GetAllStores(managerId);
+            var stores = await manager.GetAllStoresAsync(managerId);
 
             return stores;
         }
 
         [HttpGet]
-        [Route("Select/{id}")]
-        public SelectedStore Select(string id)
+        [Route("SelectAsync/{id}")]
+        public async Task<SelectedStore> SelectAsync(string id)
         {
-            return manager.SelectStore(id);
-
+            return await manager.SelectStoreAsync(id);
         }
 
         [HttpGet]
-        [Route("EditStore/{id}")]
-        public async Task<WebApiStore> EditStore(string id)
+        [Route("EditStoreAsync/{id}")]
+        public async Task<WebApiStore> EditStoreAsync(string id)
         {
-            var store = await manager.ReadStoreById(id);
+            var store = await manager.ReadStoreByIdAsync(id);
 
             return store;
         }
 
         [HttpPut]
-        [Route("EditStore")]
-        public Response EditStore(WebApiStore store)
+        [Route("EditStoreAsync")]
+        public async Task<Response> EditStoreAsync(WebApiStore store)
         {
-            return manager.EditStore(store);
+            return await manager.EditStoreAsync(store);
         }
 
         [HttpGet]
-        [Route("DetailsStore/{id}")]
-        public async Task<WebApiStore> DetailsStore(string id)
+        [Route("DetailsStoreAsync/{id}")]
+        public async Task<WebApiStore> DetailsStoreAsync(string id)
         {
-            WebApiStore store = await manager.ReadStoreById(id);
+            WebApiStore store = await manager.ReadStoreByIdAsync(id);
 
             return store;
         }
 
         [HttpPost]
-        [Route("AbandonStore")]
-        public Response AbandonStore(WebApiStoreAssign storeUnassign)
+        [Route("AbandonStoreAsync")]
+        public async Task<Response> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            Response response = manager.UnassignStore(storeUnassign);
+            Response response = await manager.UnassignStoreAsync(storeUnassign);
 
             return response;
         }

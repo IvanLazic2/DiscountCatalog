@@ -21,16 +21,18 @@ namespace AbatementHelper.WebAPI.Controllers
         private AdminRepository adminRepository = new AdminRepository();
 
         [HttpGet]
-        [Route("GetAllUsers")]
-        public WebApiListOfUsersResult GetAllUsers()
+        [Route("GetAllUsersAsync")]
+        public async Task<WebApiListOfUsersResult> GetAllUsersAsync()
         {
-            var users = adminRepository.ReadAllUsers();
+            var users = await adminRepository.ReadAllUsersAsync();
 
             List<WebApiUser> processedUsers = new List<WebApiUser>();
 
             foreach (var user in users)
             {
-                processedUsers.Add(UserProcessor.ApplicationUserToWebApiUser(user));
+                WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
+
+                processedUsers.Add(webApiUser);
             }
 
             return new WebApiListOfUsersResult
@@ -41,46 +43,48 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("Edit/{id}")]
-        public async Task<WebApiUser> Edit(string id)
+        [Route("EditAsync/{id}")]
+        public async Task<WebApiUser> EditAsync(string id)
         {
-            //WebApiUser user = new WebApiUser();
+            ApplicationUser user = await adminRepository.ReadUserById(id);
 
-            var user = await adminRepository.ReadUserById(id);
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
 
-            return UserProcessor.ApplicationUserToWebApiUser(user);
+            return webApiUser;
         }
 
         [HttpPut]
-        [Route("Edit")]
-        public Response Edit(WebApiUser user)
+        [Route("EditAsync")]
+        public async Task<Response> EditAsync(WebApiUser user)
         {
-            return adminRepository.Edit(user);
+            return await adminRepository.EditAsync(user);
         }
 
         [HttpGet]
-        [Route("Details/{id}")]
-        public async Task<WebApiUser> Details(string id)
+        [Route("DetailsAsync/{id}")]
+        public async Task<WebApiUser> DetailsAsync(string id)
         {
             var user = await adminRepository.ReadUserById(id);
 
-            return UserProcessor.ApplicationUserToWebApiUser(user);
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
+
+            return webApiUser;
         }
 
         [HttpPut]
-        [Route("Delete")]
-        public IHttpActionResult Delete(WebApiUser user)
+        [Route("DeleteAsync")]
+        public async Task<IHttpActionResult> DeleteAsync(WebApiUser user)
         {
-            adminRepository.Delete(user.Id);
+            await adminRepository.DeleteAsync(user.Id);
 
             return Ok();
         }
 
         [HttpPut]
-        [Route("Restore/{id}")]
-        public IHttpActionResult Restore(string id)
+        [Route("RestoreAsync/{id}")]
+        public async Task<IHttpActionResult> RestoreAsync(string id)
         {
-            adminRepository.Restore(id);
+            await adminRepository.RestoreAsync(id);
 
             return Ok();
         }

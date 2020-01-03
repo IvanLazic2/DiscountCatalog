@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace AbatementHelper.MVC.Repositories
@@ -15,7 +16,6 @@ namespace AbatementHelper.MVC.Repositories
     public class StoreRepository
     {
         private HttpClient apiClient;
-        private Response responseModel = new Response();
 
         public StoreRepository()
         {
@@ -42,7 +42,7 @@ namespace AbatementHelper.MVC.Repositories
             }
         }
 
-        public Response CreateProduct(WebApiProduct product)
+        public async Task<Response> CreateProductAsync(WebApiProduct product)
         {
             AddTokenToHeader();
 
@@ -51,224 +51,196 @@ namespace AbatementHelper.MVC.Repositories
                 Id = HttpContext.Current.Request.Cookies["StoreID"].Value
             };
 
-            var jsonContent = JsonConvert.SerializeObject(product);
+            if (product.Store.Id != null)
+            {
+                var jsonContent = JsonConvert.SerializeObject(product);
 
-            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            var response = apiClient.PostAsync("api/Store/CreateProduct", httpContent);
-            response.Wait();
+                HttpResponseMessage request = await apiClient.PostAsync("api/Store/CreateProductAsync", httpContent);
 
-            var result = response.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
 
-            var resultContent = result.Content.ReadAsAsync<Response>();
+                    return resultContent;
+                }
+            }
 
-            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
-            responseModel.Success = resultContent.Result.Success;
-
-            return responseModel;
+            return null;
         }
 
-        public List<WebApiProduct> GetAllProducts()
+        public async Task<List<WebApiProduct>> GetAllProductsAsync()
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            List<WebApiProduct> products = new List<WebApiProduct>();
-
-            var response = apiClient.GetAsync("api/Store/GetAllProducts/" + storeId);
-            response.Wait();
-
-            var result = response.Result;
-
-            var resultString = response.Result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            if (storeId != null)
             {
-                var resultContent = result.Content.ReadAsAsync<List<WebApiProduct>>();
-                resultContent.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllProductsAsync/" + storeId);
 
-                products = resultContent.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+
+                    return resultContent;
+                }
             }
 
-            return products;
-
+            return null;
         }
 
-        public WebApiProduct ProductDetails(string id)
+        public async Task<WebApiProduct> ProductDetailsAsync(string id)
         {
-            WebApiProduct product = new WebApiProduct();
-
             if (id != null)
             {
                 AddTokenToHeader();
 
-                var response = apiClient.GetAsync("api/Store/ProductDetails/" + id);
-                response.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Store/ProductDetailsAsync/" + id);
 
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<WebApiProduct>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<WebApiProduct>();
 
-                    product = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return product;
+            return null;
         }
 
-        public Response PostProductImage(byte[] array)
+        public async Task<Response> PostProductImageAsync(WebApiPostImage image)
         {
-            WebApiProduct product = new WebApiProduct();
-
-
-            AddTokenToHeader();
-
-            product.Id = HttpContext.Current.Request.Cookies["ProductID"].Value;
-            product.ProductImage = array;
-
-            var response = apiClient.PutAsJsonAsync("api/Store/PostProductImage", product);
-            response.Wait();
-
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
+            if (image.Image != null && image.Id != null)
             {
-                var resultContent = result.Content.ReadAsAsync<Response>();
-                resultContent.Wait();
+                AddTokenToHeader();
 
-                responseModel = resultContent.Result;
+                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/PostProductImageAsync", image);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
+
+                    return resultContent;
+                }
             }
 
-
-            return responseModel;
+            return null;
         }
 
-        public byte[] GetProductImage(string id)
+        public async Task<byte[]> GetProductImageAsync(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Store/GetProductImage/" + id);
-            response.Wait();
-
-            var result = response.Result;
-
-            var resultContent = result.Content.ReadAsAsync<byte[]>();
-            //resultContent.Wait();
-
-            return resultContent.Result;
-        }
-
-        public Response EditProduct(WebApiProduct product)
-        {
-            AddTokenToHeader();
-
-            var response = apiClient.PutAsJsonAsync("api/Store/EditProduct", product);
-            response.Wait();
-
-            var result = response.Result;
-
-            var resultContent = result.Content.ReadAsAsync<Response>();
-
-            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
-            responseModel.Success = resultContent.Result.Success;
-
-            return responseModel;
-        }
-
-        public bool DeleteProduct(string id)
-        {
-            AddTokenToHeader();
-
-            var response = apiClient.PutAsync("api/Store/DeleteProduct/" + id, null);
-            response.Wait();
-
-            var result = response.Result;
-
-
-            var resultString = result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            if (id != null)
             {
-                return true;
+                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetProductImageAsync/" + id);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<byte[]>();
+
+                    return resultContent;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<Response> EditProductAsync(WebApiProduct product)
+        {
+            AddTokenToHeader();
+
+            if (product.Id != null)
+            {
+                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
+
+                    return resultContent;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<bool> DeleteProductAsync(string id)
+        {
+            AddTokenToHeader();
+
+            if (id != null)
+            {
+                HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        public bool RestoreProduct(string id)
+        public async Task<bool> RestoreProductAsync(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/Store/RestoreProduct/" + id, null);
-            response.Wait();
-
-            var result = response.Result;
-
-
-            var resultString = result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            if (id != null)
             {
-                return true;
+                HttpResponseMessage request = await apiClient.PutAsync("api/Store/RestoreProductAsync/" + id, null);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        public List<WebApiProduct> GetAllDeletedProducts()
+        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync()
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            List<WebApiProduct> stores = new List<WebApiProduct>();
-
-            var response = apiClient.GetAsync("api/Store/GetAllDeletedProducts/" + storeId);
-            response.Wait();
-
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
+            if (storeId != null)
             {
-                var resultContent = result.Content.ReadAsAsync<List<WebApiProduct>>();
-                resultContent.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllDeletedProductsAsync/" + storeId);
 
-                stores = resultContent.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+
+                    return resultContent;
+                }
             }
 
-            return stores;
-
+            return null;
         }
 
-        public List<WebApiProduct> GetAllExpiredProducts()
+        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync()
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            List<WebApiProduct> stores = new List<WebApiProduct>();
-
-            var response = apiClient.GetAsync("api/Store/GetAllExpiredProducts/" + storeId);
-            response.Wait();
-
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
+            if (storeId != null)
             {
-                var resultContent = result.Content.ReadAsAsync<List<WebApiProduct>>();
-                resultContent.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllExpiredProductsAsync/" + storeId);
 
-                stores = resultContent.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+
+                    return resultContent;
+                }
             }
 
-            return stores;
-
+            return null;
         }
     }
 }

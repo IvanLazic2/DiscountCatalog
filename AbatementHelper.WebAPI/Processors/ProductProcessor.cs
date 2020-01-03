@@ -8,12 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using AutoMapper;
+using System.Threading.Tasks;
 
 namespace AbatementHelper.WebAPI.Processors
 {
     public static class ProductProcessor
     {
-        public static WebApiProduct ProductEntityToWebApiProduct(ProductEntity product)
+        public static async Task<WebApiProduct> ProductEntityToWebApiProductAsync(ProductEntity product)
         {
             WebApiProduct webApiProduct = new WebApiProduct();
 
@@ -33,7 +34,7 @@ namespace AbatementHelper.WebAPI.Processors
 
                 if (product.Store != null)
                 {
-                    webApiProduct.Store = StoreProcessor.StoreEntityToWebApiStore(product.Store);
+                    webApiProduct.Store = await StoreProcessor.StoreEntityToWebApiStoreAsync(product.Store);
                 }
 
                 
@@ -47,7 +48,7 @@ namespace AbatementHelper.WebAPI.Processors
             return webApiProduct;
         }
 
-        public static ProductEntity WebApiProductToProductEntity(WebApiProduct product)
+        public static async Task<ProductEntity> WebApiProductToProductEntityAsync(WebApiProduct product)
         {
             ProductEntity productEntity = new ProductEntity();
 
@@ -68,7 +69,7 @@ namespace AbatementHelper.WebAPI.Processors
 
                 if (productEntity != null)
                 {
-                    productEntity.Store = storeRepository.GetStore(product.Store.Id);
+                    productEntity.Store = await storeRepository.GetStoreAsync(product.Store.Id);
                 }
             }
             catch (Exception exception)

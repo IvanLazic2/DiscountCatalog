@@ -25,8 +25,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool TwoFactorEnabled { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-
-        public byte[] UserImage { get; set; }
     }
 
     

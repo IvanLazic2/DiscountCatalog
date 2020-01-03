@@ -8,6 +8,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Processors;
+using AbatementHelper.MVC.Models;
+using System.Threading.Tasks;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -21,9 +23,9 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [Route("GetAllProducts")]
-        public ActionResult GetAllProducts()
+        public async Task<ActionResult> GetAllProducts()
         {
-            List<WebApiProduct> products = store.GetAllProducts();
+            List<WebApiProduct> products = await store.GetAllProductsAsync();
 
             return View(products);
         }
@@ -37,18 +39,18 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
-        public ActionResult CreateProduct(WebApiProduct product)
+        public async Task<ActionResult> CreateProduct(WebApiProduct product)
         {
-            Response response = store.CreateProduct(product);
+            Response response = await store.CreateProductAsync(product);
 
             return RedirectToAction("GetAllProducts");
         }
 
         [HttpGet]
         [Route("EditProduct/{id}")]
-        public ActionResult EditProduct(string id)
+        public async Task<ActionResult> EditProduct(string id)
         {
-            WebApiProduct product = store.ProductDetails(id);
+            WebApiProduct product = await store.ProductDetailsAsync(id);
 
             Response.Cookies.Add(new HttpCookie("ProductID")
             {
@@ -61,18 +63,18 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("EditProduct")]
-        public ActionResult EditProduct(WebApiProduct product)
+        public async Task<ActionResult> EditProduct(WebApiProduct product)
         {
-            Response editResponse = store.EditProduct(product);
+            Response editResponse = await store.EditProductAsync(product);
 
             return RedirectToAction("GetAllProducts");
         }
 
         [HttpGet]
         [Route("ProductDetails/{id}")]
-        public ActionResult ProductDetails(string id)
+        public async Task<ActionResult> ProductDetails(string id)
         {
-            WebApiProduct product = store.ProductDetails(id);
+            WebApiProduct product = await store.ProductDetailsAsync(id);
 
             Response.Cookies.Add(new HttpCookie("ProductID")
             {
@@ -84,20 +86,26 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [Route("UploadProductImage")]
-        public ActionResult PostProductImage(HttpPostedFileBase file)
+        public async Task<ActionResult> PostProductImage(PostImage image)
         {
-            if (file != null)
+            if (image.File != null)
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    file.InputStream.CopyTo(ms);
+                    image.File.InputStream.CopyTo(ms);
                     byte[] array = ms.GetBuffer();
 
                     float mb = (array.Length / 1024f) / 1024f;
 
                     if (mb < 1)
                     {
-                        store.PostProductImage(array);
+                        WebApiPostImage webApiImage = new WebApiPostImage
+                        {
+                            Id = image.Id,
+                            Image = array
+
+                        };
+                        await store.PostProductImageAsync(webApiImage);
                     }
                     else
                     {
@@ -106,7 +114,13 @@ namespace AbatementHelper.MVC.Controllers
 
                         if (arrayScaled != null)
                         {
-                            store.PostProductImage(arrayScaled);
+                            WebApiPostImage webApiImage = new WebApiPostImage
+                            {
+                                Id = image.Id,
+                                Image = arrayScaled
+
+                            };
+                            await store.PostProductImageAsync(webApiImage);
                         }
                     }
 
@@ -119,54 +133,54 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("GetProductImage/{id}")]
-        public ActionResult GetProductImage(string id)
+        public async Task<ActionResult> GetProductImage(string id)
         {
-            byte[] byteArray = store.GetProductImage(id);
+            byte[] byteArray = await store.GetProductImageAsync(id);
 
             return File(byteArray, "image/png");
         }
 
         [HttpGet]
         [Route("DeleteProduct/{id}")]
-        public ActionResult DeleteProduct(string id)
+        public async Task<ActionResult> DeleteProduct(string id)
         {
-            WebApiProduct product = store.ProductDetails(id);
+            WebApiProduct product = await store.ProductDetailsAsync(id);
 
             return View(product);
         }
 
         [HttpPost]
         [Route("DeleteProduct")]
-        public ActionResult DeleteProduct(WebApiProduct product)
+        public async Task<ActionResult> DeleteProduct(WebApiProduct product)
         {
-            store.DeleteProduct(product.Id);
+            await store.DeleteProductAsync(product.Id);
 
             return RedirectToAction("GetAllProducts");
         }
 
         [HttpGet]
         [Route("GetAllDeletedProducts")]
-        public ActionResult GetAllDeletedProducts()
+        public async Task<ActionResult> GetAllDeletedProducts()
         {
-            List<WebApiProduct> products = store.GetAllDeletedProducts();
+            List<WebApiProduct> products = await store.GetAllDeletedProductsAsync();
 
             return View(products);
         }
 
         [HttpGet]
         [Route("RestoreProduct/{id}")]
-        public ActionResult RestoreProduct(string id)
+        public async Task<ActionResult> RestoreProduct(string id)
         {
-            store.DeleteProduct(id);
+            await store.DeleteProductAsync(id);
 
             return RedirectToAction("GetAllProducts");
         }
 
         [HttpGet]
         [Route("GetAllExpiredProducts")]
-        public ActionResult GetAllExpiredProducts()
+        public async Task<ActionResult> GetAllExpiredProducts()
         {
-            List<WebApiProduct> products = store.GetAllExpiredProducts();
+            List<WebApiProduct> products = await store.GetAllExpiredProductsAsync();
 
             return View(products);
         }

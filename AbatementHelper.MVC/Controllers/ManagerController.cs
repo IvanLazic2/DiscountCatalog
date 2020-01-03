@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Extensions;
+using System.Threading.Tasks;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -20,9 +21,8 @@ namespace AbatementHelper.MVC.Controllers
             return View();
         }
 
-        //GetAllStores
         [Route("GetAllStores")]
-        public ActionResult GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -38,7 +38,7 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiStore> stores = manager.GetAllStores();
+            List<WebApiStore> stores = await manager.GetAllStoresAsync();
 
             if (TempData["Message"] != null && TempData["Success"] != null)
             {
@@ -67,15 +67,13 @@ namespace AbatementHelper.MVC.Controllers
             return View(stores.ToPagedList(pageNumber, pageSize));
         }
 
-        //Select
-
         [HttpGet]
         [Route("Select/{id}")]
-        public ActionResult Select(string id)
+        public async Task<ActionResult> Select(string id)
         {
             if (id != null)
             {
-                var store = manager.Select(id);
+                SelectedStore store = await manager.SelectAsync(id);
 
                 if (store != null)
                 {
@@ -99,20 +97,20 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("EditStore/{id}")]
-        public ActionResult EditStore(string id)
+        public async Task<ActionResult> EditStore(string id)
         {
-            WebApiStore store = manager.EditStore(id);
+            WebApiStore store = await manager.EditStoreAsync(id);
 
             return View(store);
         }
 
         [HttpPost]
         [Route("EditStore")]
-        public ActionResult EditStore(WebApiStore store)
+        public async Task<ActionResult> EditStore(WebApiStore store)
         {
-            Response editStoreResponse = manager.EditStore(store);
+            Response editStoreResponse = await manager.EditStoreAsync(store);
 
-            TempData["Message"] = editStoreResponse.ResponseMessage;
+            TempData["Message"] = editStoreResponse.Message;
             TempData["Success"] = editStoreResponse.Success;
 
             return RedirectToAction("GetAllStores");
@@ -120,31 +118,29 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("DetailsStore/{id}")]
-        public ActionResult DetailsStore(string id)
+        public async Task<ActionResult> DetailsStore(string id)
         {
-            WebApiStore store = manager.DetailsStore(id);
+            WebApiStore store = await manager.DetailsStoreAsync(id);
 
             return View(store);
         }
 
-        //AbandonStore
-
         [HttpGet]
         [Route("AbandonStore/{id}")]
-        public ActionResult AbandonStore(string id)
+        public async Task<ActionResult> AbandonStore(string id)
         {
-            WebApiStore store = manager.DetailsStore(id);
+            WebApiStore store = await manager.DetailsStoreAsync(id);
 
             return View(store);
         }
 
         [HttpPost]
         [Route("AbandonStore/{id}")]
-        public ActionResult AbandonStore(WebApiStore store)
+        public async Task<ActionResult> AbandonStore(WebApiStore store)
         {
-            Response storeUnassignResponse = manager.AbandonStore(store.Id);
+            Response storeUnassignResponse = await manager.AbandonStoreAsync(store.Id);
 
-            TempData["Message"] = storeUnassignResponse.ResponseMessage;
+            TempData["Message"] = storeUnassignResponse.Message;
             TempData["Success"] = storeUnassignResponse.Success;
 
             return RedirectToAction("GetAllStores");

@@ -6,13 +6,14 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace AbatementHelper.WebAPI.Processors
 {
     public static class StoreProcessor
     {
-        public static WebApiStore StoreEntityToWebApiStore(StoreEntity store)
+        public static async Task<WebApiStore> StoreEntityToWebApiStoreAsync(StoreEntity store)
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
@@ -32,7 +33,7 @@ namespace AbatementHelper.WebAPI.Processors
 
                 if (store.Managers != null)
                 {
-                    webApiStore.Managers = storeAdminRepository.GetStoreManagers(store.Id);
+                    webApiStore.Managers = await storeAdminRepository.GetStoreManagersAsync(store.Id);
                 }
             }
             catch (Exception exception)
@@ -45,20 +46,30 @@ namespace AbatementHelper.WebAPI.Processors
 
         public static StoreEntity WebApiStoreToStoreEntity(WebApiStore store)
         {
-            return new StoreEntity
-            {
-                StoreName = store.StoreName,
-                WorkingHoursWeek = store.WorkingHoursWeek,
-                WorkingHoursWeekends = store.WorkingHoursWeekends,
-                WorkingHoursHolidays = store.WorkingHoursHolidays,
-                Country = store.Country,
-                City = store.City,
-                PostalCode = store.PostalCode,
-                Street = store.Street,
+            var storeEntity = new StoreEntity();
 
-                Approved = store.Approved,
-                Deleted = store.Deleted
-            };
+            var config = new MapperConfiguration(c =>
+            {
+                c.CreateMap<WebApiStore, StoreEntity>()
+                    .ForMember(s => s.Managers, act => act.Ignore())
+                    .ForMember(s => s.StoreAdmin, act => act.Ignore())
+                    .ForMember(s => s.Products, act => act.Ignore())
+                    .ForMember(s => s.StoreImage, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            try
+            {
+                storeEntity = mapper.Map<WebApiStore, StoreEntity>(store);
+            }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return storeEntity;
         }
     }
 }

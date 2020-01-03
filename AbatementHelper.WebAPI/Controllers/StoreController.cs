@@ -18,79 +18,81 @@ namespace AbatementHelper.WebAPI.Controllers
         private StoreRepository storeRepository = new StoreRepository();
 
         [HttpGet]
-        [Route("GetAllProducts/{id}")]
-        public List<WebApiProduct> GetAllProducts(string id)
+        [Route("GetAllProductsAsync/{id}")]
+        public async Task<List<WebApiProduct>> GetAllProductsAsync(string id)
         {
-            return storeRepository.GetAllProducts(id);
+            return await storeRepository.GetAllProductsAsync(id);
         }
 
         [HttpPost]
-        [Route("CreateProduct")]
-        public Response CreateProduct(WebApiProduct product)
+        [Route("CreateProductAsync")]
+        public async Task<Response> CreateProductAsync(WebApiProduct product)
         {
-            return storeRepository.CreateProduct(product);
+            return await storeRepository.CreateProductAsync(product);
         }
 
         [HttpPost]
-        [Route("EditProduct")]
-        public Response EditProduct(WebApiProduct product)
+        [Route("EditProductAsync")]
+        public async Task<Response> EditProductAsync(WebApiProduct product)
         {
-            return storeRepository.EditProduct(product);
+            return await storeRepository.EditProductAsync(product);
         }
 
         [HttpGet]
-        [Route("ProductDetails/{id}")]
-        public WebApiProduct ProductDetails(string id)
+        [Route("ProductDetailsAsync/{id}")]
+        public async Task<WebApiProduct> ProductDetailsAsync(string id)
         {
-            return ProductProcessor.ProductEntityToWebApiProduct(storeRepository.ReadProductById(id).Result);
+            ProductEntity product = await storeRepository.ReadProductByIdAsync(id);
+
+            return await ProductProcessor.ProductEntityToWebApiProductAsync(product);
         } 
 
         [HttpPut]
-        [Route("DeleteProduct/{id}")]
-        public IHttpActionResult DeleteProduct(string id)
+        [Route("DeleteProductAsync/{id}")]
+        public async Task<IHttpActionResult> DeleteProductAsync(string id)
         {
-            storeRepository.DeleteProduct(id);
+            await storeRepository.DeleteProductAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("GetAllDeletedProducts/{id}")]
-        public List<WebApiProduct> GetAllDeletedProducts(string id)
+        [Route("GetAllDeletedProductsAsync/{id}")]
+        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync(string id)
         {
-            return storeRepository.GetAllDeletedProducts(id);
+            return await storeRepository.GetAllDeletedProductsAsync(id);
         }
 
         [HttpPut]
-        [Route("RestoreProduct/{id}")]
-        public IHttpActionResult RestoreProduct(string id)
+        [Route("RestoreProductAsync/{id}")]
+        public async Task<IHttpActionResult> RestoreProductAsync(string id)
         {
-            storeRepository.RestoreProduct(id);
+            await storeRepository.RestoreProductAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("GetAllExpiredProducts/{id}")]
-        public List<WebApiProduct> GetAllExpiredProducts(string id)
+        [Route("GetAllExpiredProductsAsync/{id}")]
+        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync(string id)
         {
-            return storeRepository.GetAllExpiredProducts(id);
+            return await storeRepository.GetAllExpiredProductsAsync(id);
         }
 
         [HttpPut]
-        [Route("PostProductImage")]
-        public Response PostProductImage(WebApiProduct product)
+        [Route("PostProductImageAsync")]
+        public async Task<Response> PostProductImageAsync(WebApiPostImage product)
         {
-            Response response = storeRepository.PostProductImage(product);
+            Response response = await storeRepository.PostProductImageAsync(product);
 
             return response;
         }
 
         [HttpGet]
-        [Route("GetProductImage/{id}")]
-        public byte[] GetProductImage(string id)
+        [Route("GetProductImageAsync/{id}")]
+        public async Task<byte[]> GetProductImageAsync(string id)
         {
-            byte[] byteArray = storeRepository.GetProductImage(id);
+            byte[] byteArray = await storeRepository.GetProductImageAsync(id);
 
             return ImageProcessor.CreateThumbnail(byteArray);
         }

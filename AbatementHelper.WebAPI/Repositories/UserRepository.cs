@@ -15,74 +15,46 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class UserRepository
     {
-        private UserManager userManager = new UserManager();
-
-        public async Task<string> ReturnUserName(UserManager userManager, string usernameOrEmail)
+        public async Task<string> ReturnUserNameAsync(string usernameOrEmail)
         {
-            var username = usernameOrEmail;
+            string username = usernameOrEmail;
+
             if (usernameOrEmail.Contains("@"))
             {
-                var userForEmail = await userManager.FindByEmailAsync(usernameOrEmail);
-                if (userForEmail != null)
+                using (var userManager = new UserManager())
                 {
-                    username = userForEmail.UserName;
+                    ApplicationUser userForEmail = await userManager.FindByEmailAsync(usernameOrEmail);
+
+                    if (userForEmail != null)
+                    {
+                        username = userForEmail.UserName;
+                    }
                 }
             }
-            //return await userManager.FindAsync(username, password);
+
             return username;
         }
 
-        public ApplicationUser ReadUserById(string id)
+        public async Task<ApplicationUser> ReadUserByIdAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                var user = (from u in context.Users
-                            where u.Id == id
-                            select u).FirstOrDefault();
+                ApplicationUser user = await context.Users.FindAsync(id);
 
                 return user;
             }
         }
 
-        public static WebApiResult ReadEmail(string email)
-        {
-
-            using (var context = new ApplicationUserDbContext())
-            {
-                var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
-
-                return new WebApiResult()
-                {
-                    Value = user.Email,
-                    Message = "Query successfull",
-                    Success = true
-                };
-            }
-        }
-
-        public static WebApiResult ReadUserName(string email)
-        {
-            using (var context = new ApplicationUserDbContext())
-            {
-                var user = (from u in context.Users where u.Email == email select u).FirstOrDefault();
-
-                return new WebApiResult()
-                {
-                    Value = user.UserName,
-                    Message = "Query successfull",
-                    Success = true
-                };
-            }
-        }
-
         public async Task<Response> Edit(WebApiUser user)
         {
-            Response response = new Response();
+            var response = new Response();
+
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
                     ApplicationUser userEntity = context.Users.Find(user.Id);
+
                     context.Users.Attach(userEntity);
 
                     userEntity.UserName = user.UserName;
@@ -98,13 +70,13 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     await context.SaveChangesAsync();
 
-                    response.ResponseMessage = "Successfully edited.";
+                    response.Message = "Successfully edited.";
                     response.Success = true;
                 }
             }
             catch (DbUpdateException exception)
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Message = exception.InnerException.InnerException.Message;
                 response.Success = false;
             }
 
@@ -112,11 +84,11 @@ namespace AbatementHelper.WebAPI.Repositories
 
         }
 
-        public Response PostUserImage(WebApiUser user)
+        public async Task<Response> PostUserImageAsync(WebApiPostImage user)
         {
-            Response response = new Response();
+            var response = new Response();
 
-            byte[] image = user.UserImage;
+            byte[] image = user.Image;
 
             if (ImageProcessor.IsValid(image))
             {
@@ -124,38 +96,38 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     using (var context = new ApplicationUserDbContext())
                     {
-                        ApplicationUser applicationUser = context.Users.Find(user.Id);
+                        ApplicationUser applicationUser = await context.Users.FindAsync(user.Id);
 
                         context.Users.Attach(applicationUser);
                         applicationUser.UserImage = image;
 
                         context.SaveChanges();
-                    } 
+                    }
                 }
                 catch (Exception exception)
                 {
-                    response.ResponseMessage = exception.InnerException.InnerException.Message;
+                    response.Message = exception.InnerException.InnerException.Message;
                     response.Success = false;
                 }
 
-                response.ResponseMessage = "Successfully uploaded.";
+                response.Message = "Successfully uploaded.";
                 response.Success = true;
             }
             else
             {
-                response.ResponseMessage = "Invalid image type";
+                response.Message = "Invalid image type";
                 response.Success = false;
             }
-            
+
 
             return response;
         }
 
-        public byte[] GetUserImage(string id)
+        public async Task<byte[]> GetUserImageAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ApplicationUser user = context.Users.Find(id);
+                ApplicationUser user = await context.Users.FindAsync(id);
 
                 return user.UserImage;
             }
@@ -164,32 +136,37 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<ApplicationUser> ReturnUser(string userName)
         {
-            var user = userManager.FindByNameAsync(userName);
-            
-            return await user;
-        }
-
-       
-
-        public void Delete(string id)
-        {
-            using (var context = new ApplicationUserDbContext())
+            using (var userManager = new UserManager())
             {
-                ApplicationUser user = context.Users.Find(id);
-                context.Users.Attach(user);
-                user.Deleted = true;
-                context.SaveChanges();
+                ApplicationUser user = await userManager.FindByNameAsync(userName);
+
+                return user;
             }
         }
 
-        public void Restore(string id)
+        public async Task DeleteAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ApplicationUser user = context.Users.Find(id);
+                ApplicationUser user = await context.Users.FindAsync(id);
+
+                context.Users.Attach(user);
+                user.Deleted = true;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RestoreAsync(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser user = await context.Users.FindAsync(id);
+
                 context.Users.Attach(user);
                 user.Deleted = false;
-                context.SaveChanges();
+
+                await context.SaveChangesAsync();
             }
         }
     }

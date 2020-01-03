@@ -19,7 +19,7 @@ namespace AbatementHelper.MVC.Controllers
     public class UserController : Controller //promjenit u accountcontroller
     {
         private AccountRepository account = new AccountRepository();
-        private Response response = new Response();
+        
 
         [HttpGet]
         public ActionResult AccountTypeSelection()
@@ -54,9 +54,9 @@ namespace AbatementHelper.MVC.Controllers
         {
             user.Role = Session["accountType"].ToString();
 
-            var result = await account.Register(user);
+            var result = await account.RegisterAsync(user);
 
-            if (account.RegisterSuccessful)
+            if (result.Success)
             {
                 TempData["Success"] = "Registration Successful, please log in!";
                 return RedirectToAction("Login");
@@ -78,9 +78,9 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(AuthenticationModel user)
         {
-            var result = await account.Login(user);
+            var result = await account.LoginAsync(user);
 
-            TempData["Message"] = result.ResponseMessage;
+            TempData["Message"] = result.Message;
             TempData["Success"] = result.Success;
 
             if (result.Success)
@@ -131,11 +131,10 @@ namespace AbatementHelper.MVC.Controllers
             }
         }
 
-        //Logout
-
         public ActionResult Logout()
         {
             string[] myCookies = Request.Cookies.AllKeys;
+
             foreach (string cookie in myCookies)
             {
                 Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
@@ -144,14 +143,11 @@ namespace AbatementHelper.MVC.Controllers
             return RedirectToAction("Login");
         }
 
-
-        //Details
-
         [HttpGet]
         [Route("Details")]
-        public ActionResult Details()
+        public async Task<ActionResult> Details()
         {
-            WebApiUser user = account.Details();
+            WebApiUser user = await account.DetailsAsync();
 
             if (TempData["Message"] != null && TempData["Success"] != null)
             {
@@ -163,9 +159,9 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [Route("PostUserImage")]
-        public ActionResult PostUserImage(HttpPostedFileBase file)
+        public async Task<ActionResult> PostUserImage(PostImage image)
         {
-            if (file != null)
+            if (image.File != null)
             {
                 // ZA SPREMANJE NA SERVER
                 //string image = System.IO.Path.GetFileName(file.FileName);
@@ -175,14 +171,20 @@ namespace AbatementHelper.MVC.Controllers
                 //ZA SPREMANJE NA BAZU
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    file.InputStream.CopyTo(ms);
+                    image.File.InputStream.CopyTo(ms);
                     byte[] array = ms.GetBuffer();
 
                     float mb = (array.Length / 1024f) / 1024f; 
 
                     if (mb < 1)
                     {
-                        account.PostUserImage(array);
+                        WebApiPostImage webApiImage = new WebApiPostImage
+                        {
+                            Id = image.Id,
+                            Image = array
+
+                        };
+                        await account.PostUserImageAsync(webApiImage);
                     }
                     else
                     {
@@ -191,7 +193,14 @@ namespace AbatementHelper.MVC.Controllers
 
                         if (arrayScaled != null)
                         {
-                            account.PostUserImage(arrayScaled);
+                            WebApiPostImage webApiImage = new WebApiPostImage
+                            {
+                                Id = image.Id,
+                                Image = arrayScaled
+
+                            };
+
+                            await account.PostUserImageAsync(webApiImage);
                         }
                     }
                     
@@ -203,9 +212,9 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [Route("GetUserImage/{id}")]
-        public ActionResult GetUserImage(string id)
+        public async Task<ActionResult> GetUserImage(string id)
         {
-            byte[] byteArray = account.GetUserImage(id);
+            byte[] byteArray = await account.GetUserImageAsync(id);
 
             return File(byteArray, "image/png");
         }
@@ -214,11 +223,11 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("Edit")]
-        public ActionResult Edit()
+        public async Task<ActionResult> Edit()
         {
             WebApiUser user = new WebApiUser();
 
-            user = account.Edit();
+            user = await account.EditAsync();
 
             return View(user);
         }
@@ -227,11 +236,11 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("Edit")]
-        public ActionResult Edit(WebApiUser user)
+        public async Task<ActionResult> Edit(WebApiUser user)
         {
-            Response editResponse = account.Edit(user);
+            Response editResponse = await account.EditAsync(user);
 
-            TempData["Message"] = editResponse.ResponseMessage;
+            TempData["Message"] = editResponse.Message;
             TempData["Success"] = editResponse.Success;
 
             return RedirectToAction("Details");
@@ -241,18 +250,18 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("Delete")]
-        public ActionResult Delete()
+        public async Task<ActionResult> Delete()
         {
-            WebApiUser user = account.Details();
+            WebApiUser user = await account.DetailsAsync();
 
             return View(user);
         }
 
         [HttpPost]
         [Route("Delete")]
-        public ActionResult Delete(WebApiUser user)
+        public async Task<ActionResult> Delete(WebApiUser user)
         {
-            account.Delete(user);
+            await account.DeleteAsync(user);
 
             return RedirectToAction("Index", "Home");
         }

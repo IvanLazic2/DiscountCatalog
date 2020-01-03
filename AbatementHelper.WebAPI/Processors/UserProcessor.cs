@@ -1,102 +1,92 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Models;
+using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace AbatementHelper.WebAPI.Processors
 {
     public static class UserProcessor
     {
-        public static WebApiUser ApplicationUserToWebApiUser(ApplicationUser user)
+        public static async Task<WebApiUser> ApplicationUserToWebApiUser(ApplicationUser user)
         {
+            
+
+            WebApiUser webApiUser = new WebApiUser();
+
             IList<string> roles = new List<string>();
 
-            UserManager userManager = new UserManager();
+            using (UserManager userManager = new UserManager())
+            {
+                roles = await userManager.GetRolesAsync(user.Id);
+            }
+
+            var config = new MapperConfiguration(c => {
+                c.CreateMap<ApplicationUser, WebApiUser>()
+                    .ForMember(u => u.Role, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
             try
             {
-                roles = userManager.GetRoles(user.Id);
-            }
-            finally
-            {
-                userManager.Dispose();
-            }
-            
-            //var userRoleList = user.Roles.ToList();
-            //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
-            //var identityRole = roleManager.FindById(userRoleList[0].RoleId);
+                webApiUser = mapper.Map<ApplicationUser, WebApiUser>(user);
 
-
-            return new WebApiUser
+                if (webApiUser != null)
+                {
+                    webApiUser.Role = roles.FirstOrDefault();
+                }
+            }
+            catch (Exception exception)
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                Country = user.Country,
-                City = user.City,
-                PostalCode = user.PostalCode,
-                Street = user.Street,
-                Role = roles[0],
-                TwoFactorEnabled = user.TwoFactorEnabled,
-                Approved = user.Approved,
-                Deleted = user.Deleted,
-                UserImage = user.UserImage
-            };
+
+                throw;
+            }
+
+            return webApiUser;
         }
 
-        public static ApplicationUser WebApiUserToApplicationUser(WebApiUser user)
+        public static async Task<ApplicationUser> WebApiUserToApplicationUser(WebApiUser user)
         {
+            ApplicationUser applicationUser = new ApplicationUser();
 
-            //var userRoleList = user.Roles.ToList();
-            //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
-            //var identityRole = roleManager.FindById(userRoleList[0].RoleId);
+            var config = new MapperConfiguration(c => {
+                c.CreateMap<WebApiUser, ApplicationUser>()
+                    .ForMember(u => u.Roles, act => act.Ignore());
+            });
 
-            if (user.Role != null)
+            IMapper mapper = config.CreateMapper();
+
+            try
             {
-                UserManager userManager = new UserManager();
+                applicationUser = mapper.Map<WebApiUser, ApplicationUser>(user);
 
-                try
+                if (applicationUser != null)
                 {
-                    var roles = userManager.GetRoles(user.Id);
-                    userManager.RemoveFromRole(user.Id, roles[0]);
-                    userManager.AddToRole(user.Id, user.Role);
+                    using (UserManager userManager = new UserManager())
+                    {
+                        if (user.Role != null)
+                        {
+                            var roles = await userManager.GetRolesAsync(user.Id);
+                            userManager.RemoveFromRole(user.Id, roles.FirstOrDefault());
+                            userManager.AddToRole(user.Id, user.Role);
+                        }
+                    }
                 }
-                finally
-                {
-                    userManager.Dispose();
-                }
-                
+            }
+            catch (Exception exception)
+            {
+
+                throw;
             }
 
-            return new ApplicationUser
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                Country = user.Country,
-                City = user.City,
-                PostalCode = user.PostalCode,
-                Street = user.Street,
-
-                TwoFactorEnabled = user.TwoFactorEnabled,
-                Approved = user.Approved,
-                Deleted = user.Deleted,
-                UserImage = user.UserImage
-            };
+            return applicationUser;
         }
     }
 }

@@ -23,17 +23,15 @@ namespace AbatementHelper.WebAPI.Processors
                 graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                 graphics.DrawImage(srcImage, new Rectangle(0, 0, 100, 100));
                 newImage.Save(stream, ImageFormat.Png);
+                
                 byte[] thumbnail = stream.ToArray();
-
+                
                 return thumbnail;
 
             }
         }
 
-        //public static byte[] To1MB(byte[] byteArray)
-        //{
-
-        //}
+        
 
         public static bool IsValid(byte[] byteArray)
         {

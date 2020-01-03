@@ -1,7 +1,6 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.MVC.Repositeories;
-using AbatementHelper.MVC.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Extensions;
 using PagedList;
+using System.Threading.Tasks;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -24,7 +24,7 @@ namespace AbatementHelper.MVC.Controllers
 
         //[HttpGet]
         [Route("GetAllUsers")]
-        public ActionResult GetAllUsers(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> GetAllUsers(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -40,17 +40,15 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiUser> users;
+            WebApiListOfUsersResult result = await admin.GetAllUsersAsync();
 
-            var result = admin.GetAllUsers();
+            List<WebApiUser> users = result.Value;
 
             if (TempData["Message"] != null && TempData["Success"] != null)
             {
                 ViewBag.Message = TempData["Message"].ToString();
                 ViewBag.Success = (bool)TempData["Success"];
             }
-
-            users = result.Value;
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -75,22 +73,22 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("Edit/{id}")]
-        public ActionResult Edit(string id)
+        public async Task<ActionResult> Edit(string id)
         {
             WebApiUser user = new WebApiUser();
 
-            user = admin.EditUser(id);
+            user = await admin.EditUserAsync(id);
 
             return View(user);
         }
 
         [HttpPost]
         [Route("Edit")]
-        public ActionResult Edit(WebApiUser user)
+        public async Task<ActionResult> Edit(WebApiUser user)
         {
-            Response editUserResponse = admin.EditUser(user);
+            Response editUserResponse = await admin.EditUserAsync(user);
 
-            TempData["Message"] = editUserResponse.ResponseMessage;
+            TempData["Message"] = editUserResponse.Message;
             TempData["Success"] = editUserResponse.Success;
 
             return RedirectToAction("GetAllUsers");
@@ -98,36 +96,36 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpGet]
         [Route("Details/{id}")]
-        public ActionResult Details(string id)
+        public async Task<ActionResult> Details(string id)
         {
-            WebApiUser user = admin.DetailsUser(id);
+            WebApiUser user = await admin.DetailsUserAsync(id);
 
             return View(user);
         }
 
         [HttpGet]
         [Route("Delete/{id}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            WebApiUser user = admin.DetailsUser(id);
+            WebApiUser user = await admin.DetailsUserAsync(id);
 
             return View(user);
         }
 
         [HttpPost]
         [Route("Delete")]
-        public ActionResult Delete(WebApiUser user)
+        public async Task<ActionResult> Delete(WebApiUser user)
         {
-            admin.DeleteUser(user);
+            await admin.DeleteUserAsync(user);
 
             return RedirectToAction("GetAllUsers");
         }
 
         [HttpGet]
         [Route("Restore/{id}")]
-        public ActionResult Restore(string id)
+        public async Task<ActionResult> Restore(string id)
         {
-            admin.RestoreUser(id);
+            await admin.RestoreUserAsync(id);
 
             return RedirectToAction("GetAllUsers");
         }

@@ -216,8 +216,6 @@ namespace AbatementHelper.WebAPI.Controllers
 
             IdentityResult result;
 
-
-
             if (model.LoginProvider == LocalLoginProvider)
             {
                 result = await UserManager.RemovePasswordAsync(User.Identity.GetUserId());
@@ -344,35 +342,48 @@ namespace AbatementHelper.WebAPI.Controllers
 
         // POST api/Account/Register
         [AllowAnonymous]
-        [Route("Register")]
-        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
+        [Route("RegisterAsync")]
+        public async Task<Response> Register(RegisterBindingModel model)
         {
-            if (!ModelState.IsValid)
+            Response response = new Response();
+
+            if (ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                ApplicationUser user = new ApplicationUser
+                {
+                    Email = model.Email,
+                    UserName = model.Email.Split('@')[0],
+                };
+
+                IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    IdentityResult UserRoleResult = await UserManager.AddToRoleAsync(user.Id, model.Role);
+
+                    if (UserRoleResult.Succeeded)
+                    {
+                        response.Message = "Successfully registered";
+                    }
+                    else
+                    {
+                        response.Errors = UserRoleResult.Errors;
+                        response.Success = false;
+                    }
+                }
+                else
+                {
+                    response.Errors = result.Errors;
+                    response.Success = false;
+                } 
+            }
+            else
+            {
+                response.Message = "Error";
+                response.Success = false;
             }
 
-            ApplicationUser user = new ApplicationUser
-            {
-                Email = model.Email,
-                UserName = model.Email.Split('@')[0],
-            };
-
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-            
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            IdentityResult UserRoleResult = await UserManager.AddToRoleAsync(user.Id, model.Role);
-
-            if (!UserRoleResult.Succeeded)
-            {
-                return GetErrorResult(UserRoleResult);
-            }
-
-            return Ok("Registration successful");
+            return response;
         }
 
         
@@ -390,6 +401,7 @@ namespace AbatementHelper.WebAPI.Controllers
             }
 
             var info = await Authentication.GetExternalLoginInfoAsync();
+
             if (info == null)
             {
                 return InternalServerError();
@@ -398,6 +410,7 @@ namespace AbatementHelper.WebAPI.Controllers
             var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user);
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -412,101 +425,107 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [AllowAnonymous]
-        [Route("Authenticate")]
-        public async Task<Response> Authenticate(AuthenticationModel model)
+        [Route("AuthenticateAsync")]
+        public async Task<Response> AuthenticateAsync(AuthenticationModel model)
         {
             //var user = await ReturnUserName(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationUserDbContext())), "aaa@aaa.aaa", "Aaa123");
 
-            var userName = await userRepository.ReturnUserName(new UserManager(), model.EmailOrUserName);
+            var userName = await userRepository.ReturnUserNameAsync(model.EmailOrUserName);
 
-            var existingUser = Task.Run(() => userRepository.ReturnUser(userName));
-            existingUser.Wait();
+            var existingUser = await userRepository.ReturnUser(userName);
 
 
-            if (existingUser.Result == null)
+            if (existingUser == null)
             {
-                response.ResponseMessage = $"User {model.EmailOrUserName} does not exist.";
+                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
+                response.Message = $"User {model.EmailOrUserName} does not exist.";
                 response.Success = false;
 
                 return response;
             }
 
-            var result = Task.Run(() => authenticate.Authenticate(userName, model.Password));
-            result.Wait();
-
-            //var readuser = DataBaseReader.ReadUser(model.Email); 
+            var result = await authenticate.Authenticate(userName, model.Password);
 
             if (authenticate.LoginSuccessful)
             {
-                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.OK, "Authentication successfull!");
-                response.User = result.Result;
+                response.User = result;
                 response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
                 response.Success = true;
-                response.ResponseMessage = $"Logged in as {userName}";
+                response.Message = $"Logged in as {userName}";
             }
             else
             {
-                //user.ResponseMessage =  Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, "Incorrect password!");
-
                 response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
                 response.Success = false;
-                response.ResponseMessage = "Incorrect password!";
+                response.Message = "Incorrect password!";
             }
 
+            return response;
+        }
+
+        [HttpGet]
+        [Route("DetailsAsync/{id}")]
+        public async Task<WebApiUser> DetailsAsync(string id)
+        {
+            ApplicationUser user = await userRepository.ReadUserByIdAsync(id);
+
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
+
+            return webApiUser;
+        }
+
+        [HttpPut]
+        [Route("PostUserImageAsync")]
+        public async Task<Response> PostUserImageAsync(WebApiPostImage user)
+        {
+            Response response = await userRepository.PostUserImageAsync(user);
 
             return response;
         }
 
         [HttpGet]
-        [Route("Details/{id}")]
-        public WebApiUser Details(string id)
+        [Route("GetUserImageAsync/{id}")]
+        public async Task<byte[]> GetUserImageAsync(string id)
         {
-            WebApiUser user = UserProcessor.ApplicationUserToWebApiUser(userRepository.ReadUserById(id));
+            byte[] byteArray = await userRepository.GetUserImageAsync(id);
 
-            return user;
-        }
+            //return ImageProcessor.CreateThumbnail(byteArray);
 
-        [HttpPut]
-        [Route("PostUserImage")]
-        public Response PostUserImage(WebApiUser user)
-        {
-            Response response = userRepository.PostUserImage(user);
-
-            return response;
+            return byteArray;
         }
 
         [HttpGet]
-        [Route("GetUserImage/{id}")]
-        public byte[] GetUserImage(string id)
+        [Route("EditAsync/{id}")]
+        public async Task<WebApiUser> EditAsync(string id)
         {
-            byte[] byteArray = userRepository.GetUserImage(id);
+            ApplicationUser user = await userRepository.ReadUserByIdAsync(id);
 
-            return ImageProcessor.CreateThumbnail(byteArray);
-        }
+            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
 
-        [HttpGet]
-        [Route("Edit/{id}")]
-        public WebApiUser Edit(string id)
-        {
-            WebApiUser user = new WebApiUser();
-
-            user = UserProcessor.ApplicationUserToWebApiUser(userRepository.ReadUserById(id));
-
-            return user;
+            return webApiUser;
         }
 
         [HttpPut]
-        [Route("Edit")]
-        public async Task<Response> Edit(WebApiUser user)
+        [Route("EditAsync")]
+        public async Task<Response> EditAsync(WebApiUser user)
         {
             return await userRepository.Edit(user);
         }
 
         [HttpPut]
-        [Route("Delete/{id}")]
-        public IHttpActionResult Delete(string id)
+        [Route("DeleteAsync/{id}")]
+        public async Task<IHttpActionResult> DeleteAsync(string id)
         {
-            userRepository.Delete(id);
+            await userRepository.DeleteAsync(id);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("RestoreAsync/{id}")]
+        public async Task<IHttpActionResult> RestoreAsync(string id)
+        {
+            await userRepository.RestoreAsync(id);
 
             return Ok();
         }

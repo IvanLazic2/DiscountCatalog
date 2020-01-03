@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
@@ -18,23 +19,28 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class AdminRepository
     {
-        private UserManager userManager = new UserManager();
-
-        public List<ApplicationUser> ReadAllUsers()
+        public async Task<List<ApplicationUser>> ReadAllUsersAsync()
         {
-            return new UserManager().Users.ToList();
+            using (var context = new ApplicationUserDbContext())
+            {
+                List<ApplicationUser> users = await context.Users.ToListAsync();
+
+                return users;
+            }
         }
 
-        public Response Edit(WebApiUser user)
+        public async Task<Response> EditAsync(WebApiUser user)
         {
-            Response response = new Response();
+            var response = new Response();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
                     ApplicationUser userEntity = context.Users.Find(user.Id);
+
                     context.Users.Attach(userEntity);
+
                     userEntity.UserName = user.UserName;
                     userEntity.FirstName = user.FirstName;
                     userEntity.LastName = user.LastName;
@@ -52,23 +58,32 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     if (user.Role != null)
                     {
-                        var roles = new UserManager().GetRoles(user.Id);
-                        if (roles[0] != user.Role)
+                        using (var userManager = new UserManager())
                         {
-                            new UserManager().RemoveFromRole(user.Id, roles[0]);
-                            new UserManager().AddToRole(user.Id, user.Role);
+                            IList<string> roles = await userManager.GetRolesAsync(user.Id);
+
+                            List<IdentityRole> identityRoles = await context.Roles.ToListAsync();
+
+                            IdentityRole existingRole = identityRoles.FirstOrDefault(r => r.Name == user.Role);
+
+                            if (roles.FirstOrDefault() != user.Role && existingRole != null)
+                            {
+                                await userManager.RemoveFromRoleAsync(user.Id, roles.FirstOrDefault());
+
+                                await userManager.AddToRoleAsync(user.Id, user.Role);
+                            }
                         }
                     }
 
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
 
-                    response.ResponseMessage = "Successfully edited.";
+                    response.Message = "Successfully edited.";
                     response.Success = true;
                 }
             }
             catch (DbUpdateException exception)
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Message = exception.InnerException.InnerException.Message;
                 response.Success = false;
             }
 
@@ -77,37 +92,37 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<ApplicationUser> ReadUserById(string id)
         {
-            return await userManager.FindByIdAsync(id);
-
-            //using (var context = new ApplicationUserDbContext())
-            //{
-            //    var user = (from u in context.Users
-            //                where u.Id == id
-            //                select u).FirstOrDefault();
-
-            //    return user;
-            //}
-        }
-
-        public void Delete(string id)
-        {
-            using (var context = new ApplicationUserDbContext())
+            using (var userManager = new UserManager())
             {
-                ApplicationUser user = context.Users.Find(id);
-                context.Users.Attach(user);
-                user.Deleted = true;
-                context.SaveChanges();
+                ApplicationUser user = await userManager.FindByIdAsync(id);
+
+                return user;
             }
         }
 
-        public void Restore(string id)
+        public async Task DeleteAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ApplicationUser user = context.Users.Find(id);
+                ApplicationUser user = await context.Users.FindAsync(id);
+
+                context.Users.Attach(user);
+                user.Deleted = true;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RestoreAsync(string id)
+        {
+            using (var context = new ApplicationUserDbContext())
+            {
+                ApplicationUser user = await context.Users.FindAsync(id);
+
                 context.Users.Attach(user);
                 user.Deleted = false;
-                context.SaveChanges();
+
+                await context.SaveChangesAsync();
             }
         }
 

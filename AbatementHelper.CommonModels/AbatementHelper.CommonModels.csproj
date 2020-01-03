@@ -92,6 +92,7 @@
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="WebApiModels\WebApiManager.cs" />
     <Compile Include="WebApiModels\WebApiManagerStores.cs" />
+    <Compile Include="WebApiModels\WebApiPostImage.cs" />
     <Compile Include="WebApiModels\WebApiProduct.cs" />
     <Compile Include="WebApiModels\WebApiResultModels.cs" />
     <Compile Include="Models\Product.cs" />

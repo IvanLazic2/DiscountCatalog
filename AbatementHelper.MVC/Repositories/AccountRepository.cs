@@ -28,10 +28,6 @@ namespace AbatementHelper.MVC.Repositories
     public class AccountRepository
     {
         private HttpClient apiClient;
-        public bool LoginSuccessful;
-        public bool RegisterSuccessful;
-        public string ResponseMessageText = null;
-        Response responseModel = new Response();
 
         public AccountRepository()
         {
@@ -58,145 +54,121 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<Response> Login(string email, string userName, string password)
-        {
-            var data = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("Email", email),
-                new KeyValuePair<string, string>("UserName", userName),
-                new KeyValuePair<string, string>("Password", password)
-            });
+        //public async Task<Response> Login(string email, string userName, string password)
+        //{
+        //    var data = new FormUrlEncodedContent(new[]
+        //    {
+        //        new KeyValuePair<string, string>("Email", email),
+        //        new KeyValuePair<string, string>("UserName", userName),
+        //        new KeyValuePair<string, string>("Password", password)
+        //    });
 
-            var request = await apiClient.PostAsync("/api/Login/Authenticate", data);
+        //    var request = await apiClient.PostAsync("/api/Login/AuthenticateAsync", data);
 
-            var response = request.Content.ReadAsStringAsync();
+        //    var response = request.Content.ReadAsStringAsync();
 
-            string responseString = response.Result;
+        //    string responseString = response.Result;
 
-            responseModel = JsonConvert.DeserializeObject<Response>(responseString);
+        //    responseModel = JsonConvert.DeserializeObject<Response>(responseString);
 
-            ResponseMessageText = responseModel.ResponseMessage;
+        //    ResponseMessageText = responseModel.ResponseMessage;
 
-            if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
-            {
+        //    if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
+        //    {
 
-                LoginSuccessful = true;
-            }
-            else
-            {
-                LoginSuccessful = false;
-            }
+        //        LoginSuccessful = true;
+        //    }
+        //    else
+        //    {
+        //        LoginSuccessful = false;
+        //    }
 
-            return responseModel;
-        }
+        //    return responseModel;
+        //}
 
-        public async Task<string> Register(User user)
+        public async Task<Response> RegisterAsync(User user)
         {
             var jsonContent = JsonConvert.SerializeObject(user);
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response;
+            HttpResponseMessage request = await apiClient.PostAsync("api/Account/RegisterAsync", httpContent);
 
-            response = await apiClient.PostAsync("api/Account/Register", httpContent);
+            Response result = await request.Content.ReadAsAsync<Response>();
 
-            RegisterSuccessful = response.IsSuccessStatusCode;
-
-            var result = response.Content.ReadAsStringAsync();
-
-            return await result;
+            return result;
         }
 
-        public async Task<Response> Login(AuthenticationModel authentication)
+        public async Task<Response> LoginAsync(AuthenticationModel authentication)
         {
             var jsonContent = JsonConvert.SerializeObject(authentication);
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            var request = await apiClient.PostAsync("api/Account/Authenticate", httpContent);
+            HttpResponseMessage request = await apiClient.PostAsync("api/Account/AuthenticateAsync", httpContent);
 
-            string response = await request.Content.ReadAsStringAsync();
+            if (request.IsSuccessStatusCode)
+            {
+                var result = await request.Content.ReadAsAsync<Response>();
 
-            LoginSuccessful = request.IsSuccessStatusCode;
+                return result;
+            }
 
-            var result = request.Content.ReadAsAsync<AuthenticatedUser>();
-
-            Response resultModel = JsonConvert.DeserializeObject<Response>(response);
-
-            return resultModel;
+            return null;
         }
 
-        public WebApiUser Details()
+        public async Task<WebApiUser> DetailsAsync()
         {
-            WebApiUser user = new WebApiUser();
-
             AddTokenToHeader();
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
             if (id != null)
             {
-                var response = apiClient.GetAsync("api/Account/Details/" + id);
-                response.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Account/DetailsAsync/" + id);
 
-                var result = response.Result;
-
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<WebApiUser>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
 
-                    user = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return user;
+            return null;
         }
 
-        public Response PostUserImage(byte[] array)
+        public async Task<Response> PostUserImageAsync(WebApiPostImage image)
         {
-            WebApiUser user = new WebApiUser();
-
-            if (array != null)
+            if (image.Id != null && image.Image != null)
             {
                 AddTokenToHeader();
 
-                user.Id = HttpContext.Current.Request.Cookies["UserID"].Value;
-                user.UserImage = array;
+                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Account/PostUserImageAsync", image);
 
-                var response = apiClient.PutAsJsonAsync("api/Account/PostUserImage", user);
-                response.Wait();
-
-                var result = response.Result;
-
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<Response>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
 
-                    responseModel = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return responseModel;
+            return null;
         }
 
-        public byte[] GetUserImage(string id)
+        public async Task<byte[]> GetUserImageAsync(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Account/GetUserImage/" + id);
-            response.Wait();
+            HttpResponseMessage request = await apiClient.GetAsync("api/Account/GetUserImageAsync/" + id);
 
-            var result = response.Result;
+            var resultContent = await request.Content.ReadAsAsync<byte[]>();
 
-            var resultContent = result.Content.ReadAsAsync<byte[]>();
-            //resultContent.Wait();
-
-            return resultContent.Result;
+            return resultContent;
         }
 
-        public WebApiUser Edit()
+        public async Task<WebApiUser> EditAsync()
         {
             WebApiUser user = new WebApiUser();
 
@@ -206,40 +178,38 @@ namespace AbatementHelper.MVC.Repositories
 
             if (id != null)
             {
-                var response = apiClient.GetAsync("api/Account/Edit/" + id);
-                response.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Account/EditAsync/" + id);
 
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<WebApiUser>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
 
-                    user = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return user;
-
+            return null;
         }
 
-        public Response Edit(WebApiUser user)
+        public async Task<Response> EditAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync("api/Account/Edit", user);
-            response.Wait();
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Account/EditAsync", user);
 
-            var result = response.Result;
+            if (request.IsSuccessStatusCode)
+            {
+                Response resultContent = await request.Content.ReadAsAsync<Response>();
 
-            var resultContent = result.Content.ReadAsAsync<Response>();
-
-            responseModel = resultContent.Result;
-
-            return responseModel;
+                return resultContent;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public bool Delete(WebApiUser user)
+        public async Task<bool> DeleteAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
@@ -247,16 +217,9 @@ namespace AbatementHelper.MVC.Repositories
 
             if (id != null)
             {
-                var response = apiClient.PutAsync("api/Account/Delete/" + id, null);
-                response.Wait();
+                HttpResponseMessage request = await apiClient.PutAsync("api/Account/DeleteAsync/" + id, null);
 
-                var result = response.Result;
-
-
-                var resultString = result.ToString();
-
-
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
                     return true;
                 }
@@ -265,5 +228,24 @@ namespace AbatementHelper.MVC.Repositories
             return false;
         }
 
+
+        public async Task<bool> RestoreAsync(WebApiUser user)
+        {
+            AddTokenToHeader();
+
+            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            if (id != null)
+            {
+                HttpResponseMessage request = await apiClient.PutAsync("api/Account/RestoreAsync/" + id, null);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

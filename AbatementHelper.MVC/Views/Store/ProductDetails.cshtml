@@ -19,6 +19,7 @@
                         new { enctype = "multipart/form-data" }))
             {
                 <label for="file">Upload Image:</label>
+                <input type="hidden" name="id" id="id" value="@Model.Id">
                 <input type="file" name="file" id="file" style="width: 100%;" />
                 <input type="submit" value="Upload" class="submit" />
             }

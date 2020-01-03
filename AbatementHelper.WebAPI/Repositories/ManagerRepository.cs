@@ -5,6 +5,7 @@ using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,23 +15,23 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class ManagerRepository
     {
-        public List<WebApiStore> GetAllStores(string id)
+        public async Task<List<WebApiStore>> GetAllStoresAsync(string id)
         {
-            List<WebApiStore> stores = new List<WebApiStore>();
+            var stores = new List<WebApiStore>();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    ApplicationUser user = context.Users.Find(id);
+                    ApplicationUser user = await context.Users.FindAsync(id);
 
                     if (user != null)
                     {
-                        ManagerEntity manager = context.Managers.FirstOrDefault(m => m.User.Id == user.Id);
+                        ManagerEntity manager = await context.Managers.FirstOrDefaultAsync(m => m.User.Id == user.Id);
 
                         if (manager != null)
                         {
-                            context.Entry(manager).Collection(m => m.Stores).Load();
+                            await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
 
                             List<StoreEntity> storeEntities = manager.Stores.ToList();
 
@@ -38,7 +39,7 @@ namespace AbatementHelper.WebAPI.Repositories
                             {
                                 foreach (var store in storeEntities)
                                 {
-                                    stores.Add(StoreProcessor.StoreEntityToWebApiStore(store));
+                                    stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
                                 }
                             }
                         }
@@ -54,11 +55,11 @@ namespace AbatementHelper.WebAPI.Repositories
             return stores;
         }
 
-        public SelectedStore SelectStore(string id)
+        public async Task<SelectedStore> SelectStoreAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                var store = context.Stores.Find(id);
+                StoreEntity store = await context.Stores.FindAsync(id);
 
                 return new SelectedStore
                 {
@@ -68,15 +69,16 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public Response EditStore(WebApiStore store)
+        public async Task<Response> EditStoreAsync(WebApiStore store)
         {
-            Response response = new Response();
+            var response = new Response();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    StoreEntity storeEntity = context.Stores.Find(store.Id);
+                    StoreEntity storeEntity = await context.Stores.FindAsync(store.Id);
+
                     context.Stores.Attach(storeEntity);
 
                     storeEntity.StoreName = store.StoreName;
@@ -88,54 +90,56 @@ namespace AbatementHelper.WebAPI.Repositories
                     storeEntity.PostalCode = store.PostalCode;
                     storeEntity.Street = store.Street;
 
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
 
-                    response.ResponseMessage = "Successfully edited.";
+                    response.Message = "Successfully edited.";
                     response.Success = true;
                 }
             }
             catch (DbUpdateException exception)
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Message = exception.InnerException.InnerException.Message;
                 response.Success = false;
             }
 
             return response;
         }
 
-        public async Task<WebApiStore> ReadStoreById(string id)
+        public async Task<WebApiStore> ReadStoreByIdAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                StoreEntity storeEntity = context.Stores.Find(id);
+                StoreEntity storeEntity = await context.Stores.FindAsync(id);
 
-                WebApiStore store = StoreProcessor.StoreEntityToWebApiStore(storeEntity);
+                WebApiStore store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity);
 
                 return store;
             }
         }
 
-        public Response UnassignStore(WebApiStoreAssign storeUnassign)
+        public async Task<Response> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            Response response = new Response();
+            var response = new Response();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    ApplicationUser user = context.Users.Find(storeUnassign.ManagerId);
-                    ManagerEntity manager = context.Managers.FirstOrDefault(m => m.User.Id == storeUnassign.ManagerId);
+                    ApplicationUser user = await context.Users.FindAsync(storeUnassign.ManagerId);
 
-                    context.Entry(manager).Collection(m => m.Stores).Load();
+                    ManagerEntity manager = await context.Managers.FirstOrDefaultAsync(m => m.User.Id == storeUnassign.ManagerId);
 
-                    StoreEntity store = context.Stores.Find(storeUnassign.StoreId);
+                    await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
+
+                    StoreEntity store = await context.Stores.FindAsync(storeUnassign.StoreId);
 
                     context.Managers.Attach(manager);
+
                     manager.Stores.Remove(store);
 
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
 
-                    response.ResponseMessage = "Store abandoned";
+                    response.Message = "Store abandoned";
                     response.Success = true;
                 }
             }

@@ -8,59 +8,94 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace AbatementHelper.WebAPI.Processors
 {
     public static class ManagerProcessor
     {
-        public static ApplicationUser WebApiUserToApplicationUser(WebApiUser user)
+        public static async Task<ApplicationUser> WebApiUserToApplicationUserAsync(WebApiUser user)
         {
-            UserManager userManager = new UserManager();
+            var applicationUser = new ApplicationUser();
+
+            var config = new MapperConfiguration(c =>
+            {
+                c.CreateMap<WebApiUser, ApplicationUser>()
+                    .ForMember(m => m.Roles, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
 
             try
             {
-                userManager.AddToRole(user.Id, "Manager");
+                applicationUser = mapper.Map<WebApiUser, ApplicationUser>(user);
+
+                if (applicationUser != null)
+                {
+                    using (var userManager = new UserManager())
+                    {
+                        await userManager.AddToRoleAsync(user.Id, "Manager");
+                    }
+                }
             }
-            finally
+            catch (Exception exception)
             {
-                userManager.Dispose();
+
+                throw;
             }
 
-            return new ApplicationUser
-            {
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                Country = user.Country,
-                City = user.City,
-                PostalCode = user.PostalCode,
-                Street = user.Street,
+            return applicationUser;
 
-                TwoFactorEnabled = user.TwoFactorEnabled,
-            };
+            //return new ApplicationUser
+            //{
+            //    UserName = user.UserName,
+            //    FirstName = user.FirstName,
+            //    LastName = user.LastName,
+            //    Email = user.Email,
+            //    PhoneNumber = user.PhoneNumber,
+            //    Country = user.Country,
+            //    City = user.City,
+            //    PostalCode = user.PostalCode,
+            //    Street = user.Street,
+
+            //    TwoFactorEnabled = user.TwoFactorEnabled,
+            //};
         }
 
         public static ApplicationUser CreateManagerModelToApplicationUser(CreateManagerModel manager)
         {
-            return new ApplicationUser
+            var user = new ApplicationUser();
+
+            var config = new MapperConfiguration(c =>
             {
-                UserName = manager.Email.Split('@')[0],
-                FirstName = manager.FirstName,
-                LastName = manager.LastName,
-                Email = manager.Email,
-                PhoneNumber = manager.PhoneNumber,
-                Country = manager.Country,
-                City = manager.City,
-                PostalCode = manager.PostalCode,
-                Street = manager.Street,
-                TwoFactorEnabled = manager.TwoFactorEnabled
-            };
+                c.CreateMap<CreateManagerModel, ApplicationUser>()
+                    .ForMember(m => m.UserName, act => act.Ignore())
+                    .ForMember(m => m.Id, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            try
+            {
+                user = mapper.Map<CreateManagerModel, ApplicationUser>(manager);
+
+                if (user != null)
+                {
+                    user.Id = Guid.NewGuid().ToString();
+                    user.UserName = manager.Email.Split('@')[0];
+                }
+            }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return user;
         }
 
-        public static WebApiManager ManagerEntityToWebApiManager(ManagerEntity manager)
+        public static async Task<WebApiManager> ManagerEntityToWebApiManagerAsync(ManagerEntity manager)
         {
             StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
@@ -68,18 +103,13 @@ namespace AbatementHelper.WebAPI.Processors
 
             IList<string> roles = new List<string>();
 
-            UserManager userManager = new UserManager();
-
-            try
+            using (UserManager userManager = new UserManager())
             {
                 roles = userManager.GetRoles(manager.User.Id);
             }
-            finally
-            {
-                userManager.Dispose();
-            }
 
-            var config = new MapperConfiguration(c => {
+            var config = new MapperConfiguration(c =>
+            {
                 c.CreateMap<ApplicationUser, WebApiManager>()
                     .ForMember(m => m.Stores, act => act.Ignore());
             });
@@ -92,7 +122,7 @@ namespace AbatementHelper.WebAPI.Processors
 
                 if (manager.Stores != null)
                 {
-                    webApiManager.Stores = storeAdminRepository.GetManagerStores(manager.Id);
+                    webApiManager.Stores = await storeAdminRepository.GetManagerStoresAsync(manager.Id);
                 }
             }
             catch (Exception exception)
@@ -100,7 +130,7 @@ namespace AbatementHelper.WebAPI.Processors
 
                 throw;
             }
-            
+
             return webApiManager;
         }
 

@@ -39,7 +39,7 @@
                     <div class="card-footer">
 
                         @Html.ActionLink("Edit", "EditProduct", new { id = item.Id })
-                        @Html.ActionLink("Delete", "DeleteProduct")
+                        @Html.ActionLink("Delete", "DeleteProduct", new { id = item.Id })
                     </div>
                 </div>
             </div>

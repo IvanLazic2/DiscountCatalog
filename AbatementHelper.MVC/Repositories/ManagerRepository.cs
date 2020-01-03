@@ -16,7 +16,6 @@ namespace AbatementHelper.MVC.Repositories
     public class ManagerRepository
     {
         private HttpClient apiClient;
-        private Response responseModel = new Response();
 
         public ManagerRepository()
         {
@@ -43,122 +42,105 @@ namespace AbatementHelper.MVC.Repositories
             }
         }
 
-        public List<WebApiStore> GetAllStores()
+        public async Task<List<WebApiStore>> GetAllStoresAsync()
         {
             AddTokenToHeader();
 
             string managerId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            List<WebApiStore> stores = new List<WebApiStore>();
-
-            var response = apiClient.GetAsync("api/Manager/GetAllStores/" + managerId);
-            response.Wait();
-
-            var result = response.Result;
-
-            var resultString = response.Result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            if (managerId != null)
             {
-                var resultContent = result.Content.ReadAsAsync<List<WebApiStore>>();
-                resultContent.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/GetAllStoresAsync/" + managerId);
 
-                stores = resultContent.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<List<WebApiStore>>();
+
+                    return resultContent;
+                }
             }
 
-            return stores;
-
+            return null;
         }
 
-        public SelectedStore Select(string id)
+        public async Task<SelectedStore> SelectAsync(string id)
         {
             AddTokenToHeader();
 
-            SelectedStore store = new SelectedStore();
-
-            var response = apiClient.GetAsync("api/Manager/Select/" + id);
-            response.Wait();
-
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
+            if (id != null)
             {
-                var resultContent = result.Content.ReadAsAsync<SelectedStore>();
-                resultContent.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/SelectAsync/" + id);
 
-                store = resultContent.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<SelectedStore>();
+
+                    return resultContent;
+                }
             }
 
-            return store;
+            return null;
         }
 
-        public WebApiStore EditStore(string id)
-        {
-            WebApiStore store = new WebApiStore();
-
-            AddTokenToHeader();
-
-            var response = apiClient.GetAsync("api/Manager/EditStore/" + id);
-            response.Wait();
-
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
-            {
-                var resultContent = result.Content.ReadAsAsync<WebApiStore>();
-                resultContent.Wait();
-
-                store = resultContent.Result;
-            }
-
-            return store;
-        }
-
-        public Response EditStore(WebApiStore store)
+        public async Task<WebApiStore> EditStoreAsync(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsJsonAsync("api/Manager/EditStore", store);
-            response.Wait();
+            if (id != null)
+            {
+                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/EditStoreAsync/" + id);
 
-            var result = response.Result;
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
 
-            var resultContent = result.Content.ReadAsAsync<Response>();
+                    return resultContent;
+                }
+            }
 
-            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
-            responseModel.Success = resultContent.Result.Success;
-
-            return responseModel;
+            return null;
         }
 
-        public WebApiStore DetailsStore(string id)
+        public async Task<Response> EditStoreAsync(WebApiStore store)
         {
-            WebApiStore store = new WebApiStore();
+            AddTokenToHeader();
 
+            if (store != null)
+            {
+                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Manager/EditStoreAsync", store);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
+
+                    return resultContent;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<WebApiStore> DetailsStoreAsync(string id)
+        {
             if (id != null)
             {
                 AddTokenToHeader();
 
-                var response = apiClient.GetAsync("api/Manager/DetailsStore/" + id);
-                response.Wait();
+                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/DetailsStoreAsync/" + id);
 
-                var result = response.Result;
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<WebApiStore>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
 
-                    store = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return store;
+            return null;
         }
 
-        public Response AbandonStore(string id)
+        public async Task<Response> AbandonStoreAsync(string id)
         {
-            Response response = new Response();
-
             WebApiStoreAssign storeUnassign = new WebApiStoreAssign();
 
             storeUnassign.ManagerId = HttpContext.Current.Request.Cookies["UserID"].Value;
@@ -172,20 +154,17 @@ namespace AbatementHelper.MVC.Repositories
 
                 var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                var apiResponse = apiClient.PostAsync("api/Manager/AbandonStore/", httpContent);
-                apiResponse.Wait();
+                HttpResponseMessage request = await apiClient.PostAsync("api/Manager/AbandonStoreAsync/", httpContent);
 
-                var result = apiResponse.Result;
-                if (result.IsSuccessStatusCode)
+                if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = result.Content.ReadAsAsync<Response>();
-                    resultContent.Wait();
+                    var resultContent = await request.Content.ReadAsAsync<Response>();
 
-                    response = resultContent.Result;
+                    return resultContent;
                 }
             }
 
-            return response;
+            return null;
         }
     }
 }

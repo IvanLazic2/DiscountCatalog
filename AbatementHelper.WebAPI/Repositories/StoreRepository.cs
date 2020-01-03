@@ -14,7 +14,7 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class StoreRepository
     {
-        public List<WebApiProduct> GetAllProducts(string id)
+        public async Task<List<WebApiProduct>> GetAllProductsAsync(string id)
         {
             List<WebApiProduct> products = new List<WebApiProduct>();
 
@@ -22,18 +22,14 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    //List<ProductEntity> productEntities = new List<ProductEntity>();
-
                     var productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved);
-
-
 
                     if (productEntities != null)
                     {
                         foreach (var product in productEntities)
                         {
-                            product.Store = GetStore(id);
-                            products.Add(ProductProcessor.ProductEntityToWebApiProduct(product));
+                            product.Store = await GetStoreAsync(id);
+                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
                         }
                     }
                 }
@@ -47,17 +43,17 @@ namespace AbatementHelper.WebAPI.Repositories
             return products;
         }
 
-        public StoreEntity GetStore(string id)
+        public async Task<StoreEntity> GetStoreAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                StoreEntity storeEntity = context.Stores.Find(id);
+                StoreEntity storeEntity = await context.Stores.FindAsync(id);
 
                 return storeEntity;
             }
         }
 
-        public Response CreateProduct(WebApiProduct product)
+        public async Task<Response> CreateProductAsync(WebApiProduct product)
         {
             Response response = new Response();
 
@@ -67,8 +63,9 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     if (product.ProductNewPrice < product.ProductOldPrice)
                     {
-                        ProductEntity processedProduct = ProductProcessor.WebApiProductToProductEntity(product);
-                        processedProduct.Store = context.Stores.Find(product.Store.Id);
+                        ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
+
+                        processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
 
                         processedProduct.Deleted = false;
                         processedProduct.Approved = true;
@@ -86,28 +83,28 @@ namespace AbatementHelper.WebAPI.Repositories
 
                         context.Products.Add(processedProduct);
 
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
 
-                        response.ResponseMessage = "Successfully created";
+                        response.Message = "Successfully created";
                         response.Success = true;
                     }
                     else
                     {
-                        response.ResponseMessage = "New price has to be a discount!";
+                        response.Message = "New price has to be a discount!";
                         response.Success = false;
                     }
                 }
             }
             catch (Exception exception)
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Message = exception.InnerException.InnerException.Message;
                 response.Success = false;
             }
 
             return response;
         }
 
-        public Response EditProduct(WebApiProduct product)
+        public async Task<Response> EditProductAsync(WebApiProduct product)
         {
             Response response = new Response();
 
@@ -117,7 +114,8 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     if (product.ProductNewPrice < product.ProductOldPrice)
                     {
-                        ProductEntity productEntity = context.Products.Find(product.Id);
+                        ProductEntity productEntity = await context.Products.FindAsync(product.Id);
+
                         context.Products.Attach(productEntity);
 
                         productEntity.ProductName = product.ProductName;
@@ -131,49 +129,52 @@ namespace AbatementHelper.WebAPI.Repositories
                         productEntity.Description = product.Description;
                         productEntity.Note = product.Note;
 
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
 
-                        response.ResponseMessage = "Successfully edited.";
+                        response.Message = "Successfully edited.";
                         response.Success = true;
                     }
                     else
                     {
-                        response.ResponseMessage = "New price has to be a discount!";
+                        response.Message = "New price has to be a discount!";
                         response.Success = false;
                     }
                 }
             }
             catch (DbUpdateException exception)
             {
-                response.ResponseMessage = exception.InnerException.InnerException.Message;
+                response.Message = exception.InnerException.InnerException.Message;
                 response.Success = false;
             }
 
             return response;
         }
 
-        public async Task<ProductEntity> ReadProductById(string id)
+        public async Task<ProductEntity> ReadProductByIdAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ProductEntity product = context.Products.Find(id);
+                ProductEntity product = await context.Products.FindAsync(id);
 
                 return product;
             }
         }
 
-        public void DeleteProduct(string id)
+        public async Task DeleteProductAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ProductEntity product = context.Products.Find(id);
+                ProductEntity product = await context.Products.FindAsync(id);
+
                 context.Products.Attach(product);
+
                 product.Deleted = true;
-                context.SaveChanges();
+
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<WebApiProduct> GetAllDeletedProducts(string id)
+        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync(string id)
         {
             List<WebApiProduct> products = new List<WebApiProduct>();
 
@@ -189,7 +190,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         foreach (var product in productEntities)
                         {
-                            products.Add(ProductProcessor.ProductEntityToWebApiProduct(product));
+                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
                         }
                     }
                 }
@@ -203,18 +204,21 @@ namespace AbatementHelper.WebAPI.Repositories
             return products;
         }
 
-        public void RestoreProduct(string id)
+        public async Task RestoreProductAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ProductEntity product = context.Products.Find(id);
+                ProductEntity product = await context.Products.FindAsync(id);
+
                 context.Products.Attach(product);
+
                 product.Deleted = false;
-                context.SaveChanges();
+
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<WebApiProduct> GetAllExpiredProducts(string id)
+        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync(string id)
         {
             List<WebApiProduct> products = new List<WebApiProduct>();
 
@@ -230,7 +234,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         foreach (var product in productEntities)
                         {
-                            products.Add(ProductProcessor.ProductEntityToWebApiProduct(product));
+                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
                         }
                     }
                 }
@@ -243,11 +247,11 @@ namespace AbatementHelper.WebAPI.Repositories
             return products;
         }
 
-        public Response PostProductImage(WebApiProduct product)
+        public async Task<Response> PostProductImageAsync(WebApiPostImage product)
         {
             Response response = new Response();
 
-            byte[] image = product.ProductImage;
+            byte[] image = product.Image;
 
             if (ImageProcessor.IsValid(image))
             {
@@ -255,26 +259,27 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     using (var context = new ApplicationUserDbContext())
                     {
-                        ProductEntity productEntity = context.Products.Find(product.Id);
+                        ProductEntity productEntity = await context.Products.FindAsync(product.Id);
 
                         context.Products.Attach(productEntity);
+
                         productEntity.ProductImage = image;
 
-                        context.SaveChanges();
+                        await context.SaveChangesAsync();
                     }
                 }
                 catch (Exception exception)
                 {
-                    response.ResponseMessage = exception.InnerException.InnerException.Message;
+                    response.Message = exception.InnerException.InnerException.Message;
                     response.Success = false;
                 }
 
-                response.ResponseMessage = "Successfully uploaded.";
+                response.Message = "Successfully uploaded.";
                 response.Success = true;
             }
             else
             {
-                response.ResponseMessage = "Invalid image type";
+                response.Message = "Invalid image type";
                 response.Success = false;
             }
 
@@ -282,11 +287,11 @@ namespace AbatementHelper.WebAPI.Repositories
             return response;
         }
 
-        public byte[] GetProductImage(string id)
+        public async Task<byte[]> GetProductImageAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                ProductEntity product = context.Products.Find(id);
+                ProductEntity product = await context.Products.FindAsync(id);
 
                 return product.ProductImage;
             }

@@ -44,93 +44,85 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public WebApiListOfUsersResult GetAllUsers()
+        public async Task<WebApiListOfUsersResult> GetAllUsersAsync()
         {
-            WebApiListOfUsersResult users = new WebApiListOfUsersResult();
-
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/GetAllUsers/");
-            response.Wait();
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/GetAllUsersAsync/");
 
-            var result = response.Result;
-
-            var resultString = result.ToString();
-
-            if (result.IsSuccessStatusCode) //ovdje dobiva server error
+            if (request.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<WebApiListOfUsersResult>();
-                resultContent.Wait();
+                WebApiListOfUsersResult resultContent = await request.Content.ReadAsAsync<WebApiListOfUsersResult>();
 
-                users = resultContent.Result;
+                return resultContent;
+            }
+            else
+            {
+                return null;
             }
 
-            return users;
         }
 
-        public WebApiUser EditUser(string id)
+        public async Task<WebApiUser> EditUserAsync(string id)
         {
             WebApiUser user = new WebApiUser();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/Edit/" + id);
-            response.Wait();
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/EditAsync/" + id);
 
-            var result = response.Result;
-            if (result.IsSuccessStatusCode)
+            if (request.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
-                resultContent.Wait();
+                WebApiUser resultContent = await request.Content.ReadAsAsync<WebApiUser>();
 
-                user = resultContent.Result;
+                return resultContent;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<Response> EditUserAsync(WebApiUser user)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Admin/EditAsync", user);
+
+            if (request.IsSuccessStatusCode)
+            {
+                Response resultContent = await request.Content.ReadAsAsync<Response>();
+
+                return resultContent;
+            }
+            else
+            {
+                return null;
             }
 
-            return user;
-
         }
 
-        public Response EditUser(WebApiUser user)
-        {
-            AddTokenToHeader();  
-
-            var response = apiClient.PutAsJsonAsync("api/Admin/Edit", user);
-            response.Wait();
-
-            var result = response.Result;
-
-            var resultContent = result.Content.ReadAsAsync<Response>();
-            resultContent.Wait();
-
-            responseModel.ResponseMessage = resultContent.Result.ResponseMessage;
-            responseModel.Success = resultContent.Result.Success;
-
-            return responseModel;
-        }
-
-        public WebApiUser DetailsUser(string id)
+        public async Task<WebApiUser> DetailsUserAsync(string id)
         {
             WebApiUser user = new WebApiUser();
 
             AddTokenToHeader();
 
-            var response = apiClient.GetAsync("api/Admin/Details/" + id);
-            response.Wait();
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/DetailsAsync/" + id);
 
-            var result = response.Result;
-
-            if (result.IsSuccessStatusCode)
+            if (request.IsSuccessStatusCode)
             {
-                var resultContent = result.Content.ReadAsAsync<WebApiUser>();
-                resultContent.Wait();
+                var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
 
-                user = resultContent.Result;
+                return resultContent;
             }
-
-            return user;
+            else
+            {
+                return null;
+            }
         }
 
-        public bool DeleteUser(WebApiUser user)
+        public async Task<bool> DeleteUserAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
@@ -138,43 +130,32 @@ namespace AbatementHelper.MVC.Repositeories
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            var response = apiClient.PutAsync("api/Admin/Delete/", httpContent);
-            response.Wait();
-
-            var result = response.Result;
-
-
-            var resultString = result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/DeleteAsync/", httpContent);
+            
+            if (request.IsSuccessStatusCode)
             {
                 return true;
             }
-
-            return false;
+            else
+            {
+                return false;
+            }  
         }
 
-        public bool RestoreUser(string id)
+        public async Task<bool> RestoreUserAsync(string id)
         {
             AddTokenToHeader();
 
-            var response = apiClient.PutAsync("api/Admin/Restore/" + id, null);
-            response.Wait();
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/RestoreAsync/" + id, null);
 
-            var result = response.Result;
-
-
-            var resultString = result.ToString();
-
-
-            if (result.IsSuccessStatusCode)
+            if (request.IsSuccessStatusCode)
             {
                 return true;
             }
-
-            return false;
+            else
+            {
+                return false;
+            }
         }
-
     }
 }
