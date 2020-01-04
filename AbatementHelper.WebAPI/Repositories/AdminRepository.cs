@@ -19,14 +19,35 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class AdminRepository
     {
-        public async Task<List<ApplicationUser>> ReadAllUsersAsync()
+        public async Task<List<WebApiUser>> ReadAllUsersAsync()
         {
-            using (var context = new ApplicationUserDbContext())
-            {
-                List<ApplicationUser> users = await context.Users.ToListAsync();
+            var webApiUsers = new List<WebApiUser>();
 
-                return users;
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    var tasks = new List<Task<WebApiUser>>();
+
+                    List<ApplicationUser> users = context.Users.ToList();
+
+                    foreach (var user in users)
+                    {
+                        tasks.Add(Task.Run(() => UserProcessor.ApplicationUserToWebApiUser(user)));
+                    }
+
+                    var results = await Task.WhenAll(tasks);
+
+                    webApiUsers = results.ToList();
+                }
             }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return webApiUsers;
         }
 
         public async Task<Response> EditAsync(WebApiUser user)

@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -134,6 +135,19 @@ namespace AbatementHelper.WebAPI.Processors
             return webApiManager;
         }
 
+        public static async Task<WebApiManagerStore> CreateWebApiManagerStoreAsync(StoreEntity store, ManagerEntity manager, bool assigned)
+        {
+            WebApiStore webApiStore = await StoreProcessor.StoreEntityToWebApiStoreAsync(store);
+
+            WebApiManager webApiManager = await ManagerEntityToWebApiManagerAsync(manager);
+
+            return new WebApiManagerStore
+            {
+                Store = webApiStore,
+                Manager = webApiManager,
+                Assigned = assigned
+            };
+        }
 
     }
 }

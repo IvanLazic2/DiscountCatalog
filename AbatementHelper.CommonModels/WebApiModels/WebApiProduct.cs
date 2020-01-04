@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-
 namespace AbatementHelper.CommonModels.WebApiModels
 {
     public class WebApiProduct
@@ -20,10 +19,9 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public string CompanyName { get; set; }
         [Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
         public double ProductOldPrice { get; set; }
-        [LessThan("ProductOldPrice", ErrorMessage = "New price has to be a discount"), Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
+        [Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
         public double ProductNewPrice { get; set; }
 
-        //[GreaterThan("ProductNewPrice"), Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
         public string ProductOldPriceString { get; set; }
         public string ProductNewPriceString { get; set; }
         

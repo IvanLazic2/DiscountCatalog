@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Data.Entity;
+using System.Diagnostics;
 
 namespace AbatementHelper.WebAPI.Repositories
 {
@@ -89,7 +90,7 @@ namespace AbatementHelper.WebAPI.Repositories
             using (var context = new ApplicationUserDbContext())
             {
                 StoreEntity store = context.Stores.Find(id);
-                await context.Stores.Include(s => s.Managers).ToListAsync();
+                context.Stores.Include(s => s.Managers).ToList();
 
                 foreach (var manager in store.Managers)
                 {
@@ -104,6 +105,7 @@ namespace AbatementHelper.WebAPI.Repositories
                         }
                     );
                 }
+
             }
 
             return webApiManagers;
@@ -116,7 +118,8 @@ namespace AbatementHelper.WebAPI.Repositories
             using (var context = new ApplicationUserDbContext())
             {
                 ManagerEntity manager = context.Managers.Find(id);
-                await context.Managers.Include(m => m.Stores).ToListAsync();
+
+                await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
 
                 foreach (var store in manager.Stores)
                 {
@@ -142,21 +145,25 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    List<StoreEntity> storeEntities = await context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId)
-                                                                          .Include(s => s.Managers).ToListAsync();
+                    var storeEntities = context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId).ToList();
+
+                    var tasks = new List<Task<WebApiStore>>();
 
                     foreach (var store in storeEntities)
                     {
-                        //context.Stores.Include(s => s.Managers);
+                        context.Entry(store).Collection(s => s.Managers).Load();
 
                         if (!store.Deleted && !store.Approved) //OVO PROMIJENIT U store.Approved (bez !)
                         {
                             store.StoreAdmin = await context.Users.FindAsync(storeAdminId);
 
-                            stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
+                            tasks.Add(Task.Run(() => StoreProcessor.StoreEntityToWebApiStoreAsync(store)));
                         }
                     }
 
+                    var results = await Task.WhenAll(tasks);
+
+                    stores = results.ToList();
                 }
             }
             catch (Exception exception)
@@ -330,21 +337,38 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<List<WebApiStore>> GetAllDeletedStoresAsync(string storeAdminId)
         {
-            using (var context = new ApplicationUserDbContext())
+            var stores = new List<WebApiStore>();
+
+            try
             {
-                var stores = new List<WebApiStore>();
-
-                List<StoreEntity> storeEntities = await context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId && s.Deleted).ToListAsync();
-
-                foreach (var store in storeEntities)
+                using (var context = new ApplicationUserDbContext())
                 {
-                    store.StoreAdmin = await context.Users.FindAsync(storeAdminId);
 
-                    stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
+
+                    var tasks = new List<Task<WebApiStore>>();
+
+                    List<StoreEntity> storeEntities = context.Stores.Where(s => s.StoreAdmin.Id == storeAdminId && s.Deleted).ToList();
+
+                    foreach (var store in storeEntities)
+                    {
+                        store.StoreAdmin = await context.Users.FindAsync(storeAdminId);
+
+                        tasks.Add(Task.Run(() => StoreProcessor.StoreEntityToWebApiStoreAsync(store)));
+                    }
+
+                    var results = await Task.WhenAll(tasks);
+
+                    stores = results.ToList();
                 }
-
-                return stores;
             }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return stores;
+
         }
 
         public async Task RestoreStoreAsync(string id)
@@ -377,26 +401,39 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<List<WebApiManager>> GetAllManagersAsync(string storeAdminId)
         {
-            using (var context = new ApplicationUserDbContext())
+            var managers = new List<WebApiManager>();
+
+            try
             {
-                var managers = new List<WebApiManager>();
-
-                List<ManagerEntity> managerEntites = context.Managers.Where(s => s.StoreAdmin.Id == storeAdminId).ToList();
-
-                foreach (var manager in managerEntites)
+                using (var context = new ApplicationUserDbContext())
                 {
-                    context.Entry(manager).Reference(m => m.User).Load();
-                    context.Entry(manager).Collection(m => m.Stores).Load();
+                    var tasks = new List<Task<WebApiManager>>();
 
-                    if (!manager.User.Deleted && !manager.User.Approved) //MAKNIT ! SA Approved
+                    List<ManagerEntity> managerEntites = context.Managers.Where(s => s.StoreAdmin.Id == storeAdminId).ToList();
+
+                    foreach (var manager in managerEntites)
                     {
-                        //context.Entry(manager).Reference(m => m.User).Load();
-                        managers.Add(await ManagerProcessor.ManagerEntityToWebApiManagerAsync(manager));
-                    }
-                }
+                        context.Entry(manager).Reference(m => m.User).Load();
+                        context.Entry(manager).Collection(m => m.Stores).Load();
 
-                return managers;
+                        if (!manager.User.Deleted && !manager.User.Approved) //MAKNIT ! SA Approved
+                        {
+                            tasks.Add(Task.Run(() => ManagerProcessor.ManagerEntityToWebApiManagerAsync(manager)));
+                        }
+                    }
+
+                    var results = await Task.WhenAll(tasks);
+
+                    managers = results.ToList();
+                }
             }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return managers;
         }
 
         public async Task<Response> CreateManagerAsync(CreateManagerModel user, string password)
@@ -547,24 +584,38 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<List<WebApiManager>> GetAllDeletedManagersAsync(string storeAdminId)
         {
-            using (var context = new ApplicationUserDbContext())
+            var managers = new List<WebApiManager>();
+
+            try
             {
-                var managers = new List<WebApiManager>();
-
-                List<ManagerEntity> managerEntityList = context.Managers.Where(m => m.StoreAdmin.Id == storeAdminId).ToList();
-
-                foreach (var manager in managerEntityList)
+                using (var context = new ApplicationUserDbContext())
                 {
-                    await context.Entry(manager).Reference(m => m.User).LoadAsync();
+                    var tasks = new List<Task<WebApiManager>>();
 
-                    if (manager.User.Deleted)
+                    List<ManagerEntity> managerEntityList = context.Managers.Where(m => m.StoreAdmin.Id == storeAdminId).ToList();
+
+                    foreach (var manager in managerEntityList)
                     {
-                        managers.Add(await ManagerProcessor.ManagerEntityToWebApiManagerAsync(manager));
-                    }
-                }
+                        await context.Entry(manager).Reference(m => m.User).LoadAsync();
 
-                return managers;
+                        if (manager.User.Deleted)
+                        {
+                            tasks.Add(Task.Run(() => ManagerProcessor.ManagerEntityToWebApiManagerAsync(manager)));
+                        }
+                    }
+
+                    var results = await Task.WhenAll(tasks);
+
+                    managers = results.ToList();
+                }
             }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return managers;
         }
 
         public async Task RestoreManagerAsync(string id)
@@ -583,12 +634,16 @@ namespace AbatementHelper.WebAPI.Repositories
 
         public async Task<List<WebApiManagerStore>> GetAllManagerStoresAsync(string managerId)
         {
+            var watch = Stopwatch.StartNew();
+
             var managerStores = new List<WebApiManagerStore>();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
+                    var tasks = new List<Task<WebApiManagerStore>>();
+
                     ApplicationUser user = await context.Users.FindAsync(managerId);
 
                     ManagerEntity managerEntity = await context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefaultAsync();
@@ -596,10 +651,12 @@ namespace AbatementHelper.WebAPI.Repositories
                     await context.Entry(managerEntity).Collection(m => m.Stores).LoadAsync();
                     await context.Entry(managerEntity).Reference(m => m.StoreAdmin).LoadAsync();
 
-                    List<StoreEntity> storeEntities = await context.Stores.ToListAsync();
+                    List<StoreEntity> storeEntities = context.Stores.ToList();
 
                     foreach (var store in storeEntities)
                     {
+                        bool assigned;
+
                         await context.Entry(store).Reference(s => s.StoreAdmin).LoadAsync();
 
                         StoreEntity storeEntity = managerEntity.Stores.Where(s => s.Id == store.Id).FirstOrDefault();
@@ -608,25 +665,21 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             if (storeEntity != null)
                             {
-                                managerStores.Add(new WebApiManagerStore
-                                {
-                                    Store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity),
-                                    Manager = await ManagerProcessor.ManagerEntityToWebApiManagerAsync(managerEntity),
-                                    Assigned = true
-                                });
+                                assigned = true;
                             }
                             else
                             {
-                                managerStores.Add(new WebApiManagerStore
-                                {
-                                    Store = await StoreProcessor.StoreEntityToWebApiStoreAsync(store),
-                                    Manager = await ManagerProcessor.ManagerEntityToWebApiManagerAsync(managerEntity),
-                                    Assigned = false
-                                });
+                                assigned = false;
                             }
+
+                            tasks.Add(Task.Run(() => ManagerProcessor.CreateWebApiManagerStoreAsync(store, managerEntity, assigned)));
                         }
 
                     }
+
+                    var results = await Task.WhenAll(tasks);
+
+                    managerStores = results.ToList();
                 }
 
             }
@@ -634,6 +687,10 @@ namespace AbatementHelper.WebAPI.Repositories
             {
 
             }
+
+            watch.Stop();
+
+            var elapsed = watch.ElapsedMilliseconds;
 
             return managerStores;
         }

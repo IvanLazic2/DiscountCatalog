@@ -22,15 +22,21 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    var productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved);
+                    var tasks = new List<Task<WebApiProduct>>();
+
+                    List<ProductEntity> productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted && !p.Expired && p.Approved).ToList();
 
                     if (productEntities != null)
                     {
                         foreach (var product in productEntities)
                         {
                             product.Store = await GetStoreAsync(id);
-                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
+                            tasks.Add(Task.Run(() => ProductProcessor.ProductEntityToWebApiProductAsync(product)));
                         }
+
+                        var results = await Task.WhenAll(tasks);
+
+                        products = results.ToList();
                     }
                 }
             }
@@ -182,6 +188,8 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
+                    var tasks = new List<Task<WebApiProduct>>();
+
                     List<ProductEntity> productEntities = new List<ProductEntity>();
 
                     productEntities = context.Products.Where(p => p.Store.Id == id && p.Deleted).ToList();
@@ -190,8 +198,12 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         foreach (var product in productEntities)
                         {
-                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
+                            tasks.Add(Task.Run(() => ProductProcessor.ProductEntityToWebApiProductAsync(product)));
                         }
+
+                        var results = await Task.WhenAll(tasks);
+
+                        products = results.ToList();
                     }
                 }
             }
@@ -226,6 +238,8 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
+                    var tasks = new List<Task<WebApiProduct>>();
+
                     List<ProductEntity> productEntities = new List<ProductEntity>();
 
                     productEntities = context.Products.Where(p => p.Store.Id == id && p.Expired && !p.Deleted).ToList();
@@ -234,8 +248,12 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         foreach (var product in productEntities)
                         {
-                            products.Add(await ProductProcessor.ProductEntityToWebApiProductAsync(product));
+                            tasks.Add(Task.Run(() => ProductProcessor.ProductEntityToWebApiProductAsync(product)));
                         }
+
+                        var results = await Task.WhenAll(tasks);
+
+                        products = results.ToList();
                     }
                 }
             }

@@ -221,6 +221,7 @@
     <Compile Include="Repositories\ProductManagerRepository.cs" />
     <Compile Include="Repositories\StoreAdminRepository.cs" />
     <Compile Include="Repositories\StoreRepository.cs" />
+    <Compile Include="Validators\DiscountValidator.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

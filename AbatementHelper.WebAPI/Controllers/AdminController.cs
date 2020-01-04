@@ -26,18 +26,9 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             var users = await adminRepository.ReadAllUsersAsync();
 
-            List<WebApiUser> processedUsers = new List<WebApiUser>();
-
-            foreach (var user in users)
-            {
-                WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
-
-                processedUsers.Add(webApiUser);
-            }
-
             return new WebApiListOfUsersResult
             {
-                Value = processedUsers,
+                Value = users,
                 Success = true
             };
         }

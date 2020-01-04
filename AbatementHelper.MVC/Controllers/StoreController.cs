@@ -10,6 +10,8 @@ using System.Web.Mvc;
 using AbatementHelper.MVC.Processors;
 using AbatementHelper.MVC.Models;
 using System.Threading.Tasks;
+using AbatementHelper.MVC.Validators;
+using FluentValidation.Results;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -41,6 +43,20 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateProduct")]
         public async Task<ActionResult> CreateProduct(WebApiProduct product)
         {
+            ProductValidator productValidator = new ProductValidator();
+
+            ValidationResult result = productValidator.Validate(product);
+
+            if (!result.IsValid)
+            {
+                foreach (ValidationFailure failure in result.Errors)
+                {
+                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                }
+
+                return View(product);
+            }
+
             Response response = await store.CreateProductAsync(product);
 
             return RedirectToAction("GetAllProducts");
