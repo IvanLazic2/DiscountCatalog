@@ -17,79 +17,28 @@ namespace AbatementHelper.CommonModels.WebApiModels
         [Required]
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
-        [Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
+        [Range(double.MinValue, double.MaxValue, ErrorMessage = "Please enter valid price.")]
         public double ProductOldPrice { get; set; }
-        [Required, Range(0, double.MaxValue, ErrorMessage = "Please enter valid price.")]
+        [Range(double.MinValue, double.MaxValue, ErrorMessage = "Please enter valid price.")]
         public double ProductNewPrice { get; set; }
-
-        public string ProductOldPriceString { get; set; }
-        public string ProductNewPriceString { get; set; }
-        
-        public double DiscountPercentage
-        {
-            get
-            {
-                return Math.Round(100 - (ProductNewPrice / ProductOldPrice) * 100, 1);
-            }
-            private set
-            {
-            }
-        }
-
-        public string DiscountPercentageString
-        {
-            get
-            {
-                string toReturn = DiscountPercentage.ToString() + "%";
-
-                return toReturn;
-            }
-            private set
-            {
-            }
-        }
+        public double DiscountPercentage{ get; set; }
+        //return Math.Round(100 - (ProductNewPrice / ProductOldPrice) * 100, 1);
         public string Currency { get; set; }
-        [Required, DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime DiscountDateBegin { get; set; }
-        [Required, DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime DiscountDateEnd { get; set; }
+        [Required, DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.mm.gggg.}", ApplyFormatInEditMode = true)]
+        public string DiscountDateBegin { get; set; }
+        [Required, DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.mm.gggg.}", ApplyFormatInEditMode = true)]
+        public string DiscountDateEnd { get; set; }
         public string Quantity { get; set; }
         public string Description { get; set; }
         public string Note { get; set; }
-        public bool Expired
-        {
-            get
-            {
-                if (DateTime.Compare(DiscountDateEnd, DateTime.Now) >= 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            set
-            {
-
-            }
-        }
+        public bool Expired { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public DateTime DateCreated { get; set; }
 
         public WebApiProduct()
         {
-            ProductOldPriceString = ProductOldPrice.ToString() + Currency;
-            ProductNewPriceString = ProductNewPrice.ToString() + Currency;
+            
         }
     }
-
-    //public class ProductValidator : AbstractValidator<WebApiProduct>
-    //{
-    //    public ProductValidator()
-    //    {
-    //        RuleFor(p => p.ProductNewPrice).LessThan(p => p.ProductOldPrice).WithMessage("{0} has to be a discount!");
-    //    }
-    //}
 }

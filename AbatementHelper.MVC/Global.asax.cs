@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AbatementHelper.MVC.ModelBinders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,6 +18,8 @@ namespace AbatementHelper.MVC
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
+
+            //System.Web.Mvc.ModelBinders.Binders.Add(typeof(DateTime), new CustomDateModelBinder());
         }
     }
 }

@@ -20,10 +20,10 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         [Required]
         public double ProductNewPrice { get; set; }
         public double DiscountPercentage { get; set; }
-        [Required, Column(TypeName = "datetime2")]
-        public DateTime DiscountDateBegin { get; set; }
-        [Required, Column(TypeName = "datetime2")]
-        public DateTime DiscountDateEnd { get; set; }
+        [Required/*, Column(TypeName = "datetime2")*/]
+        public string DiscountDateBegin { get; set; }
+        [Required/*, Column(TypeName = "datetime2")*/]
+        public string DiscountDateEnd { get; set; }
         public string Quantity { get; set; }
         public string Description { get; set; }
         public string Note { get; set; }

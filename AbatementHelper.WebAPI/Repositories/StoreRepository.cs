@@ -67,38 +67,82 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    if (product.ProductNewPrice < product.ProductOldPrice)
+
+                    ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
+
+                    var discountModel = new DiscountModel
                     {
-                        ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
+                        OldPrice = processedProduct.ProductOldPrice,
+                        NewPrice = processedProduct.ProductNewPrice,
+                        Discount = processedProduct.DiscountPercentage
+                    };
 
-                        processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
+                    DiscountResponseModel discountResponse = DiscountProcessor.DiscountCalculator(discountModel);
 
-                        processedProduct.Deleted = false;
-                        processedProduct.Approved = true;
+                    if (!discountResponse.Success)
+                    {
+                        response.Message = discountResponse.Message;
+                        response.Success = false;
 
-                        if (DateTime.Compare(processedProduct.DiscountDateEnd, DateTime.Now) >= 0)
-                        {
-                            processedProduct.Expired = false;
-                        }
-                        else
-                        {
-                            processedProduct.Expired = true;
-                        }
+                        return response;
+                    }
 
-                        processedProduct.DateCreated = DateTime.Now;
-
-                        context.Products.Add(processedProduct);
-
-                        await context.SaveChangesAsync();
-
-                        response.Message = "Successfully created";
-                        response.Success = true;
+                    if (discountResponse.Discount.OldPrice != 0 && discountResponse.Discount.NewPrice != 0 && discountResponse.Discount.Discount != 0)
+                    {
+                        processedProduct.ProductOldPrice = discountResponse.Discount.OldPrice;
+                        processedProduct.ProductNewPrice = discountResponse.Discount.NewPrice;
+                        processedProduct.DiscountPercentage = discountResponse.Discount.Discount;
                     }
                     else
                     {
-                        response.Message = "New price has to be a discount!";
+                        response.Message = "An error has occured!";
                         response.Success = false;
+
+                        return response;
                     }
+
+                    if (processedProduct.ProductNewPrice > processedProduct.ProductOldPrice)
+                    {
+                        response.Message = "New price has to be a discount";
+                        response.Success = false;
+
+                        return response;
+                    }
+
+                    DateTime discountDateEnd = DateTime.Parse(processedProduct.DiscountDateEnd);
+                    DateTime discountDateBegin = DateTime.Parse(processedProduct.DiscountDateBegin);
+
+                    if (DateTime.Compare(discountDateBegin, discountDateEnd) >= 0)
+                    {
+                        response.Message = "Discount end date cannot be earlier or same as discount begin date!";
+                        response.Success = false;
+
+                        return response;
+                    }
+
+                    if (DateTime.Compare(discountDateEnd, DateTime.Now) >= 0)
+                    {
+                        processedProduct.Expired = false;
+                    }
+                    else
+                    {
+                        processedProduct.Expired = true;
+                    }
+
+                    processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
+
+                    processedProduct.Deleted = false;
+                    processedProduct.Approved = true;
+
+                    processedProduct.DateCreated = DateTime.Now;
+
+                    context.Products.Add(processedProduct);
+
+                    await context.SaveChangesAsync();
+
+                    response.Message = "Successfully created";
+                    response.Success = true;
+
                 }
             }
             catch (Exception exception)

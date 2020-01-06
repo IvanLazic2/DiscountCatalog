@@ -25,6 +25,11 @@ namespace AbatementHelper.MVC.Extensions
             else
                 comparison = StringComparison.Ordinal;
 
+            if (str == null)
+            {
+                str = "";
+            }
+
             if (str.IndexOf(value, comparison) != -1)
                 return true;
             else

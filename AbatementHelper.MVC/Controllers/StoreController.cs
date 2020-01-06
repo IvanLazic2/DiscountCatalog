@@ -12,6 +12,9 @@ using AbatementHelper.MVC.Models;
 using System.Threading.Tasks;
 using AbatementHelper.MVC.Validators;
 using FluentValidation.Results;
+using AbatementHelper.MVC.Extensions;
+using PagedList;
+using AbatementHelper.MVC.ViewModels;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -25,11 +28,64 @@ namespace AbatementHelper.MVC.Controllers
         }
 
         [Route("GetAllProducts")]
-        public async Task<ActionResult> GetAllProducts()
+        public async Task<ActionResult> GetAllProducts(string sortOrder, string CurrentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.PriceSortParm = sortOrder == "price" ? "price_desc" : "price";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = CurrentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             List<WebApiProduct> products = await store.GetAllProductsAsync();
 
-            return View(products);
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(u => u.ProductName.Contains(searchString, StringComparer.OrdinalIgnoreCase) ||
+                                               u.CompanyName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.ProductName).ToList();
+                    break;
+                case "price":
+                    products = products.OrderBy(p => p.ProductNewPrice).ToList();
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.ProductNewPrice).ToList();
+                    break;
+                case "percentage":
+                    products = products.OrderBy(p => p.DiscountPercentage).ToList();
+                    break;
+                case "percentage_desc":
+                    products = products.OrderByDescending(p => p.DiscountPercentage).ToList();
+                    break;
+                default:
+                    products = products.OrderBy(p => p.ProductName).ToList();
+                    break;
+            }
+
+            int pageSize = 15;
+            int pageNumber = (page ?? 1);
+
+            return View(products.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -41,11 +97,15 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
-        public async Task<ActionResult> CreateProduct(WebApiProduct product)
+        public async Task<ActionResult> CreateProduct(ProductViewModel productViewModel)
         {
-            ProductValidator productValidator = new ProductValidator();
+            DiscountValidator discountValidator = new DiscountValidator();
 
-            ValidationResult result = productValidator.Validate(product);
+            productViewModel.Product.ProductOldPrice = productViewModel.Discount.OldPrice;
+            productViewModel.Product.ProductNewPrice = productViewModel.Discount.NewPrice;
+            productViewModel.Product.DiscountPercentage = productViewModel.Discount.Discount;
+
+            ValidationResult result = discountValidator.Validate(productViewModel);
 
             if (!result.IsValid)
             {
@@ -54,10 +114,10 @@ namespace AbatementHelper.MVC.Controllers
                     ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
                 }
 
-                return View(product);
+                return View(productViewModel);
             }
 
-            Response response = await store.CreateProductAsync(product);
+            Response response = await store.CreateProductAsync(productViewModel.Product);
 
             return RedirectToAction("GetAllProducts");
         }

@@ -252,10 +252,16 @@
     <Compile Include="Migrations\201912301014415_initial1.Designer.cs">
       <DependentUpon>201912301014415_initial1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001061625250_date.cs" />
+    <Compile Include="Migrations\202001061625250_date.Designer.cs">
+      <DependentUpon>202001061625250_date.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\DiscountResponseModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Processors\DiscountProcessor.cs" />
     <Compile Include="Processors\ExceptionProcessor.cs" />
     <Compile Include="Processors\ImageProcessor.cs" />
     <Compile Include="Processors\ManagerProcessor.cs" />
@@ -377,6 +383,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912301014415_initial1.resx">
       <DependentUpon>201912301014415_initial1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001061625250_date.resx">
+      <DependentUpon>202001061625250_date.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

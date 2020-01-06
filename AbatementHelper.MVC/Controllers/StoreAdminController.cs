@@ -543,6 +543,13 @@ namespace AbatementHelper.MVC.Controllers
             ViewBag.CurrentFilter = searchString;
 
             //jos dodat error messages
+
+            if (TempData["Message"] != null && TempData["Success"] != null)
+            {
+                ViewBag.Message = TempData["Message"].ToString();
+                ViewBag.Success = (bool)TempData["Success"];
+            }
+
             WebApiManager manager = await storeAdmin.DetailsManagerAsync(id);
 
             if (manager != null)
@@ -557,6 +564,12 @@ namespace AbatementHelper.MVC.Controllers
                     Value = manager.UserName,
                     HttpOnly = true
                 });
+
+                ViewBag.ManagerUserName = manager.UserName;
+            }
+            else
+            {
+                return RedirectToAction("GetAllManagers");
             }
 
             List<WebApiManagerStore> stores = await storeAdmin.GetAllManagerStoresAsync(id);

@@ -6,98 +6,94 @@
     ViewBag.Title = "GetAllAssignedStores";
 }
 
-<h2>Assign or unassign stores for @Model.ToList().First().Manager.UserName</h2>
+@*<h2>Assign or unassign stores for @Model.ToList().First().Manager.UserName</h2>*@
 
+<h2>Assign or unassign stores for @ViewBag.ManagerUserName</h2>
 
-@if (Model != null && Model.Count() != 0)
+@using (Html.BeginForm("GetAllManagerStores", "StoreAdmin", FormMethod.Get))
 {
-    using (Html.BeginForm("GetAllManagerStores", "StoreAdmin", FormMethod.Get))
+    <p>
+        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("StoreName", "GetAllManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            WorkingHoursWeek
+        </th>
+        <th>
+            WorkingHoursWeekends
+        </th>
+        <th>
+            WorkingHoursHolidays
+        </th>
+        <th>
+            Country
+        </th>
+        <th>
+            City
+        </th>
+        <th>
+            PostalCode
+        </th>
+        <th>
+            Street
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
     {
-        <p>
-            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-            <input type="submit" value="Search" />
-        </p>
-    }
-
-    <table class="table">
-        <tr>
-            <th>
-                @Html.ActionLink("StoreName", "GetAllManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
-            </th>
-            <th>
-                WorkingHoursWeek
-            </th>
-            <th>
-                WorkingHoursWeekends
-            </th>
-            <th>
-                WorkingHoursHolidays
-            </th>
-            <th>
-                Country
-            </th>
-            <th>
-                City
-            </th>
-            <th>
-                PostalCode
-            </th>
-            <th>
-                Street
-            </th>
-            <th></th>
-        </tr>
-
-        @foreach (var item in Model)
+        if (!item.Store.Deleted)
         {
-            if (!item.Store.Deleted)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.StoreName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeek)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeekends)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.WorkingHoursHolidays)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.Country)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.City)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.PostalCode)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Store.Street)
-                    </td>
-                    <td>
-                        @if (item.Assigned)
-                        {
-                            @Html.ActionLink("Unassign", "UnassignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
-                        }
-                        else
-                        {
-                            @Html.ActionLink("Assign", "AssignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
-                        }
-                    </td>
-                </tr>
-            }
-
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.StoreName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeek)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeekends)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursHolidays)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.Country)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.Street)
+                </td>
+                <td>
+                    @if (item.Assigned)
+                    {
+                        @Html.ActionLink("Unassign", "UnassignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Assign", "AssignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                    }
+                </td>
+            </tr>
         }
 
-    </table>
-}
-else
-{
-    <p class="text-danger">- No stores</p>
-}
+    }
+
+</table>
+
+
 
 @Html.ActionLink("Back to the list", "GetAllManagers")
 
@@ -106,5 +102,9 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 
 @Html.PagedListPager(Model, page => Url.Action("GetAllManagerStores",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
 
 
