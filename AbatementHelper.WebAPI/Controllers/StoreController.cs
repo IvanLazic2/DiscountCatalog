@@ -3,12 +3,18 @@ using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
 using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
+using AbatementHelper.WebAPI.Validators;
 using System;
 using System.Collections.Generic;
+using FluentValidation;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using FluentValidation.Results;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using AbatementHelper.WebAPI.Models;
 
 namespace AbatementHelper.WebAPI.Controllers
 {
@@ -16,6 +22,17 @@ namespace AbatementHelper.WebAPI.Controllers
     public class StoreController : ApiController
     {
         private StoreRepository storeRepository = new StoreRepository();
+
+        private void SimulateValidation(object model)
+        {
+            var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(model, null, null);
+            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+            Validator.TryValidateObject(model, validationContext, validationResults, true);
+            foreach (var validationResult in validationResults)
+            {
+                ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+            }
+        }
 
         [HttpGet]
         [Route("GetAllProductsAsync/{id}")]
@@ -26,16 +43,112 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPost]
         [Route("CreateProductAsync")]
-        public async Task<Response> CreateProductAsync(WebApiProduct product)
+        public async Task<IHttpActionResult> CreateProductAsync(WebApiProduct product)
         {
-            return await storeRepository.CreateProductAsync(product);
+            SimulateValidation(product);
+
+            var priceValidator = new PriceValidator();
+            var discountValidator = new DiscountValidator();
+
+            var priceValidatorResult = priceValidator.GetErrors(product);
+
+            if (!priceValidatorResult.Success)
+            {
+                foreach (var error in priceValidatorResult.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            product.OldPrice = priceValidatorResult.OldPrice;
+            product.NewPrice = priceValidatorResult.NewPrice;
+            product.Discount = priceValidatorResult.Discount;
+
+            FluentValidation.Results.ValidationResult discountValidatorResult = discountValidator.Validate(product);
+
+            if (!discountValidatorResult.IsValid)
+            {
+                foreach (ValidationFailure failure in discountValidatorResult.Errors)
+                {
+                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            ModelStateResponse response = await storeRepository.CreateProductAsync(product);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("EditProductAsync")]
-        public async Task<Response> EditProductAsync(WebApiProduct product)
+        public async Task<IHttpActionResult> EditProductAsync(WebApiProduct product)
         {
-            return await storeRepository.EditProductAsync(product);
+            SimulateValidation(product);
+            
+            var priceValidator = new PriceValidator();
+            var discountValidator = new DiscountValidator();
+
+            var priceValidatorResult = priceValidator.GetErrors(product);
+
+            if (!priceValidatorResult.Success)
+            {
+                foreach (var error in priceValidatorResult.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            product.OldPrice = priceValidatorResult.OldPrice;
+            product.NewPrice = priceValidatorResult.NewPrice;
+            product.Discount = priceValidatorResult.Discount;
+
+            FluentValidation.Results.ValidationResult discountValidatorResult = discountValidator.Validate(product);
+
+            if (!discountValidatorResult.IsValid)
+            {
+                foreach (ValidationFailure failure in discountValidatorResult.Errors)
+                {
+                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            ModelStateResponse response = await storeRepository.EditProductAsync(product);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
         [HttpGet]
@@ -45,7 +158,7 @@ namespace AbatementHelper.WebAPI.Controllers
             ProductEntity product = await storeRepository.ReadProductByIdAsync(id);
 
             return await ProductProcessor.ProductEntityToWebApiProductAsync(product);
-        } 
+        }
 
         [HttpPut]
         [Route("DeleteProductAsync/{id}")]

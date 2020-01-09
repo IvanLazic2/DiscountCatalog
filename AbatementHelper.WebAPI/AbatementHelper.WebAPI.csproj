@@ -51,11 +51,17 @@
     <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.8.6.1\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.4.1\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.Entity" />
@@ -237,30 +243,23 @@
     <Compile Include="DataBaseModels\ManagerEntity.cs" />
     <Compile Include="DataBaseModels\ProductEntity.cs" />
     <Compile Include="DataBaseModels\StoreEntity.cs" />
+    <Compile Include="DataBaseValidation\ProductValidation.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201912250947539_initial.cs" />
-    <Compile Include="Migrations\201912250947539_initial.Designer.cs">
-      <DependentUpon>201912250947539_initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201912251454219_uii.cs" />
-    <Compile Include="Migrations\201912251454219_uii.Designer.cs">
-      <DependentUpon>201912251454219_uii.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201912301014415_initial1.cs" />
-    <Compile Include="Migrations\201912301014415_initial1.Designer.cs">
-      <DependentUpon>201912301014415_initial1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001061625250_date.cs" />
-    <Compile Include="Migrations\202001061625250_date.Designer.cs">
-      <DependentUpon>202001061625250_date.cs</DependentUpon>
+    <Compile Include="Interfaces\IProductValidation.cs" />
+    <Compile Include="Migrations\202001072044016_double.cs" />
+    <Compile Include="Migrations\202001072044016_double.Designer.cs">
+      <DependentUpon>202001072044016_double.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DiscountResponseModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ModelStateResponse.cs" />
+    <Compile Include="Models\PriceValidatorResult.cs" />
     <Compile Include="Processors\DiscountProcessor.cs" />
     <Compile Include="Processors\ExceptionProcessor.cs" />
     <Compile Include="Processors\ImageProcessor.cs" />
@@ -278,6 +277,8 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Validators\DiscountValidator.cs" />
+    <Compile Include="Validators\PriceValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -375,17 +376,8 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201912250947539_initial.resx">
-      <DependentUpon>201912250947539_initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201912251454219_uii.resx">
-      <DependentUpon>201912251454219_uii.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201912301014415_initial1.resx">
-      <DependentUpon>201912301014415_initial1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001061625250_date.resx">
-      <DependentUpon>202001061625250_date.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202001072044016_double.resx">
+      <DependentUpon>202001072044016_double.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

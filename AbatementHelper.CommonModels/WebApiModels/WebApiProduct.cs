@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
+using ExpressiveAnnotations.Attributes;
+using AbatementHelper.CommonModels.Attributes;
+using System.Globalization;
 
 namespace AbatementHelper.CommonModels.WebApiModels
 {
@@ -17,12 +20,9 @@ namespace AbatementHelper.CommonModels.WebApiModels
         [Required]
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
-        [Range(double.MinValue, double.MaxValue, ErrorMessage = "Please enter valid price.")]
-        public double ProductOldPrice { get; set; }
-        [Range(double.MinValue, double.MaxValue, ErrorMessage = "Please enter valid price.")]
-        public double ProductNewPrice { get; set; }
-        public double DiscountPercentage{ get; set; }
-        //return Math.Round(100 - (ProductNewPrice / ProductOldPrice) * 100, 1);
+        public string ProductOldPrice { get; set; }
+        public string ProductNewPrice { get; set; }
+        public string DiscountPercentage { get; set; }
         public string Currency { get; set; }
         [Required, DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:dd.mm.gggg.}", ApplyFormatInEditMode = true)]
         public string DiscountDateBegin { get; set; }
@@ -35,6 +35,10 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public DateTime DateCreated { get; set; }
+
+        public decimal? OldPrice { get; set; }
+        public decimal? NewPrice { get; set; }
+        public decimal? Discount { get; set; }
 
         public WebApiProduct()
         {

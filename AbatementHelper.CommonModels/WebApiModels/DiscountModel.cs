@@ -8,8 +8,8 @@ namespace AbatementHelper.CommonModels.WebApiModels
 {
     public class DiscountModel
     {
-        public double OldPrice { get; set; }
-        public double NewPrice { get; set; }
-        public double Discount { get; set; }
+        public decimal? OldPrice { get; set; }
+        public decimal? NewPrice { get; set; }
+        public decimal? Discount { get; set; }
     }
 }

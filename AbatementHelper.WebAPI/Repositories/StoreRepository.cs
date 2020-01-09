@@ -1,6 +1,8 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
+using AbatementHelper.WebAPI.DataBaseValidation;
+using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using System;
@@ -59,66 +61,26 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public async Task<Response> CreateProductAsync(WebApiProduct product)
+        public async Task<ModelStateResponse> CreateProductAsync(WebApiProduct product)
         {
-            Response response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
-                using (var context = new ApplicationUserDbContext())
+                ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
+
+                ProductValidation validation = new ProductValidation();
+
+                ModelStateResponse modelState = validation.Validate(processedProduct);
+
+                if (modelState.IsValid)
                 {
-
-                    ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
-
-                    var discountModel = new DiscountModel
-                    {
-                        OldPrice = processedProduct.ProductOldPrice,
-                        NewPrice = processedProduct.ProductNewPrice,
-                        Discount = processedProduct.DiscountPercentage
-                    };
-
-                    DiscountResponseModel discountResponse = DiscountProcessor.DiscountCalculator(discountModel);
-
-                    if (!discountResponse.Success)
-                    {
-                        response.Message = discountResponse.Message;
-                        response.Success = false;
-
-                        return response;
-                    }
-
-                    if (discountResponse.Discount.OldPrice != 0 && discountResponse.Discount.NewPrice != 0 && discountResponse.Discount.Discount != 0)
-                    {
-                        processedProduct.ProductOldPrice = discountResponse.Discount.OldPrice;
-                        processedProduct.ProductNewPrice = discountResponse.Discount.NewPrice;
-                        processedProduct.DiscountPercentage = discountResponse.Discount.Discount;
-                    }
-                    else
-                    {
-                        response.Message = "An error has occured!";
-                        response.Success = false;
-
-                        return response;
-                    }
-
-                    if (processedProduct.ProductNewPrice > processedProduct.ProductOldPrice)
-                    {
-                        response.Message = "New price has to be a discount";
-                        response.Success = false;
-
-                        return response;
-                    }
+                    processedProduct.ProductOldPrice = validation.OldPrice;
+                    processedProduct.ProductNewPrice = validation.NewPrice;
+                    processedProduct.DiscountPercentage = validation.Discount;
 
                     DateTime discountDateEnd = DateTime.Parse(processedProduct.DiscountDateEnd);
                     DateTime discountDateBegin = DateTime.Parse(processedProduct.DiscountDateBegin);
-
-                    if (DateTime.Compare(discountDateBegin, discountDateEnd) >= 0)
-                    {
-                        response.Message = "Discount end date cannot be earlier or same as discount begin date!";
-                        response.Success = false;
-
-                        return response;
-                    }
 
                     if (DateTime.Compare(discountDateEnd, DateTime.Now) >= 0)
                     {
@@ -129,72 +91,91 @@ namespace AbatementHelper.WebAPI.Repositories
                         processedProduct.Expired = true;
                     }
 
-                    processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
+                    using (var context = new ApplicationUserDbContext())
+                    {
+                        processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
 
-                    processedProduct.Deleted = false;
-                    processedProduct.Approved = true;
+                        processedProduct.Deleted = false;
+                        processedProduct.Approved = true;
 
-                    processedProduct.DateCreated = DateTime.Now;
+                        processedProduct.DateCreated = DateTime.Now;
 
-                    context.Products.Add(processedProduct);
+                        context.Products.Add(processedProduct);
 
-                    await context.SaveChangesAsync();
-
-                    response.Message = "Successfully created";
-                    response.Success = true;
-
+                        await context.SaveChangesAsync();
+                    }
                 }
+                else
+                {
+                    response = modelState;
+                }
+
             }
             catch (Exception exception)
             {
-                response.Message = exception.InnerException.InnerException.Message;
-                response.Success = false;
+                //response.Message = exception.InnerException.InnerException.Message;
             }
 
             return response;
         }
 
-        public async Task<Response> EditProductAsync(WebApiProduct product)
+        public async Task<ModelStateResponse> EditProductAsync(WebApiProduct product)
         {
-            Response response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
-                using (var context = new ApplicationUserDbContext())
+                ProductEntity processedProduct = await ProductProcessor.WebApiProductToProductEntityAsync(product);
+
+                ProductValidation validation = new ProductValidation();
+
+                ModelStateResponse modelState = validation.Validate(processedProduct);
+
+                if (modelState.IsValid)
                 {
-                    if (product.ProductNewPrice < product.ProductOldPrice)
+                    processedProduct.ProductOldPrice = validation.OldPrice;
+                    processedProduct.ProductNewPrice = validation.NewPrice;
+                    processedProduct.DiscountPercentage = validation.Discount;
+
+                    DateTime discountDateEnd = DateTime.Parse(processedProduct.DiscountDateEnd);
+                    DateTime discountDateBegin = DateTime.Parse(processedProduct.DiscountDateBegin);
+
+                    if (DateTime.Compare(discountDateEnd, DateTime.Now) >= 0)
+                    {
+                        processedProduct.Expired = false;
+                    }
+                    else
+                    {
+                        processedProduct.Expired = true;
+                    }
+                    using (var context = new ApplicationUserDbContext())
                     {
                         ProductEntity productEntity = await context.Products.FindAsync(product.Id);
 
                         context.Products.Attach(productEntity);
 
-                        productEntity.ProductName = product.ProductName;
-                        productEntity.CompanyName = product.CompanyName;
-                        productEntity.ProductOldPrice = product.ProductOldPrice;
-                        productEntity.ProductNewPrice = product.ProductNewPrice;
-                        productEntity.DiscountPercentage = product.DiscountPercentage;
-                        productEntity.DiscountDateBegin = product.DiscountDateBegin;
-                        productEntity.DiscountDateEnd = product.DiscountDateEnd;
-                        productEntity.Quantity = product.Quantity;
-                        productEntity.Description = product.Description;
-                        productEntity.Note = product.Note;
+                        productEntity.ProductName = processedProduct.ProductName;
+                        productEntity.CompanyName = processedProduct.CompanyName;
+                        productEntity.ProductOldPrice = processedProduct.ProductOldPrice;
+                        productEntity.ProductNewPrice = processedProduct.ProductNewPrice;
+                        productEntity.DiscountPercentage = processedProduct.DiscountPercentage;
+                        productEntity.DiscountDateBegin = processedProduct.DiscountDateBegin;
+                        productEntity.DiscountDateEnd = processedProduct.DiscountDateEnd;
+                        productEntity.Quantity = processedProduct.Quantity;
+                        productEntity.Description = processedProduct.Description;
+                        productEntity.Note = processedProduct.Note;
 
                         await context.SaveChangesAsync();
-
-                        response.Message = "Successfully edited.";
-                        response.Success = true;
-                    }
-                    else
-                    {
-                        response.Message = "New price has to be a discount!";
-                        response.Success = false;
                     }
                 }
+                else
+                {
+                    response = modelState;
+                }
             }
-            catch (DbUpdateException exception)
+            catch (Exception ex)
             {
-                response.Message = exception.InnerException.InnerException.Message;
-                response.Success = false;
+                throw;
             }
 
             return response;

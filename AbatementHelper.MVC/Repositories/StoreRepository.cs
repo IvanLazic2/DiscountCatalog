@@ -1,5 +1,6 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -42,9 +43,11 @@ namespace AbatementHelper.MVC.Repositories
             }
         }
 
-        public async Task<Response> CreateProductAsync(WebApiProduct product)
+        public async Task<ModelStateResponse> CreateProductAsync(WebApiProduct product)
         {
             AddTokenToHeader();
+
+            var modelState = new ModelStateResponse();
 
             product.Store = new WebApiStore
             {
@@ -59,15 +62,25 @@ namespace AbatementHelper.MVC.Repositories
 
                 HttpResponseMessage request = await apiClient.PostAsync("api/Store/CreateProductAsync", httpContent);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
 
-                    return resultContent;
+                var resultContent = await request.Content.ReadAsStringAsync();
+
+                if (!request.IsSuccessStatusCode)
+                {
+                    var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                    var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                    modelState.Message = modelStateResult.message;
+
+                    if (modelStateResult.ModelState != null)
+                    {
+                        modelState.ModelSate = modelStateResult.ModelState;
+                    }
                 }
             }
 
-            return null;
+            return modelState;
+
         }
 
         public async Task<List<WebApiProduct>> GetAllProductsAsync()
@@ -148,23 +161,41 @@ namespace AbatementHelper.MVC.Repositories
             return null;
         }
 
-        public async Task<Response> EditProductAsync(WebApiProduct product)
+        public async Task<ModelStateResponse> EditProductAsync(WebApiProduct product)
         {
             AddTokenToHeader();
 
+            var modelState = new ModelStateResponse();
+
             if (product.Id != null)
             {
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
-
-                if (request.IsSuccessStatusCode)
+                product.Store = new WebApiStore
                 {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+                    Id = HttpContext.Current.Request.Cookies["StoreID"].Value
+                };
 
-                    return resultContent;
+                if (product.Store.Id != null)
+                {
+                    HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
+
+                    var resultContent = await request.Content.ReadAsStringAsync();
+
+                    if (!request.IsSuccessStatusCode)
+                    {
+                        var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                        var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                        modelState.Message = modelStateResult.message;
+
+                        if (modelStateResult.ModelState != null)
+                        {
+                            modelState.ModelSate = modelStateResult.ModelState;
+                        }
+                    }
                 }
             }
 
-            return null;
+            return modelState;
         }
 
         public async Task<bool> DeleteProductAsync(string id)

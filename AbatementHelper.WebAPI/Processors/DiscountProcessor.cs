@@ -14,14 +14,14 @@ namespace AbatementHelper.WebAPI.Processors
         {
             var discountReturnModel = new DiscountResponseModel();
 
-            if (discount.OldPrice != 0)
+            if (discount.OldPrice.HasValue)
             {
-                if (discount.NewPrice != 0)
+                if (discount.NewPrice.HasValue)
                 {
-                    if (discount.Discount != 0)
+                    if (discount.Discount.HasValue)
                     {
                         //popunit novu cijenu
-                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice - (discount.Discount / 100 * discount.OldPrice), 2);
+                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice.Value - (discount.Discount.Value / 100 * discount.OldPrice.Value), 2);
                         discountReturnModel.Discount.OldPrice = discount.OldPrice;
                         discountReturnModel.Discount.Discount = discount.Discount;
                         discountReturnModel.Message = "New price is changed";
@@ -30,7 +30,7 @@ namespace AbatementHelper.WebAPI.Processors
                     else
                     {
                         //popunit postotak
-                        discountReturnModel.Discount.Discount = Math.Round(100 - (discount.NewPrice / discount.OldPrice) * 100, 1);
+                        discountReturnModel.Discount.Discount = Math.Round(100 - (discount.NewPrice.Value / discount.OldPrice.Value) * 100, 1);
                         discountReturnModel.Discount.OldPrice = discount.OldPrice;
                         discountReturnModel.Discount.NewPrice = discount.NewPrice;
                         discountReturnModel.Message = "Success";
@@ -39,10 +39,10 @@ namespace AbatementHelper.WebAPI.Processors
                 }
                 else
                 {
-                    if (discount.Discount != 0)
+                    if (discount.Discount.HasValue)
                     {
                         //popunit novu cijenu
-                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice - (discount.Discount / 100 * discount.OldPrice), 2);
+                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice.Value - (discount.Discount.Value / 100 * discount.OldPrice.Value), 2);
                         discountReturnModel.Discount.OldPrice = discount.OldPrice;
                         discountReturnModel.Discount.Discount = discount.Discount;
                         discountReturnModel.Message = "Success";
@@ -56,12 +56,12 @@ namespace AbatementHelper.WebAPI.Processors
                     }
                 }
             }
-            else if (discount.NewPrice != 0)
+            else if (discount.NewPrice.HasValue)
             {
-                if (discount.Discount != 0)
+                if (discount.Discount.HasValue)
                 {
                     //popunit staru cijenu
-                    discountReturnModel.Discount.OldPrice = Math.Round(discount.NewPrice / discount.Discount * 100, 2);
+                    discountReturnModel.Discount.OldPrice = Math.Round(discount.NewPrice.Value / (1 - discount.Discount.Value / 100), 2);
                     discountReturnModel.Discount.NewPrice = discount.NewPrice;
                     discountReturnModel.Discount.Discount = discount.Discount;
                     discountReturnModel.Message = "Success";
@@ -74,7 +74,7 @@ namespace AbatementHelper.WebAPI.Processors
                     discountReturnModel.Success = false;
                 }
             }
-            else if (discount.Discount != 0)
+            else if (discount.Discount.HasValue)
             {
                 //error
                 discountReturnModel.Message = "Fill in at least two properties";

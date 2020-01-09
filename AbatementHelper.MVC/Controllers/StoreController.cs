@@ -15,6 +15,7 @@ using FluentValidation.Results;
 using AbatementHelper.MVC.Extensions;
 using PagedList;
 using AbatementHelper.MVC.ViewModels;
+using System.Globalization;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -97,27 +98,19 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
-        public async Task<ActionResult> CreateProduct(ProductViewModel productViewModel)
+        public async Task<ActionResult> CreateProduct(WebApiProduct product)
         {
-            DiscountValidator discountValidator = new DiscountValidator();
+            ModelStateResponse response = await store.CreateProductAsync(product);
 
-            productViewModel.Product.ProductOldPrice = productViewModel.Discount.OldPrice;
-            productViewModel.Product.ProductNewPrice = productViewModel.Discount.NewPrice;
-            productViewModel.Product.DiscountPercentage = productViewModel.Discount.Discount;
-
-            ValidationResult result = discountValidator.Validate(productViewModel);
-
-            if (!result.IsValid)
+            if (!response.IsValid)
             {
-                foreach (ValidationFailure failure in result.Errors)
+                foreach (var error in response.ModelSate)
                 {
-                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                    ModelState.AddModelError(error.Key, error.Value.First());
                 }
 
-                return View(productViewModel);
+                return View(product);
             }
-
-            Response response = await store.CreateProductAsync(productViewModel.Product);
 
             return RedirectToAction("GetAllProducts");
         }
@@ -141,7 +134,17 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditProduct")]
         public async Task<ActionResult> EditProduct(WebApiProduct product)
         {
-            Response editResponse = await store.EditProductAsync(product);
+            ModelStateResponse response = await store.EditProductAsync(product);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
+
+                return View(product);
+            }
 
             return RedirectToAction("GetAllProducts");
         }

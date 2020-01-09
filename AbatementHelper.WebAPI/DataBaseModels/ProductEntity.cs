@@ -16,10 +16,11 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
         [Required]
-        public double ProductOldPrice { get; set; }
+        public decimal? ProductOldPrice { get; set; }
         [Required]
-        public double ProductNewPrice { get; set; }
-        public double DiscountPercentage { get; set; }
+        public decimal? ProductNewPrice { get; set; }
+        [Required]
+        public decimal? DiscountPercentage { get; set; }
         [Required/*, Column(TypeName = "datetime2")*/]
         public string DiscountDateBegin { get; set; }
         [Required/*, Column(TypeName = "datetime2")*/]
