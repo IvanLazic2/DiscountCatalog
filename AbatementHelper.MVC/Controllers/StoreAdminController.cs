@@ -344,12 +344,6 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateManager")]
         public ActionResult CreateManager()
         {
-            //if (TempData["Message"] != null && TempData["Success"] != null)
-            //{
-            //    ViewBag.Message = TempData["Message"].ToString();
-            //    ViewBag.Success = (bool)TempData["Success"];
-            //}
-
             return View();
         }
 

@@ -64,15 +64,6 @@ namespace AbatementHelper.WebAPI.Validators
                 product.Discount = null;
             }
 
-            if (result.Errors.Count > 0)
-            {
-                result.Success = false;
-            }
-            else
-            {
-                result.Success = true;
-            }
-
             return result;
         }
     }

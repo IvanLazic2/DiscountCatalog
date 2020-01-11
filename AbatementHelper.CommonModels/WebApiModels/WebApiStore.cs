@@ -15,10 +15,8 @@ namespace AbatementHelper.CommonModels.WebApiModels
 
         public string WorkingHoursWeekBegin { get; set; }
         public string WorkingHoursWeekEnd { get; set; }
-
         public string WorkingHoursWeekendsBegin { get; set; }
         public string WorkingHoursWeekendsEnd { get; set; }
-
         public string WorkingHoursHolidaysBegin { get; set; }
         public string WorkingHoursHolidaysEnd { get; set; }
 
@@ -30,5 +28,12 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public List<WebApiManager> Managers { get; set; } = new List<WebApiManager>();
+
+        public DateTime? _WorkingHoursWeekBegin { get; set; }
+        public DateTime? _WorkingHoursWeekEnd { get; set; }
+        public DateTime? _WorkingHoursWeekendsBegin { get; set; }
+        public DateTime? _WorkingHoursWeekendsEnd { get; set; }
+        public DateTime? _WorkingHoursHolidaysBegin { get; set; }
+        public DateTime? _WorkingHoursHolidaysEnd { get; set; }
     }
 }

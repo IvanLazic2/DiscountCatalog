@@ -16,6 +16,9 @@ using System.Data.Entity;
 using System.Diagnostics;
 using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.EntityValidation;
+using AbatementHelper.WebAPI.Models.Result;
+using AbatementHelper.WebAPI.Validators;
+using FluentValidation.Results;
 
 namespace AbatementHelper.WebAPI.Repositories
 {
@@ -158,6 +161,18 @@ namespace AbatementHelper.WebAPI.Repositories
         {
             var response = new ModelStateResponse();
 
+            var storeValidation = new StoreValidation();
+
+            ModelStateResponse validationResponse = storeValidation.Validate(store);
+
+            if (!validationResponse.IsValid)
+            {
+                foreach (var error in validationResponse.ModelState)
+                {
+                    response.ModelState.Add(error.Key, error.Value);
+                }
+            }
+
             try
             {
                 using (var context = new ApplicationUserDbContext())
@@ -168,17 +183,31 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
 
-                        processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
-                        processedStore.Approved = true;
-                        processedStore.Deleted = false;
+                        if (processedStore != null)
+                        {
+                            processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
 
-                        context.Stores.Add(processedStore);
+                            if (processedStore.StoreAdmin != null)
+                            {
+                                if (response.IsValid)
+                                {
+                                    processedStore.Approved = true;
+                                    processedStore.Deleted = false;
 
-                        await context.SaveChangesAsync();
+                                    context.Stores.Add(processedStore);
+
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                response.ModelState.Add(string.Empty, "Store administrator does not exist.");
+                            }
+                        }
                     }
                     else
                     {
-                        response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store {store.StoreName} already exists.");
+                        response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store name is already taken");
                     }
 
                     //try
@@ -219,6 +248,18 @@ namespace AbatementHelper.WebAPI.Repositories
         {
             var response = new ModelStateResponse();
 
+            var storeValidation = new StoreValidation();
+
+            ModelStateResponse validationResponse = storeValidation.Validate(store);
+
+            if (!validationResponse.IsValid)
+            {
+                foreach (var error in validationResponse.ModelState)
+                {
+                    response.ModelState.Add(error.Key, error.Value);
+                }
+            }
+
             try
             {
                 using (var context = new ApplicationUserDbContext())
@@ -232,22 +273,35 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             StoreEntity storeEntity = context.Stores.Find(store.Id);
 
-                            context.Stores.Attach(storeEntity);
+                            if (storeEntity != null)
+                            {
+                                if (response.IsValid)
+                                {
+                                    context.Stores.Attach(storeEntity);
 
-                            storeEntity.StoreName = store.StoreName;
-                            //storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
-                            //storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
-                            //storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
-                            storeEntity.Country = store.Country;
-                            storeEntity.City = store.City;
-                            storeEntity.PostalCode = store.PostalCode;
-                            storeEntity.Street = store.Street;
+                                    storeEntity.StoreName = store.StoreName;
+                                    storeEntity.WorkingHoursWeekBegin = store.WorkingHoursWeekBegin;
+                                    storeEntity.WorkingHoursWeekEnd = store.WorkingHoursWeekEnd;
+                                    storeEntity.WorkingHoursWeekendsBegin = store.WorkingHoursWeekendsBegin;
+                                    storeEntity.WorkingHoursWeekendsEnd = store.WorkingHoursWeekendsEnd;
+                                    storeEntity.WorkingHoursHolidaysBegin = store.WorkingHoursHolidaysBegin;
+                                    storeEntity.WorkingHoursHolidaysEnd = store.WorkingHoursHolidaysEnd;
+                                    storeEntity.Country = store.Country;
+                                    storeEntity.City = store.City;
+                                    storeEntity.PostalCode = store.PostalCode;
+                                    storeEntity.Street = store.Street;
 
-                            await context.SaveChangesAsync();
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                response.ModelState.Add(string.Empty, "Store does not exist.");
+                            }
                         }
                         else
                         {
-                            response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store {store.StoreName} already exists.");
+                            response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
                         }
                     }
                 }

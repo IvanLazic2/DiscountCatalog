@@ -11,9 +11,6 @@ namespace AbatementHelper.WebAPI.Validators
     {
         public DiscountValidator()
         {
-            //RuleFor(p => p.ProductNewPrice)
-            //    .LessThan(p => p.ProductOldPrice).WithMessage();
-
             RuleFor(d => d.NewPrice)
                 .LessThan(d => d.OldPrice).WithMessage("New price has to be a discount!")
                 .Unless(d => !d.OldPrice.HasValue);

@@ -245,23 +245,31 @@
     <Compile Include="DataBaseModels\StoreEntity.cs" />
     <Compile Include="EntityValidation\ManagerValidation.cs" />
     <Compile Include="EntityValidation\ProductValidation.cs" />
+    <Compile Include="EntityValidation\StoreValidation.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IManagerValidation.cs" />
     <Compile Include="Interfaces\IProductValidation.cs" />
+    <Compile Include="Interfaces\IStoreValidation.cs" />
     <Compile Include="Migrations\202001072044016_double.cs" />
     <Compile Include="Migrations\202001072044016_double.Designer.cs">
       <DependentUpon>202001072044016_double.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001112334154_workinghours.cs" />
+    <Compile Include="Migrations\202001112334154_workinghours.Designer.cs">
+      <DependentUpon>202001112334154_workinghours.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\DiscountResponseModel.cs" />
+    <Compile Include="Models\Response models\DiscountResponseModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\ModelStateResponse.cs" />
-    <Compile Include="Models\PriceValidatorResult.cs" />
+    <Compile Include="Models\Response models\ModelStateResponse.cs" />
+    <Compile Include="Models\Response models\WorkingHoursResponseModel.cs" />
+    <Compile Include="Models\Validator results\PriceValidatorResult.cs" />
+    <Compile Include="Models\Validator results\WorkingHoursValidatorResult.cs" />
     <Compile Include="Processors\DiscountProcessor.cs" />
     <Compile Include="Processors\ExceptionProcessor.cs" />
     <Compile Include="Processors\ImageProcessor.cs" />
@@ -281,6 +289,8 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Validators\DiscountValidator.cs" />
     <Compile Include="Validators\PriceValidator.cs" />
+    <Compile Include="Validators\WorkingHoursModelValidator.cs" />
+    <Compile Include="Validators\WorkingHoursValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -380,6 +390,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202001072044016_double.resx">
       <DependentUpon>202001072044016_double.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001112334154_workinghours.resx">
+      <DependentUpon>202001112334154_workinghours.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

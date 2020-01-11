@@ -14,9 +14,15 @@ namespace AbatementHelper.WebAPI.DataBaseModels
         [Index(IsUnique = true), Required, StringLength(200)]
         public string StoreName { get; set; }
         public ICollection<ManagerEntity> Managers { get; set; }
-        public string WorkingHoursWeek { get; set; }
-        public string WorkingHoursWeekends { get; set; }
-        public string WorkingHoursHolidays { get; set; }
+        //public string WorkingHoursWeek { get; set; }
+        //public string WorkingHoursWeekends { get; set; }
+        //public string WorkingHoursHolidays { get; set; }
+        public string WorkingHoursWeekBegin { get; set; }
+        public string WorkingHoursWeekEnd { get; set; }
+        public string WorkingHoursWeekendsBegin { get; set; }
+        public string WorkingHoursWeekendsEnd { get; set; }
+        public string WorkingHoursHolidaysBegin { get; set; }
+        public string WorkingHoursHolidaysEnd { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }

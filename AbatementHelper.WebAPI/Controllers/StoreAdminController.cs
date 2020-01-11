@@ -3,8 +3,11 @@ using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
 using AbatementHelper.WebAPI.Models;
+using AbatementHelper.WebAPI.Models.Result;
 using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
+using AbatementHelper.WebAPI.Validators;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,7 +27,7 @@ namespace AbatementHelper.WebAPI.Controllers
         private void SimulateValidation(object model)
         {
             var validationContext = new ValidationContext(model, null, null);
-            var validationResults = new List<ValidationResult>();
+            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
             Validator.TryValidateObject(model, validationContext, validationResults, true);
             foreach (var validationResult in validationResults)
             {
@@ -88,7 +91,10 @@ namespace AbatementHelper.WebAPI.Controllers
                 {
                     ModelState.AddModelError(error.Key, error.Value);
                 }
+            }
 
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
             }
 

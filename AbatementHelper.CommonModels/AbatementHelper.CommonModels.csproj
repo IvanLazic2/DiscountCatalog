@@ -111,6 +111,7 @@
     <Compile Include="WebApiModels\WebApiStoreAssign.cs" />
     <Compile Include="WebApiModels\WebApiUser.cs" />
     <Compile Include="WebApiModels\WebApiUserCreate.cs" />
+    <Compile Include="WebApiModels\WorkingHoursModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

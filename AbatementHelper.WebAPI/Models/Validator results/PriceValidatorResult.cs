@@ -8,7 +8,24 @@ namespace AbatementHelper.WebAPI.Models
     public class PriceValidatorResult
     {
         public Dictionary<string, string> Errors { get; set; }
-        public bool Success { get; set; }
+        public bool Success
+        {
+            get
+            {
+                if (Errors.Count > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            private set
+            {
+
+            }
+        }
         public decimal? OldPrice { get; set; }
         public decimal? NewPrice { get; set; }
         public decimal? Discount { get; set; }
