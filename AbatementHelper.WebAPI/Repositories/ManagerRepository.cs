@@ -1,6 +1,7 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
+using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 using System;
@@ -39,7 +40,10 @@ namespace AbatementHelper.WebAPI.Repositories
                             {
                                 foreach (var store in storeEntities)
                                 {
-                                    stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
+                                    if (store.Approved && !store.Deleted)
+                                    {
+                                        stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
+                                    }
                                 }
                             }
                         }
@@ -69,37 +73,46 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public async Task<Response> EditStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
         {
-            var response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    StoreEntity storeEntity = await context.Stores.FindAsync(store.Id);
+                    StoreEntity existingStore = context.Stores.FirstOrDefault(s => s.StoreName == store.StoreName);
+                    StoreEntity originalStore = context.Stores.FirstOrDefault(s => s.Id == store.Id);
 
-                    context.Stores.Attach(storeEntity);
+                    if (existingStore != null)
+                    {
+                        if (existingStore.StoreName == originalStore.StoreName)
+                        {
+                            StoreEntity storeEntity = context.Stores.Find(store.Id);
 
-                    storeEntity.StoreName = store.StoreName;
-                    storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
-                    storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
-                    storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
-                    storeEntity.Country = store.Country;
-                    storeEntity.City = store.City;
-                    storeEntity.PostalCode = store.PostalCode;
-                    storeEntity.Street = store.Street;
+                            context.Stores.Attach(storeEntity);
 
-                    await context.SaveChangesAsync();
+                            storeEntity.StoreName = store.StoreName;
+                            //storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
+                            //storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
+                            //storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
+                            storeEntity.Country = store.Country;
+                            storeEntity.City = store.City;
+                            storeEntity.PostalCode = store.PostalCode;
+                            storeEntity.Street = store.Street;
 
-                    response.Message = "Successfully edited.";
-                    response.Success = true;
+                            await context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
+                        }
+                    }
                 }
             }
-            catch (DbUpdateException exception)
+            catch (Exception exception) //DbUpdateException
             {
-                response.Message = exception.InnerException.InnerException.Message;
-                response.Success = false;
+
             }
 
             return response;

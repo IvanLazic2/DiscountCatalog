@@ -51,7 +51,8 @@ namespace AbatementHelper.MVC.Repositories
 
             product.Store = new WebApiStore
             {
-                Id = HttpContext.Current.Request.Cookies["StoreID"].Value
+                Id = HttpContext.Current.Request.Cookies["StoreID"].Value,
+                StoreName = HttpContext.Current.Request.Cookies["StoreName"].Value
             };
 
             if (product.Store.Id != null)
@@ -80,7 +81,6 @@ namespace AbatementHelper.MVC.Repositories
             }
 
             return modelState;
-
         }
 
         public async Task<List<WebApiProduct>> GetAllProductsAsync()

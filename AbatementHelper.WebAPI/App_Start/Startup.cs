@@ -12,5 +12,9 @@ namespace AbatementHelper.WebAPI.App_Start
         {
             
         }
+
+        public void Testing()
+        {
+        }
     }
 }

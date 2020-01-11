@@ -81,7 +81,7 @@ namespace AbatementHelper.WebAPI.Processors
             {
                 user = mapper.Map<CreateManagerModel, ApplicationUser>(manager);
 
-                if (user != null)
+                if (user != null && user.Email != null)
                 {
                     user.Id = Guid.NewGuid().ToString();
                     user.UserName = manager.Email.Split('@')[0];

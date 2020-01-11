@@ -9,7 +9,7 @@ using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
 
-namespace AbatementHelper.WebAPI.DataBaseValidation
+namespace AbatementHelper.WebAPI.EntityValidation
 {
     public class ProductValidation : IProductValidation
     {

@@ -45,9 +45,11 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<Response> CreateStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> CreateStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
+
+            var modelState = new ModelStateResponse();
 
             store.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
@@ -57,16 +59,22 @@ namespace AbatementHelper.MVC.Repositeories
 
             HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/CreateStoreAsync", httpContent);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<Response>();
+            var resultContent = await request.Content.ReadAsStringAsync();
 
-                return resultContent;
-            }
-            else
+            if (!request.IsSuccessStatusCode)
             {
-                return null;
+                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                modelState.Message = modelStateResult.message;
+
+                if (modelStateResult.ModelState != null)
+                {
+                    modelState.ModelSate = modelStateResult.ModelState;
+                }
             }
+
+            return modelState;
         }
 
         public async Task<List<WebApiStore>> GetAllStoresAsync()
@@ -108,22 +116,30 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<Response> EditStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
 
+            var modelState = new ModelStateResponse();
+
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/EditStoreAsync", store);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<Response>();
+            var resultContent = await request.Content.ReadAsStringAsync();
 
-                return resultContent;
-            }
-            else
+            if (!request.IsSuccessStatusCode)
             {
-                return null;
+                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                modelState.Message = modelStateResult.message;
+
+                if (modelStateResult.ModelState != null)
+                {
+                    modelState.ModelSate = modelStateResult.ModelState;
+                }
             }
+
+            return modelState;
         }
 
         public async Task<Response> PostStoreImageAsync(WebApiPostImage image)
@@ -276,9 +292,11 @@ namespace AbatementHelper.MVC.Repositeories
             return null;
         }
 
-        public async Task<Response> CreateManagerAsync(CreateManagerModel user)
+        public async Task<ModelStateResponse> CreateManagerAsync(CreateManagerModel user)
         {
             AddTokenToHeader();
+
+            var modelState = new ModelStateResponse();
 
             user.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
@@ -290,15 +308,23 @@ namespace AbatementHelper.MVC.Repositeories
 
                 HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/CreateManagerAsync", httpContent);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+                var resultContent = await request.Content.ReadAsStringAsync();
 
-                    return resultContent;
+                if (!request.IsSuccessStatusCode)
+                {
+                    var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                    var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                    modelState.Message = modelStateResult.message;
+
+                    if (modelStateResult.ModelState != null)
+                    {
+                        modelState.ModelSate = modelStateResult.ModelState;
+                    }
                 }
             }
 
-            return null;
+            return modelState;
         }
 
         public async Task<WebApiManager> EditManagerAsync(string id)
@@ -320,22 +346,30 @@ namespace AbatementHelper.MVC.Repositeories
 
         }
 
-        public async Task<Response> EditManagerAsync(WebApiManager user)
+        public async Task<ModelStateResponse> EditManagerAsync(WebApiManager user)
         {
             AddTokenToHeader();
 
+            var modelState = new ModelStateResponse();
+
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/EditManagerAsync", user);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<Response>();
+            var resultContent = await request.Content.ReadAsStringAsync();
 
-                return resultContent;
-            }
-            else
+            if (!request.IsSuccessStatusCode)
             {
-                return null;
+                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+                modelState.Message = modelStateResult.message;
+
+                if (modelStateResult.ModelState != null)
+                {
+                    modelState.ModelSate = modelStateResult.ModelState;
+                }
             }
+
+            return modelState;
         }
 
         public async Task<Response> PostManagerImageAsync(WebApiPostImage image)

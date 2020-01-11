@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 using ExpressiveAnnotations.Attributes;
-using AbatementHelper.CommonModels.Attributes;
 using System.Globalization;
 
 namespace AbatementHelper.CommonModels.WebApiModels
@@ -39,10 +38,5 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public decimal? OldPrice { get; set; }
         public decimal? NewPrice { get; set; }
         public decimal? Discount { get; set; }
-
-        public WebApiProduct()
-        {
-            
-        }
     }
 }

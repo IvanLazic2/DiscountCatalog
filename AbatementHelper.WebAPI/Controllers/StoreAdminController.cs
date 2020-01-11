@@ -7,6 +7,7 @@ using AbatementHelper.WebAPI.Processors;
 using AbatementHelper.WebAPI.Repositories;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -20,6 +21,17 @@ namespace AbatementHelper.WebAPI.Controllers
     {
         private StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
+        private void SimulateValidation(object model)
+        {
+            var validationContext = new ValidationContext(model, null, null);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(model, validationContext, validationResults, true);
+            foreach (var validationResult in validationResults)
+            {
+                ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+            }
+        }
+
         [HttpGet]
         [Route("GetAllStoresAsync/{storeAdminId}")]
         public async Task<List<WebApiStore>> GetAllStoresAsync(string storeAdminId)
@@ -31,9 +43,26 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPost]
         [Route("CreateStoreAsync")]
-        public async Task<Response> CreateStoreAsync(WebApiStore store)
+        public async Task<IHttpActionResult> CreateStoreAsync(WebApiStore store)
         {
-            return await storeAdminRepository.CreateStoreAsync(store); ;
+            SimulateValidation(store);
+
+            ModelStateResponse response = await storeAdminRepository.CreateStoreAsync(store);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
         [HttpGet]
@@ -49,9 +78,21 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("EditStoreAsync")]
-        public async Task<Response> EditStoreAsync(WebApiStore store)
+        public async Task<IHttpActionResult> EditStoreAsync(WebApiStore store)
         {
-            return await storeAdminRepository.EditStoreAsync(store);
+            ModelStateResponse response = await storeAdminRepository.EditStoreAsync(store);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
         [HttpPut]
@@ -129,9 +170,28 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPost]
         [Route("CreateManagerAsync")]
-        public async Task<Response> CreateManagerAsync(CreateManagerModel manager)
+        public async Task<IHttpActionResult> CreateManagerAsync(CreateManagerModel manager)
         {
-            return await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
+            SimulateValidation(manager);
+
+            ModelStateResponse response = await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
         [HttpGet]
@@ -158,9 +218,28 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("EditManagerAsync")]
-        public async Task<Response> EditManager(WebApiManager manager)
+        public async Task<IHttpActionResult> EditManager(WebApiManager manager)
         {
-            return await storeAdminRepository.EditManager(manager);
+            SimulateValidation(manager);
+
+            ModelStateResponse response = await storeAdminRepository.EditManager(manager);
+
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
         }
 
         [HttpPut]

@@ -14,12 +14,13 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Data.Entity;
 using System.Diagnostics;
+using AbatementHelper.WebAPI.Extentions;
+using AbatementHelper.WebAPI.EntityValidation;
 
 namespace AbatementHelper.WebAPI.Repositories
 {
     public class StoreAdminRepository
     {
-
         public async Task<ApplicationUser> ReadUserById(string id)
         {
             using (var userManager = new UserManager())
@@ -61,27 +62,6 @@ namespace AbatementHelper.WebAPI.Repositories
 
             return user;
         }
-
-        //public async Task<ManagerEntity> FindManagerByUserIdAsync(string id)
-        //{
-        //    //var manager = new ManagerEntity();
-        //    //var stores = new List<StoreEntity>();
-
-        //    using (var context = new ApplicationUserDbContext())
-        //    {
-        //        //manager = context.Managers.Include(m => m.Stores)
-        //        //                          .Include(m => m.StoreAdmin).FirstOrDefault(m => m.User.Id == id);
-
-        //        //ApplicationUser user = await context.Users.FindAsync(id);
-
-        //        ManagerEntity manager = await context.Managers.FirstOrDefaultAsync(m => m.User.Id == id);
-
-        //        await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
-        //        await context.Entry(manager).Reference(m => m.User).LoadAsync();
-
-        //        return manager;
-        //    }
-        //}
 
         public async Task<List<WebApiManager>> GetStoreManagersAsync(string id)
         {
@@ -153,7 +133,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         context.Entry(store).Collection(s => s.Managers).Load();
 
-                        if (!store.Deleted && !store.Approved) //OVO PROMIJENIT U store.Approved (bez !)
+                        if (!store.Deleted && store.Approved) //OVO PROMIJENIT U store.Approved (bez !)
                         {
                             store.StoreAdmin = await context.Users.FindAsync(storeAdminId);
 
@@ -174,26 +154,32 @@ namespace AbatementHelper.WebAPI.Repositories
             return stores;
         }
 
-        public async Task<Response> CreateStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> CreateStoreAsync(WebApiStore store)
         {
-            var response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
+                    StoreEntity existingStore = context.Stores.FirstOrDefault(s => s.StoreName == store.StoreName);
 
-                    StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
+                    if (existingStore == null)
+                    {
+                        StoreEntity processedStore = StoreProcessor.WebApiStoreToStoreEntity(store);
 
-                    processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
-                    processedStore.Approved = true;
-                    processedStore.Deleted = false;
+                        processedStore.StoreAdmin = context.Users.Find(store.StoreAdminId);
+                        processedStore.Approved = true;
+                        processedStore.Deleted = false;
 
-                    context.Stores.Add(processedStore);
+                        context.Stores.Add(processedStore);
 
-                    await context.SaveChangesAsync();
-
-
+                        await context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store {store.StoreName} already exists.");
+                    }
 
                     //try
                     //{
@@ -219,53 +205,57 @@ namespace AbatementHelper.WebAPI.Repositories
                     //    }
                     //}
 
-
                 }
             }
-            catch (DbUpdateException exception)
+            catch (Exception exception)
             {
-                response.Message = exception.InnerException.InnerException.Message;
-                response.Success = false;
-            }
 
-            response.Message = "Successfully created";
-            response.Success = true;
+            }
 
             return response;
         }
 
-        public async Task<Response> EditStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
         {
-            var response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
-                    StoreEntity storeEntity = context.Stores.Find(store.Id);
+                    StoreEntity existingStore = context.Stores.FirstOrDefault(s => s.StoreName == store.StoreName);
+                    StoreEntity originalStore = context.Stores.FirstOrDefault(s => s.Id == store.Id);
 
-                    context.Stores.Attach(storeEntity);
+                    if (existingStore != null)
+                    {
+                        if (existingStore.StoreName == originalStore.StoreName)
+                        {
+                            StoreEntity storeEntity = context.Stores.Find(store.Id);
 
-                    storeEntity.StoreName = store.StoreName;
-                    storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
-                    storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
-                    storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
-                    storeEntity.Country = store.Country;
-                    storeEntity.City = store.City;
-                    storeEntity.PostalCode = store.PostalCode;
-                    storeEntity.Street = store.Street;
+                            context.Stores.Attach(storeEntity);
 
-                    await context.SaveChangesAsync();
+                            storeEntity.StoreName = store.StoreName;
+                            //storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
+                            //storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
+                            //storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
+                            storeEntity.Country = store.Country;
+                            storeEntity.City = store.City;
+                            storeEntity.PostalCode = store.PostalCode;
+                            storeEntity.Street = store.Street;
+
+                            await context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store {store.StoreName} already exists.");
+                        }
+                    }
                 }
             }
-            catch (DbUpdateException exception)
+            catch (Exception exception) //DbUpdateException
             {
-                response.Message = exception.InnerException.InnerException.Message;
-                response.Success = false;
-            }
 
-            response.Message = "Successfully edited.";
-            response.Success = true;
+            }
 
             return response;
         }
@@ -416,7 +406,7 @@ namespace AbatementHelper.WebAPI.Repositories
                         context.Entry(manager).Reference(m => m.User).Load();
                         context.Entry(manager).Collection(m => m.Stores).Load();
 
-                        if (!manager.User.Deleted && !manager.User.Approved) //MAKNIT ! SA Approved
+                        if (!manager.User.Deleted && manager.User.Approved)
                         {
                             tasks.Add(Task.Run(() => ManagerProcessor.ManagerEntityToWebApiManagerAsync(manager)));
                         }
@@ -436,9 +426,9 @@ namespace AbatementHelper.WebAPI.Repositories
             return managers;
         }
 
-        public async Task<Response> CreateManagerAsync(CreateManagerModel user, string password)
+        public async Task<ModelStateResponse> CreateManagerAsync(CreateManagerModel user, string password)
         {
-            var response = new Response();
+            var response = new ModelStateResponse();
 
             ApplicationUser processedUser = ManagerProcessor.CreateManagerModelToApplicationUser(user);
 
@@ -446,32 +436,44 @@ namespace AbatementHelper.WebAPI.Repositories
             {
                 using (var userManager = new UserManager())
                 {
-                    await userManager.CreateAsync(processedUser, password);
-                    await userManager.AddToRoleAsync(processedUser.Id, "Manager");
-                }
+                    processedUser.Approved = true; //za sad
 
-                using (var context = new ApplicationUserDbContext())
-                {
-                    ApplicationUser applicationUser = await context.Users.FindAsync(processedUser.Id);
-                    ApplicationUser storeAdmin = await context.Users.FindAsync(user.StoreAdminId);
+                    var createResult = await userManager.CreateAsync(processedUser, password);
 
-                    context.Managers.Add(new ManagerEntity
+                    if (!createResult.Succeeded)
                     {
-                        User = applicationUser,
-                        StoreAdmin = storeAdmin
-                    });
+                        var managerValidation = new ManagerValidation();
 
-                    await context.SaveChangesAsync();
+                        ModelStateResponse managerValidationResult = await managerValidation.ValidateAsync(processedUser);
+
+                        if (!managerValidationResult.IsValid)
+                        {
+                            foreach (var error in managerValidationResult.ModelState)
+                            {
+                                response.ModelState.Add(error.Key, error.Value);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var roleResult = await userManager.AddToRoleAsync(processedUser.Id, "Manager");
+
+                        if (!roleResult.Succeeded)
+                        {
+                            foreach (var error in roleResult.Errors)
+                            {
+                                response.ModelState.Add(string.Empty, error);
+                            }
+                        }
+                    }
                 }
-
-                response.Message = "Created successfully";
-                response.Success = true;
             }
-            catch (DbEntityValidationException exception)
+            catch (Exception exception) //DbEntityValidationException
             {
-                var ex = ExceptionProcessor.processException(exception);
-                response.Message = ex.Message;
-                response.Success = false;
+
+                //var ex = ExceptionProcessor.processException(exception);
+                //response.Message = ex.Message;
+                //response.Success = false;
             }
 
             return response;
@@ -479,17 +481,15 @@ namespace AbatementHelper.WebAPI.Repositories
 
 
 
-        public async Task<Response> EditManager(WebApiManager user)
+        public async Task<ModelStateResponse> EditManager(WebApiManager user)
         {
-            var response = new Response();
+            var response = new ModelStateResponse();
 
             try
             {
-                using (var context = new ApplicationUserDbContext())
+                using (var userManager = new UserManager())
                 {
-                    ApplicationUser userEntity = context.Users.Find(user.Id);
-
-                    context.Users.Attach(userEntity);
+                    ApplicationUser userEntity = await userManager.FindByIdAsync(user.Id);
 
                     userEntity.UserName = user.UserName;
                     userEntity.FirstName = user.FirstName;
@@ -502,17 +502,49 @@ namespace AbatementHelper.WebAPI.Repositories
                     userEntity.Street = user.Street;
                     userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
 
-                    await context.SaveChangesAsync();
+                    var managerValidation = new ManagerValidation();
 
-                    response.Message = "Successfully edited.";
-                    response.Success = true;
+                    var updateResult = await userManager.UpdateAsync(userEntity);
+
+                    if (!updateResult.Succeeded)
+                    {
+                        foreach (var error in updateResult.Errors)
+                        {
+                            response.ModelState.Add(string.Empty, error);
+                        }
+                    }
+
                 }
             }
-            catch (DbEntityValidationException exception)
+            catch (Exception exception) //DbEntityValidationException
             {
-                var ex = ExceptionProcessor.processException(exception);
-                response.Message = ex.Message;
-                response.Success = false;
+                //var ex = ExceptionProcessor.processException(exception);
+                //response.Message = ex.Message;
+                //response.Success = false;
+
+                string type = exception.GetType().ToString();
+
+                if (exception is DbUpdateException)
+                {
+                    DbUpdateException ex = exception as DbUpdateException;
+
+                    var entities = ex.Entries;
+
+                    foreach (var entity in entities)
+                    {
+                        ApplicationUser userEntitiy = entity.Entity as ApplicationUser;
+
+                        using (var userManager = new UserManager())
+                        {
+                            ApplicationUser originalEntity = await userManager.FindByIdAsync(userEntitiy.Id);
+
+                            if (originalEntity.Email != userEntitiy.Email)
+                            {
+                                response.ModelState.Add(ObjectExtensions.GetPropertyName(() => userEntitiy.Email), "Email is already taken.");
+                            }
+                        }
+                    }
+                }
             }
 
             return response;

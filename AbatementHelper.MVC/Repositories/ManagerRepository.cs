@@ -1,5 +1,6 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
+using AbatementHelper.MVC.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -101,23 +102,30 @@ namespace AbatementHelper.MVC.Repositories
             return null;
         }
 
-        public async Task<Response> EditStoreAsync(WebApiStore store)
+        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
 
-            if (store != null)
+            var modelState = new ModelStateResponse();
+
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Manager/EditStoreAsync", store);
+
+            var resultContent = await request.Content.ReadAsStringAsync();
+
+            if (!request.IsSuccessStatusCode)
             {
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Manager/EditStoreAsync", store);
+                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
 
-                if (request.IsSuccessStatusCode)
+                modelState.Message = modelStateResult.message;
+
+                if (modelStateResult.ModelState != null)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
-
-                    return resultContent;
+                    modelState.ModelSate = modelStateResult.ModelState;
                 }
             }
 
-            return null;
+            return modelState;
         }
 
         public async Task<WebApiStore> DetailsStoreAsync(string id)

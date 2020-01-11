@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using AbatementHelper.MVC.Extensions;
 using System.Threading.Tasks;
+using AbatementHelper.MVC.Models;
 
 namespace AbatementHelper.MVC.Controllers
 {
@@ -108,10 +109,17 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditStore")]
         public async Task<ActionResult> EditStore(WebApiStore store)
         {
-            Response editStoreResponse = await manager.EditStoreAsync(store);
+            ModelStateResponse response = await manager.EditStoreAsync(store);
 
-            TempData["Message"] = editStoreResponse.Message;
-            TempData["Success"] = editStoreResponse.Success;
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
+
+                return View(store);
+            }
 
             return RedirectToAction("GetAllStores");
         }

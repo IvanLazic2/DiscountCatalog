@@ -93,10 +93,17 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateStore")]
         public async Task<ActionResult> CreateStore(WebApiStore store)
         {
-            Response createStoreResponse = await storeAdmin.CreateStoreAsync(store);
+            ModelStateResponse response = await storeAdmin.CreateStoreAsync(store);
 
-            TempData["Message"] = createStoreResponse.Message;
-            TempData["Success"] = createStoreResponse.Success;
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
+
+                return View(store);
+            }
 
             return RedirectToAction("GetAllStores");
         }
@@ -114,10 +121,17 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditStore")]
         public async Task<ActionResult> EditStore(WebApiStore store)
         {
-            Response editStoreResponse = await storeAdmin.EditStoreAsync(store);
+            ModelStateResponse response = await storeAdmin.EditStoreAsync(store);
 
-            TempData["Message"] = editStoreResponse.Message;
-            TempData["Success"] = editStoreResponse.Success;
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
+
+                return View(store);
+            }
 
             return RedirectToAction("GetAllStores");
         }
@@ -299,11 +313,11 @@ namespace AbatementHelper.MVC.Controllers
 
             List<WebApiManager> managers = await storeAdmin.GetAllManagersAsync();
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
-            {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
-            }
+            //if (TempData["Message"] != null && TempData["Success"] != null)
+            //{
+            //    ViewBag.Message = TempData["Message"].ToString();
+            //    ViewBag.Success = (bool)TempData["Success"];
+            //}
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -330,11 +344,11 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateManager")]
         public ActionResult CreateManager()
         {
-            if (TempData["Message"] != null && TempData["Success"] != null)
-            {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
-            }
+            //if (TempData["Message"] != null && TempData["Success"] != null)
+            //{
+            //    ViewBag.Message = TempData["Message"].ToString();
+            //    ViewBag.Success = (bool)TempData["Success"];
+            //}
 
             return View();
         }
@@ -343,19 +357,19 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateManager")]
         public async Task<ActionResult> CreateManager(CreateManagerModel manager)
         {
-            Response response = await storeAdmin.CreateManagerAsync(manager);
+            ModelStateResponse response = await storeAdmin.CreateManagerAsync(manager);
 
-            TempData["Message"] = response.Message;
-            TempData["Success"] = response.Success;
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
 
-            if (response.Success)
-            {
-                return RedirectToAction("GetAllManagers");
+                return View(manager);
             }
-            else
-            {
-                return RedirectToAction("CreateManager");
-            }
+
+            return RedirectToAction("GetAllManagers");
         }
 
         [HttpGet]
@@ -386,19 +400,19 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditManager")]
         public async Task<ActionResult> EditManager(WebApiManager manager)
         {
-            Response editManagerResponse = await storeAdmin.EditManagerAsync(manager);
+            ModelStateResponse response = await storeAdmin.EditManagerAsync(manager);
 
-            TempData["Message"] = editManagerResponse.Message;
-            TempData["Success"] = editManagerResponse.Success;
+            if (!response.IsValid)
+            {
+                foreach (var error in response.ModelSate)
+                {
+                    ModelState.AddModelError(error.Key, error.Value.First());
+                }
 
-            if (editManagerResponse.Success)
-            {
-                return RedirectToAction("GetAllManagers");
+                return View(manager);
             }
-            else
-            {
-                return RedirectToAction("EditManager");
-            }
+
+            return RedirectToAction("GetAllManagers");
         }
         
         [Route("PostManagerImage")]

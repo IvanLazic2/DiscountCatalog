@@ -93,7 +93,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\IsNumericAttribute.cs" />
     <Compile Include="CreateModels\CreateManagerModel.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
@@ -107,7 +106,6 @@
     <Compile Include="WebApiModels\WebApiResultModels.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Response.cs" />
-    <Compile Include="Processors\ModelProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApiModels\WebApiStore.cs" />
     <Compile Include="WebApiModels\WebApiStoreAssign.cs" />

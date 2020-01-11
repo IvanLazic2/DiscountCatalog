@@ -1,7 +1,7 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
-using AbatementHelper.WebAPI.DataBaseValidation;
+using AbatementHelper.WebAPI.EntityValidation;
 using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;

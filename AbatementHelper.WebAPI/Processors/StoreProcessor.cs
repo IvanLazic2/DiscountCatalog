@@ -54,7 +54,8 @@ namespace AbatementHelper.WebAPI.Processors
                     .ForMember(s => s.Managers, act => act.Ignore())
                     .ForMember(s => s.StoreAdmin, act => act.Ignore())
                     .ForMember(s => s.Products, act => act.Ignore())
-                    .ForMember(s => s.StoreImage, act => act.Ignore());
+                    .ForMember(s => s.StoreImage, act => act.Ignore())
+                    .ForMember(s => s.Id, act => act.Ignore());
             });
 
             IMapper mapper = config.CreateMapper();

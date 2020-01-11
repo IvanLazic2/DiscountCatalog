@@ -243,11 +243,13 @@
     <Compile Include="DataBaseModels\ManagerEntity.cs" />
     <Compile Include="DataBaseModels\ProductEntity.cs" />
     <Compile Include="DataBaseModels\StoreEntity.cs" />
-    <Compile Include="DataBaseValidation\ProductValidation.cs" />
+    <Compile Include="EntityValidation\ManagerValidation.cs" />
+    <Compile Include="EntityValidation\ProductValidation.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IManagerValidation.cs" />
     <Compile Include="Interfaces\IProductValidation.cs" />
     <Compile Include="Migrations\202001072044016_double.cs" />
     <Compile Include="Migrations\202001072044016_double.Designer.cs">
