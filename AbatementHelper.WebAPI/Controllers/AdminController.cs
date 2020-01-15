@@ -24,14 +24,25 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("GetAllUsersAsync")]
         public async Task<WebApiListOfUsersResult> GetAllUsersAsync()
         {
-            var users = await adminRepository.ReadAllUsersAsync();
+            var result = new WebApiListOfUsersResult();
 
-            return new WebApiListOfUsersResult
-            {
-                Value = users,
-                Success = true
-            };
+            List<WebApiUser> users = await adminRepository.ReadAllUsersAsync();
+
+            result.Users = users;
+
+            return result;
         }
+
+        [HttpGet]
+        [Route("GetAllStoresAsync")]
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync()
+        {
+            var result = new WebApiListOfStoresResult();
+
+            //repo
+
+            return result;
+        } 
 
         [HttpGet]
         [Route("EditAsync/{id}")]
@@ -79,5 +90,7 @@ namespace AbatementHelper.WebAPI.Controllers
 
             return Ok();
         }
+
+        //Approve / Refuse 
     }
 }

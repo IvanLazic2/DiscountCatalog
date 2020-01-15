@@ -71,10 +71,10 @@ namespace AbatementHelper.WebAPI.EntityValidation
                     response.ModelState.Add(ObjectExtensions.GetPropertyName(() => webApiProduct.DiscountDateEnd), "Discount end date cannot be earlier or same as discount begin date!");
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
-                throw;
+                response.Exception = exception;
+                response.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
             return response;

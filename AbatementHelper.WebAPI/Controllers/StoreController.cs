@@ -36,16 +36,29 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllProductsAsync/{id}")]
-        public async Task<List<WebApiProduct>> GetAllProductsAsync(string id)
+        public async Task<WebApiListOfProductsResult> GetAllProductsAsync(string id)
         {
-            return await storeRepository.GetAllProductsAsync(id);
+            WebApiListOfProductsResult result = await storeRepository.GetAllProductsAsync(id);
+
+            return result;
+        }
+
+        [HttpGet]
+        [Route("GetAllActiveProductsAsync/{id}")]
+        public async Task<WebApiListOfProductsResult> GetAllActiveProductsAsync(string id)
+        {
+            WebApiListOfProductsResult result = await storeRepository.GetAllActiveProductsAsync(id);
+
+            return result;
         }
 
         [HttpPost]
         [Route("CreateProductAsync")]
-        public async Task<IHttpActionResult> CreateProductAsync(WebApiProduct product)
+        public async Task<WebApiResult> CreateProductAsync(WebApiProduct product)
         {
-            SimulateValidation(product);
+            //SimulateValidation(product);
+
+            var result = new WebApiResult();
 
             var priceValidator = new PriceValidator();
             var discountValidator = new DiscountValidator();
@@ -56,10 +69,10 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (var error in priceValidatorResult.Errors)
                 {
-                    ModelState.AddModelError(error.Key, error.Value);
+                    result.ModelState.Add(error.Key, error.Value);
                 }
 
-                return BadRequest(ModelState);
+                return result;
             }
 
             product.OldPrice = priceValidatorResult.OldPrice;
@@ -72,35 +85,24 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (ValidationFailure failure in discountValidatorResult.Errors)
                 {
-                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                    result.ModelState.Add(failure.PropertyName, failure.ErrorMessage);
                 }
 
-                return BadRequest(ModelState);
+                return result;
             }
 
-            ModelStateResponse response = await storeRepository.CreateProductAsync(product);
+            result = await storeRepository.CreateProductAsync(product);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpPut]
         [Route("EditProductAsync")]
-        public async Task<IHttpActionResult> EditProductAsync(WebApiProduct product)
+        public async Task<WebApiResult> EditProductAsync(WebApiProduct product)
         {
-            SimulateValidation(product);
+            //SimulateValidation(product);
+
+            var result = new WebApiResult();
             
             var priceValidator = new PriceValidator();
             var discountValidator = new DiscountValidator();
@@ -111,10 +113,10 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (var error in priceValidatorResult.Errors)
                 {
-                    ModelState.AddModelError(error.Key, error.Value);
+                    result.ModelState.Add(error.Key, error.Value);
                 }
 
-                return BadRequest(ModelState);
+                return result;
             }
 
             product.OldPrice = priceValidatorResult.OldPrice;
@@ -127,78 +129,69 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (ValidationFailure failure in discountValidatorResult.Errors)
                 {
-                    ModelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
+                    result.ModelState.Add(failure.PropertyName, failure.ErrorMessage);
                 }
 
-                return BadRequest(ModelState);
+                return result;
             }
 
-            ModelStateResponse response = await storeRepository.EditProductAsync(product);
+            result = await storeRepository.EditProductAsync(product);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("ProductDetailsAsync/{id}")]
-        public async Task<WebApiProduct> ProductDetailsAsync(string id)
+        public async Task<WebApiProductResult> ProductDetailsAsync(string id)
         {
-            ProductEntity product = await storeRepository.ReadProductByIdAsync(id);
+            WebApiProductResult result = await storeRepository.ReadProductByIdAsync(id);
 
-            return await ProductProcessor.ProductEntityToWebApiProductAsync(product);
+            return result;
         }
 
         [HttpPut]
         [Route("DeleteProductAsync/{id}")]
-        public async Task<IHttpActionResult> DeleteProductAsync(string id)
+        public async Task<WebApiResult> DeleteProductAsync(string id)
         {
-            await storeRepository.DeleteProductAsync(id);
+            WebApiResult result = await storeRepository.DeleteProductAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("GetAllDeletedProductsAsync/{id}")]
-        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync(string id)
+        public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync(string id)
         {
-            return await storeRepository.GetAllDeletedProductsAsync(id);
+            WebApiListOfProductsResult result = await storeRepository.GetAllDeletedProductsAsync(id);
+
+            return result;
         }
 
         [HttpPut]
         [Route("RestoreProductAsync/{id}")]
-        public async Task<IHttpActionResult> RestoreProductAsync(string id)
+        public async Task<WebApiResult> RestoreProductAsync(string id)
         {
-            await storeRepository.RestoreProductAsync(id);
+            WebApiResult result = await storeRepository.RestoreProductAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("GetAllExpiredProductsAsync/{id}")]
-        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync(string id)
+        public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync(string id)
         {
-            return await storeRepository.GetAllExpiredProductsAsync(id);
+            WebApiListOfProductsResult result = await storeRepository.GetAllExpiredProductsAsync(id);
+
+            return result;
         }
 
         [HttpPut]
         [Route("PostProductImageAsync")]
-        public async Task<Response> PostProductImageAsync(WebApiPostImage product)
+        public async Task<WebApiResult> PostProductImageAsync(WebApiPostImage product)
         {
-            Response response = await storeRepository.PostProductImageAsync(product);
+            WebApiResult result = await storeRepository.PostProductImageAsync(product);
 
-            return response;
+            return result;
         }
 
         [HttpGet]
@@ -207,7 +200,9 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             byte[] byteArray = await storeRepository.GetProductImageAsync(id);
 
-            return ImageProcessor.CreateThumbnail(byteArray);
+            //return ImageProcessor.CreateThumbnail(byteArray);
+
+            return byteArray;
         }
     }
 }

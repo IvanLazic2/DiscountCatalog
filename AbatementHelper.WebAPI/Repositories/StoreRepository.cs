@@ -16,8 +16,49 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class StoreRepository
     {
-        public async Task<List<WebApiProduct>> GetAllProductsAsync(string id)
+        public async Task<WebApiListOfProductsResult> GetAllProductsAsync(string id)
         {
+            var result = new WebApiListOfProductsResult();
+
+            var products = new List<WebApiProduct>();
+
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    var tasks = new List<Task<WebApiProduct>>();
+
+                    List<ProductEntity> productEntities = context.Products.Where(p => p.Store.Id == id && !p.Deleted).ToList();
+
+                    if (productEntities != null)
+                    {
+                        foreach (var product in productEntities)
+                        {
+                            product.Store = await GetStoreAsync(id);
+                            tasks.Add(Task.Run(() => ProductProcessor.ProductEntityToWebApiProductAsync(product)));
+                        }
+
+                        var results = await Task.WhenAll(tasks);
+
+                        products = results.ToList();
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
+            }
+
+            result.Products = products;
+
+            return result;
+        }
+
+        public async Task<WebApiListOfProductsResult> GetAllActiveProductsAsync(string id)
+        {
+            var result = new WebApiListOfProductsResult();
+
             List<WebApiProduct> products = new List<WebApiProduct>();
 
             try
@@ -44,11 +85,13 @@ namespace AbatementHelper.WebAPI.Repositories
             }
             catch (Exception exception)
             {
-
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return products;
+            result.Products = products;
+
+            return result;
         }
 
         public async Task<StoreEntity> GetStoreAsync(string id)
@@ -61,9 +104,9 @@ namespace AbatementHelper.WebAPI.Repositories
             }
         }
 
-        public async Task<ModelStateResponse> CreateProductAsync(WebApiProduct product)
+        public async Task<WebApiResult> CreateProductAsync(WebApiProduct product)
         {
-            var response = new ModelStateResponse();
+            var result = new WebApiResult();
 
             try
             {
@@ -95,33 +138,48 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         processedProduct.Store = await context.Stores.FindAsync(product.Store.Id);
 
-                        processedProduct.Deleted = false;
-                        processedProduct.Approved = true;
+                        if (processedProduct.Store == null)
+                        {
+                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                        }
+                        else
+                        {
+                            processedProduct.Deleted = false;
+                            processedProduct.Approved = true;
 
-                        processedProduct.DateCreated = DateTime.Now;
+                            processedProduct.DateCreated = DateTime.Now;
 
-                        context.Products.Add(processedProduct);
+                            context.Products.Add(processedProduct);
 
-                        await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
+
+                            result.Message = "Product created.";
+                        }
                     }
                 }
                 else
                 {
-                    response = modelState;
+                    foreach (var error in modelState.ModelState)
+                    {
+                        result.ModelState.Add(error.Key, error.Value);
+                    }
+
+                    result.Exception = modelState.Exception;
                 }
 
             }
             catch (Exception exception)
             {
-                //response.Message = exception.InnerException.InnerException.Message;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return response;
+            return result;
         }
 
-        public async Task<ModelStateResponse> EditProductAsync(WebApiProduct product)
+        public async Task<WebApiResult> EditProductAsync(WebApiProduct product)
         {
-            var response = new ModelStateResponse();
+            var result = new WebApiResult();
 
             try
             {
@@ -152,62 +210,122 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         ProductEntity productEntity = await context.Products.FindAsync(product.Id);
 
-                        context.Products.Attach(productEntity);
+                        if (productEntity == null)
+                        {
+                            result.ModelState.Add(string.Empty, "Product does not exist.");
+                        }
+                        else
+                        {
+                            context.Products.Attach(productEntity);
 
-                        productEntity.ProductName = processedProduct.ProductName;
-                        productEntity.CompanyName = processedProduct.CompanyName;
-                        productEntity.ProductOldPrice = processedProduct.ProductOldPrice;
-                        productEntity.ProductNewPrice = processedProduct.ProductNewPrice;
-                        productEntity.DiscountPercentage = processedProduct.DiscountPercentage;
-                        productEntity.DiscountDateBegin = processedProduct.DiscountDateBegin;
-                        productEntity.DiscountDateEnd = processedProduct.DiscountDateEnd;
-                        productEntity.Quantity = processedProduct.Quantity;
-                        productEntity.Description = processedProduct.Description;
-                        productEntity.Note = processedProduct.Note;
+                            productEntity.ProductName = processedProduct.ProductName;
+                            productEntity.CompanyName = processedProduct.CompanyName;
+                            productEntity.ProductOldPrice = processedProduct.ProductOldPrice;
+                            productEntity.ProductNewPrice = processedProduct.ProductNewPrice;
+                            productEntity.DiscountPercentage = processedProduct.DiscountPercentage;
+                            productEntity.DiscountDateBegin = processedProduct.DiscountDateBegin;
+                            productEntity.DiscountDateEnd = processedProduct.DiscountDateEnd;
+                            productEntity.Quantity = processedProduct.Quantity;
+                            productEntity.Description = processedProduct.Description;
+                            productEntity.Note = processedProduct.Note;
 
-                        await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
+
+                            result.Message = "Product updated.";
+                        }
                     }
                 }
                 else
                 {
-                    response = modelState;
+                    foreach (var error in modelState.ModelState)
+                    {
+                        result.ModelState.Add(error.Key, error.Value);
+                    }
+
+                    result.Exception = modelState.Exception;
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return response;
+            return result;
         }
 
-        public async Task<ProductEntity> ReadProductByIdAsync(string id)
+        public async Task<WebApiProductResult> ReadProductByIdAsync(string id)
         {
-            using (var context = new ApplicationUserDbContext())
+            var result = new WebApiProductResult();
+
+            try
             {
-                ProductEntity product = await context.Products.FindAsync(id);
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ProductEntity product = await context.Products.FindAsync(id);
 
-                return product;
+                    if (product != null)
+                    {
+                        WebApiProduct webApiProduct = await ProductProcessor.ProductEntityToWebApiProductAsync(product);
+
+                        result.Product = webApiProduct;
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                    }
+                }
             }
-        }
-
-        public async Task DeleteProductAsync(string id)
-        {
-            using (var context = new ApplicationUserDbContext())
+            catch (Exception exception)
             {
-                ProductEntity product = await context.Products.FindAsync(id);
-
-                context.Products.Attach(product);
-
-                product.Deleted = true;
-
-                await context.SaveChangesAsync();
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
+
+
+            return result;
         }
 
-        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync(string id)
+        public async Task<WebApiResult> DeleteProductAsync(string id)
         {
-            List<WebApiProduct> products = new List<WebApiProduct>();
+            var result = new WebApiResult();
+
+            try
+            {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ProductEntity product = await context.Products.FindAsync(id);
+
+                    if (product != null)
+                    {
+                        context.Products.Attach(product);
+
+                        product.Deleted = true;
+
+                        await context.SaveChangesAsync();
+
+                        result.Message = "Product deleted.";
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
+            }
+
+            return result;
+        }
+
+        public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync(string id)
+        {
+            var result = new WebApiListOfProductsResult();
+
+            var products = new List<WebApiProduct>();
 
             try
             {
@@ -234,29 +352,54 @@ namespace AbatementHelper.WebAPI.Repositories
             }
             catch (Exception exception)
             {
-
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return products;
+            result.Products = products;
+
+            return result;
         }
 
-        public async Task RestoreProductAsync(string id)
+        public async Task<WebApiResult> RestoreProductAsync(string id)
         {
-            using (var context = new ApplicationUserDbContext())
+            var result = new WebApiResult();
+
+            try
             {
-                ProductEntity product = await context.Products.FindAsync(id);
+                using (var context = new ApplicationUserDbContext())
+                {
+                    ProductEntity product = await context.Products.FindAsync(id);
 
-                context.Products.Attach(product);
+                    if (product != null)
+                    {
+                        context.Products.Attach(product);
 
-                product.Deleted = false;
+                        product.Deleted = false;
 
-                await context.SaveChangesAsync();
+                        await context.SaveChangesAsync();
+
+                        result.Message = "Product restored.";
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                    }
+                }
             }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
+            }
+
+            return result;
         }
 
-        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync(string id)
+        public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync(string id)
         {
+            var result = new WebApiListOfProductsResult();
+
             List<WebApiProduct> products = new List<WebApiProduct>();
 
             try
@@ -284,15 +427,20 @@ namespace AbatementHelper.WebAPI.Repositories
             }
             catch (Exception exception)
             {
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return products;
+            result.Products = products;
+
+            return result;
         }
 
-        public async Task<Response> PostProductImageAsync(WebApiPostImage product)
+        public async Task<WebApiResult> PostProductImageAsync(WebApiPostImage product)
         {
-            Response response = new Response();
+            var result = new WebApiResult();
+
+            var webApiProduct = new WebApiProduct();
 
             byte[] image = product.Image;
 
@@ -304,30 +452,34 @@ namespace AbatementHelper.WebAPI.Repositories
                     {
                         ProductEntity productEntity = await context.Products.FindAsync(product.Id);
 
-                        context.Products.Attach(productEntity);
+                        if (productEntity != null)
+                        {
+                            context.Products.Attach(productEntity);
 
-                        productEntity.ProductImage = image;
+                            productEntity.ProductImage = image;
 
-                        await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
+
+                            result.Message = "Image saved.";
+                        }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "Product does not exist.");
+                        }
                     }
                 }
                 catch (Exception exception)
                 {
-                    response.Message = exception.InnerException.InnerException.Message;
-                    response.Success = false;
+                    result.Exception = exception;
+                    result.ModelState.Add(string.Empty, "An exception has occured.");
                 }
-
-                response.Message = "Successfully uploaded.";
-                response.Success = true;
             }
             else
             {
-                response.Message = "Invalid image type";
-                response.Success = false;
+                result.ModelState.Add(string.Empty, "Invalid image type.");
             }
 
-
-            return response;
+            return result;
         }
 
         public async Task<byte[]> GetProductImageAsync(string id)

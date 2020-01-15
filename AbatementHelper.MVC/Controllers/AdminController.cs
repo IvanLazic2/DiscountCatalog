@@ -42,7 +42,7 @@ namespace AbatementHelper.MVC.Controllers
 
             WebApiListOfUsersResult result = await admin.GetAllUsersAsync();
 
-            List<WebApiUser> users = result.Value;
+            List<WebApiUser> users = result.Users;
 
             if (TempData["Message"] != null && TempData["Success"] != null)
             {

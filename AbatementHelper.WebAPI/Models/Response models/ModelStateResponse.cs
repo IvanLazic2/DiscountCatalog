@@ -26,5 +26,7 @@ namespace AbatementHelper.WebAPI.Models
             {
             }
         }
+        public Exception Exception { get; set; }
+        public string Message { get; set; }
     }
 }

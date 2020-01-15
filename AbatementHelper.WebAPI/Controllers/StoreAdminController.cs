@@ -37,77 +37,49 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllStoresAsync/{storeAdminId}")]
-        public async Task<List<WebApiStore>> GetAllStoresAsync(string storeAdminId)
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync(string storeAdminId)
         {
-            var stores = await storeAdminRepository.GetAllStoresAsync(storeAdminId);
+            WebApiListOfStoresResult result = await storeAdminRepository.GetAllStoresAsync(storeAdminId);
 
-            return stores;
+            return result;
         }
 
         [HttpPost]
         [Route("CreateStoreAsync")]
-        public async Task<IHttpActionResult> CreateStoreAsync(WebApiStore store)
+        public async Task<WebApiResult> CreateStoreAsync(WebApiStore store)
         {
-            SimulateValidation(store);
+            //SimulateValidation(store);
 
-            ModelStateResponse response = await storeAdminRepository.CreateStoreAsync(store);
+            WebApiResult result = await storeAdminRepository.CreateStoreAsync(store);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("EditStoreAsync/{id}")]
-        public async Task<WebApiStore> EditStore(string id)
+        public async Task<WebApiStoreResult> EditStore(string id)
         {
-            var store = await storeAdminRepository.ReadStoreByIdAsync(id);
+            WebApiStoreResult result = await storeAdminRepository.ReadStoreByIdAsync(id);
 
-            var processedStore = await StoreProcessor.StoreEntityToWebApiStoreAsync(store);
-
-            return processedStore;
+            return result;
         }
 
         [HttpPut]
         [Route("EditStoreAsync")]
-        public async Task<IHttpActionResult> EditStoreAsync(WebApiStore store)
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
         {
-            ModelStateResponse response = await storeAdminRepository.EditStoreAsync(store);
+            WebApiResult result = await storeAdminRepository.EditStoreAsync(store);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpPut]
         [Route("PostStoreImageAsync")]
-        public async Task<Response> PostStoreImageAsync(WebApiPostImage store)
+        public async Task<WebApiResult> PostStoreImageAsync(WebApiPostImage store)
         {
-            Response response = await storeAdminRepository.PostStoreImageAsync(store);
+            WebApiResult result = await storeAdminRepository.PostStoreImageAsync(store);
 
-            return response;
+            return result;
         }
 
         [HttpGet]
@@ -121,40 +93,38 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("DetailsStoreAsync/{id}")]
-        public async Task<WebApiStore> DetailsStore(string id)
+        public async Task<WebApiStoreResult> DetailsStore(string id)
         {
-            StoreEntity storeEntity = await storeAdminRepository.ReadStoreByIdAsync(id);
+            WebApiStoreResult result = await storeAdminRepository.ReadStoreByIdAsync(id);
 
-            WebApiStore store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity);
-
-            return store;
+            return result;
         }
 
         [HttpPut]
         [Route("DeleteStoreAsync/{id}")]
-        public async Task<IHttpActionResult> DeleteStoreAsync(string id)
+        public async Task<WebApiResult> DeleteStoreAsync(string id)
         {
-            await storeAdminRepository.DeleteStoreAsync(id);
+            WebApiResult result = await storeAdminRepository.DeleteStoreAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("GetAllDeletedStoresAsync/{storeAdminId}")]
-        public async Task<List<WebApiStore>> GetAllDeletedStoresAsync(string storeAdminId)
+        public async Task<WebApiListOfStoresResult> GetAllDeletedStoresAsync(string storeAdminId)
         {
-            var stores = await storeAdminRepository.GetAllDeletedStoresAsync(storeAdminId);
+            WebApiListOfStoresResult result = await storeAdminRepository.GetAllDeletedStoresAsync(storeAdminId);
 
-            return stores;
+            return result;
         }
 
         [HttpPut]
         [Route("RestoreStoreAsync/{id}")]
-        public async Task<IHttpActionResult> RestoreStoreAsync(string id)
+        public async Task<WebApiResult> RestoreStoreAsync(string id)
         {
-            await storeAdminRepository.RestoreStoreAsync(id);
+            WebApiResult result = await storeAdminRepository.RestoreStoreAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
@@ -166,95 +136,61 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllManagersAsync/{storeAdminId}")]
-        public async Task<List<WebApiManager>> GetAllManagersAsync(string storeAdminId)
+        public async Task<WebApiListOfManagersResult> GetAllManagersAsync(string storeAdminId)
         {
-            List<WebApiManager> managers = await storeAdminRepository.GetAllManagersAsync(storeAdminId);
+            WebApiListOfManagersResult result = await storeAdminRepository.GetAllManagersAsync(storeAdminId);
 
-            return managers;
+            return result;
         }
 
 
         [HttpPost]
         [Route("CreateManagerAsync")]
-        public async Task<IHttpActionResult> CreateManagerAsync(CreateManagerModel manager)
+        public async Task<WebApiResult> CreateManagerAsync(CreateManagerModel manager)
         {
-            SimulateValidation(manager);
+            //SimulateValidation(manager);
 
-            ModelStateResponse response = await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
+            WebApiResult result = await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-
-                return BadRequest(ModelState);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("DetailsManagerAsync/{id}")]
-        public async Task<WebApiUser> DetailsManager(string id)
+        public async Task<WebApiUserResult> DetailsManager(string id)
         {
-            ApplicationUser user = await storeAdminRepository.ReadUserById(id);
+            WebApiUserResult result = await storeAdminRepository.ReadUserById(id);
 
-            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
-
-            return webApiUser;
+            return result;
         }
 
         [HttpGet]
         [Route("EditManagerAsync/{id}")]
-        public async Task<WebApiUser> EditManager(string id)
+        public async Task<WebApiUserResult> EditManager(string id)
         {
-            ApplicationUser user = await storeAdminRepository.ReadUserById(id);
+            WebApiUserResult result = await storeAdminRepository.ReadUserById(id);
 
-            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
-
-            return webApiUser;
+            return result;
         }
 
         [HttpPut]
         [Route("EditManagerAsync")]
-        public async Task<IHttpActionResult> EditManager(WebApiManager manager)
+        public async Task<WebApiResult> EditManager(WebApiManager manager)
         {
-            SimulateValidation(manager);
+            //SimulateValidation(manager);
 
-            ModelStateResponse response = await storeAdminRepository.EditManager(manager);
+            WebApiResult result = await storeAdminRepository.EditManager(manager);
 
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-
-                return BadRequest(ModelState);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpPut]
         [Route("PostManagerImageAsync")]
-        public async Task<Response> PostManagerImageAsync(WebApiPostImage manager)
+        public async Task<WebApiResult> PostManagerImageAsync(WebApiPostImage manager)
         {
-            Response response = await storeAdminRepository.PostManagerImageAsync(manager);
+            WebApiResult result = await storeAdminRepository.PostManagerImageAsync(manager);
 
-            return response;
+            return result;
         }
 
         [HttpGet]
@@ -268,27 +204,29 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPut]
         [Route("DeleteManagerAsync/{id}")]
-        public async Task<IHttpActionResult> DeleteManagerAsync(string id)
+        public async Task<WebApiResult> DeleteManagerAsync(string id)
         {
-            await storeAdminRepository.DeleteManagerAsync(id);
+            WebApiResult result = await storeAdminRepository.DeleteManagerAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("GetAllDeletedManagersAsync/{storeAdminId}")]
-        public async Task<List<WebApiManager>> GetAllDeletedManagersAsync(string storeAdminId)
+        public async Task<WebApiListOfManagersResult> GetAllDeletedManagersAsync(string storeAdminId)
         {
-            return await storeAdminRepository.GetAllDeletedManagersAsync(storeAdminId);
+            WebApiListOfManagersResult result = await storeAdminRepository.GetAllDeletedManagersAsync(storeAdminId);
+
+            return result;
         }
 
         [HttpPut]
         [Route("RestoreManagerAsync/{id}")]
-        public async Task<IHttpActionResult> RestoreManagerAsync(string id)
+        public async Task<WebApiResult> RestoreManagerAsync(string id)
         {
-            await storeAdminRepository.RestoreManagerAsync(id);
+            WebApiResult result = await storeAdminRepository.RestoreManagerAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpGet]
@@ -300,20 +238,20 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpPost]
         [Route("AssignStoreAsync")]
-        public async Task<Response> AssignStoreAsync(WebApiStoreAssign storeAssign)
+        public async Task<WebApiResult> AssignStoreAsync(WebApiStoreAssign storeAssign)
         {
-            Response response = await storeAdminRepository.AssignStoreAsync(storeAssign);
+            WebApiResult result = await storeAdminRepository.AssignStoreAsync(storeAssign);
 
-            return response;
+            return result;
         }
 
         [HttpPost]
         [Route("UnassignStoreAsync")]
-        public async Task<Response> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
+        public async Task<WebApiResult> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            Response response = await storeAdminRepository.UnassignStoreAsync(storeUnassign);
+            WebApiResult result = await storeAdminRepository.UnassignStoreAsync(storeUnassign);
 
-            return response;
+            return result;
         }
     }
 }

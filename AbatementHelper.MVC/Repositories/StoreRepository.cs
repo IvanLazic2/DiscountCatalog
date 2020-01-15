@@ -33,7 +33,7 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public void AddTokenToHeader()
+        private void AddTokenToHeader()
         {
             var token = HttpContext.Current.Request.Cookies["Access_Token"];
 
@@ -43,11 +43,38 @@ namespace AbatementHelper.MVC.Repositories
             }
         }
 
-        public async Task<ModelStateResponse> CreateProductAsync(WebApiProduct product)
+        //private async Task<WebApiResult> ReadResponseAsync(HttpResponseMessage request)
+        //{
+        //    var modelState = new WebApiResult();
+
+        //    if (!request.IsSuccessStatusCode)
+        //    {
+        //        var resultContent = await request.Content.ReadAsStringAsync();
+
+        //        var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
+        //        var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
+
+        //        if (modelStateResult.ModelState != null)
+        //        {
+        //            foreach (var error in modelStateResult.ModelState)
+        //            {
+        //                modelState.ModelState.Add(error.Key, error.Value.First());
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var successMessage = await request.Content.ReadAsAsync<string>();
+
+        //        modelState.Message = successMessage;
+        //    }
+
+        //    return modelState;
+        //}
+
+        public async Task<WebApiResult> CreateProductAsync(WebApiProduct product)
         {
             AddTokenToHeader();
-
-            var modelState = new ModelStateResponse();
 
             product.Store = new WebApiStore
             {
@@ -63,27 +90,15 @@ namespace AbatementHelper.MVC.Repositories
 
                 HttpResponseMessage request = await apiClient.PostAsync("api/Store/CreateProductAsync", httpContent);
 
+                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                var resultContent = await request.Content.ReadAsStringAsync();
-
-                if (!request.IsSuccessStatusCode)
-                {
-                    var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                    var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                    modelState.Message = modelStateResult.message;
-
-                    if (modelStateResult.ModelState != null)
-                    {
-                        modelState.ModelSate = modelStateResult.ModelState;
-                    }
-                }
+                return result;
             }
 
-            return modelState;
+            return null;
         }
 
-        public async Task<List<WebApiProduct>> GetAllProductsAsync()
+        public async Task<WebApiListOfProductsResult> GetAllProductsAsync()
         {
             AddTokenToHeader();
 
@@ -95,7 +110,7 @@ namespace AbatementHelper.MVC.Repositories
 
                 if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+                    var resultContent = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
                     return resultContent;
                 }
@@ -104,7 +119,7 @@ namespace AbatementHelper.MVC.Repositories
             return null;
         }
 
-        public async Task<WebApiProduct> ProductDetailsAsync(string id)
+        public async Task<WebApiProductResult> ProductDetailsAsync(string id)
         {
             if (id != null)
             {
@@ -114,7 +129,7 @@ namespace AbatementHelper.MVC.Repositories
 
                 if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiProduct>();
+                    WebApiProductResult resultContent = await request.Content.ReadAsAsync<WebApiProductResult>();
 
                     return resultContent;
                 }
@@ -123,7 +138,7 @@ namespace AbatementHelper.MVC.Repositories
             return null;
         }
 
-        public async Task<Response> PostProductImageAsync(WebApiPostImage image)
+        public async Task<WebApiResult> PostProductImageAsync(WebApiPostImage image)
         {
             if (image.Image != null && image.Id != null)
             {
@@ -133,9 +148,9 @@ namespace AbatementHelper.MVC.Repositories
 
                 if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+                    WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return resultContent;
+                    return result;
                 }
             }
 
@@ -161,11 +176,9 @@ namespace AbatementHelper.MVC.Repositories
             return null;
         }
 
-        public async Task<ModelStateResponse> EditProductAsync(WebApiProduct product)
+        public async Task<WebApiProductResult> EditProductAsync(WebApiProduct product)
         {
             AddTokenToHeader();
-
-            var modelState = new ModelStateResponse();
 
             if (product.Id != null)
             {
@@ -178,27 +191,16 @@ namespace AbatementHelper.MVC.Repositories
                 {
                     HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
 
-                    var resultContent = await request.Content.ReadAsStringAsync();
+                    WebApiProductResult result = await request.Content.ReadAsAsync<WebApiProductResult>();
 
-                    if (!request.IsSuccessStatusCode)
-                    {
-                        var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                        var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                        modelState.Message = modelStateResult.message;
-
-                        if (modelStateResult.ModelState != null)
-                        {
-                            modelState.ModelSate = modelStateResult.ModelState;
-                        }
-                    }
+                    return result;
                 }
             }
 
-            return modelState;
+            return null;
         }
 
-        public async Task<bool> DeleteProductAsync(string id)
+        public async Task<WebApiResult> DeleteProductAsync(string id)
         {
             AddTokenToHeader();
 
@@ -206,16 +208,17 @@ namespace AbatementHelper.MVC.Repositories
             {
                 HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+
+                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+                return result;
+
             }
 
-            return false;
+            return null;
         }
 
-        public async Task<bool> RestoreProductAsync(string id)
+        public async Task<WebApiResult> RestoreProductAsync(string id)
         {
             AddTokenToHeader();
 
@@ -223,16 +226,15 @@ namespace AbatementHelper.MVC.Repositories
             {
                 HttpResponseMessage request = await apiClient.PutAsync("api/Store/RestoreProductAsync/" + id, null);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+                return result;
             }
 
-            return false;
+            return null;
         }
 
-        public async Task<List<WebApiProduct>> GetAllDeletedProductsAsync()
+        public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync()
         {
             AddTokenToHeader();
 
@@ -242,18 +244,15 @@ namespace AbatementHelper.MVC.Repositories
             {
                 HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllDeletedProductsAsync/" + storeId);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+                WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
-                    return resultContent;
-                }
+                return result;
             }
 
             return null;
         }
 
-        public async Task<List<WebApiProduct>> GetAllExpiredProductsAsync()
+        public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync()
         {
             AddTokenToHeader();
 
@@ -265,9 +264,9 @@ namespace AbatementHelper.MVC.Repositories
 
                 if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiProduct>>();
+                    WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
-                    return resultContent;
+                    return result;
                 }
             }
 
