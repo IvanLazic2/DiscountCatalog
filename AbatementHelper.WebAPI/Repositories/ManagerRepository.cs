@@ -1,6 +1,7 @@
 ﻿using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.DataBaseModels;
+using AbatementHelper.WebAPI.EntityValidation;
 using AbatementHelper.WebAPI.Extentions;
 using AbatementHelper.WebAPI.Models;
 using AbatementHelper.WebAPI.Processors;
@@ -16,14 +17,18 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class ManagerRepository
     {
-        public async Task<List<WebApiStore>> GetAllStoresAsync(string id)
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync(string id)
         {
+            var result = new WebApiListOfStoresResult();
+
             var stores = new List<WebApiStore>();
 
             try
             {
                 using (var context = new ApplicationUserDbContext())
                 {
+                    var tasks = new List<Task<WebApiStore>>();
+
                     ApplicationUser user = await context.Users.FindAsync(id);
 
                     if (user != null)
@@ -42,43 +47,92 @@ namespace AbatementHelper.WebAPI.Repositories
                                 {
                                     if (store.Approved && !store.Deleted)
                                     {
-                                        stores.Add(await StoreProcessor.StoreEntityToWebApiStoreAsync(store));
+                                        tasks.Add(Task.Run(() => StoreProcessor.StoreEntityToWebApiStoreAsync(store)));
                                     }
                                 }
                             }
                         }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        }
+
+                        var results = await Task.WhenAll(tasks);
+
+                        stores = results.ToList();
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
-
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return stores;
+            result.Stores = stores;
+
+            return result;
         }
 
-        public async Task<SelectedStore> SelectStoreAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectStoreAsync(string id)
         {
-            using (var context = new ApplicationUserDbContext())
-            {
-                StoreEntity store = await context.Stores.FindAsync(id);
-
-                return new SelectedStore
-                {
-                    Id = store.Id,
-                    StoreName = store.StoreName
-                };
-            }
-        }
-
-        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
-        {
-            var response = new ModelStateResponse();
+            var result = new WebApiSelectedStoreResult();
 
             try
             {
+                using (var context = new ApplicationUserDbContext())
+                {
+                    StoreEntity store = await context.Stores.FindAsync(id);
+
+                    if (store != null)
+                    {
+                        SelectedStore selectedStore = new SelectedStore
+                        {
+                            Id = store.Id,
+                            StoreName = store.StoreName
+                        };
+                        
+                        result.Store = selectedStore;
+
+                        result.Message = $"Store {selectedStore.StoreName} selected.";
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
+            }
+            
+            return result;
+        }
+
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
+        {
+            var result = new WebApiResult();
+
+            try
+            {
+                var storeValidation = new StoreValidation();
+
+                ModelStateResponse validationResponse = storeValidation.Validate(store);
+
+                if (!validationResponse.IsValid)
+                {
+                    foreach (var error in validationResponse.ModelState)
+                    {
+                        result.ModelState.Add(error.Key, error.Value);
+                    }
+                }
+
                 using (var context = new ApplicationUserDbContext())
                 {
                     StoreEntity existingStore = context.Stores.FirstOrDefault(s => s.StoreName == store.StoreName);
@@ -90,49 +144,91 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             StoreEntity storeEntity = context.Stores.Find(store.Id);
 
-                            context.Stores.Attach(storeEntity);
+                            if (storeEntity != null)
+                            {
+                                if (result.Success)
+                                {
+                                    context.Stores.Attach(storeEntity);
 
-                            storeEntity.StoreName = store.StoreName;
-                            //storeEntity.WorkingHoursWeek = store.WorkingHoursWeek;
-                            //storeEntity.WorkingHoursWeekends = store.WorkingHoursWeekends;
-                            //storeEntity.WorkingHoursHolidays = store.WorkingHoursHolidays;
-                            storeEntity.Country = store.Country;
-                            storeEntity.City = store.City;
-                            storeEntity.PostalCode = store.PostalCode;
-                            storeEntity.Street = store.Street;
+                                    storeEntity.StoreName = store.StoreName;
+                                    storeEntity.WorkingHoursWeekBegin = store.WorkingHoursWeekBegin;
+                                    storeEntity.WorkingHoursWeekEnd = store.WorkingHoursWeekEnd;
+                                    storeEntity.WorkingHoursWeekendsBegin = store.WorkingHoursWeekendsBegin;
+                                    storeEntity.WorkingHoursWeekendsEnd = store.WorkingHoursWeekendsEnd;
+                                    storeEntity.WorkingHoursHolidaysBegin = store.WorkingHoursHolidaysBegin;
+                                    storeEntity.WorkingHoursHolidaysEnd = store.WorkingHoursHolidaysEnd;
+                                    storeEntity.Country = store.Country;
+                                    storeEntity.City = store.City;
+                                    storeEntity.PostalCode = store.PostalCode;
+                                    storeEntity.Street = store.Street;
 
-                            await context.SaveChangesAsync();
+                                    await context.SaveChangesAsync();
+
+                                    result.Message = "Store updated.";
+                                }
+                            }
+                            else
+                            {
+                                result.ModelState.Add(string.Empty, "Store does not exist.");
+                            }
                         }
                         else
                         {
-                            response.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
+                            result.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
                         }
                     }
                 }
             }
-            catch (Exception exception) //DbUpdateException
+            catch (Exception exception)
             {
-
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return response;
+            return result;
         }
 
-        public async Task<WebApiStore> ReadStoreByIdAsync(string id)
+        public async Task<WebApiStoreResult> ReadStoreByIdAsync(string id)
         {
-            using (var context = new ApplicationUserDbContext())
+            var result = new WebApiStoreResult();
+
+            try
             {
-                StoreEntity storeEntity = await context.Stores.FindAsync(id);
+                using (var context = new ApplicationUserDbContext())
+                {
+                    StoreEntity storeEntity = await context.Stores.FindAsync(id);
 
-                WebApiStore store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity);
+                    if (storeEntity != null)
+                    {
+                        WebApiStore store = await StoreProcessor.StoreEntityToWebApiStoreAsync(storeEntity);
 
-                return store;
+                        if (store != null)
+                        {
+                            result.Store = store;
+                        }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "An error has occured.");
+                        }
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                    }
+                }
             }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
+            }
+
+            return result;
         }
 
-        public async Task<Response> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
+        public async Task<WebApiResult> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            var response = new Response();
+            var result = new WebApiResult();
 
             try
             {
@@ -152,16 +248,16 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     await context.SaveChangesAsync();
 
-                    response.Message = "Store abandoned";
-                    response.Success = true;
+                    result.Message = "Store abandoned.";
                 }
             }
             catch (Exception exception)
             {
-
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return response;
+            return result;
         }
     }
 }

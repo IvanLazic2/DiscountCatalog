@@ -15,7 +15,7 @@ namespace AbatementHelper.MVC.Controllers
 {
     public class ManagerController : Controller
     {
-        private ManagerRepository manager = new ManagerRepository();
+        private ManagerRepository managerRepository = new ManagerRepository();
 
         public ActionResult Index()
         {
@@ -25,6 +25,8 @@ namespace AbatementHelper.MVC.Controllers
         [Route("GetAllStores")]
         public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiStore> stores = new List<WebApiStore>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -39,12 +41,18 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiStore> stores = await manager.GetAllStoresAsync();
+            WebApiListOfStoresResult result = await managerRepository.GetAllStoresAsync();
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
+            if (result.Success)
             {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
+                stores = result.Stores;
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
             }
 
             if (!string.IsNullOrEmpty(searchString))
@@ -72,10 +80,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Select/{id}")]
         public async Task<ActionResult> Select(string id)
         {
-            if (id != null)
-            {
-                SelectedStore store = await manager.SelectAsync(id);
+            WebApiSelectedStoreResult result = await managerRepository.SelectAsync(id);
 
+            SelectedStore store = result.Store;
+
+            if (result.Success)
+            {
                 if (store != null)
                 {
                     Response.Cookies.Add(new HttpCookie("StoreID")
@@ -93,65 +103,116 @@ namespace AbatementHelper.MVC.Controllers
                 }
             }
 
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
+
             return RedirectToAction("GetAllStores");
+
         }
 
         [HttpGet]
         [Route("EditStore/{id}")]
         public async Task<ActionResult> EditStore(string id)
         {
-            WebApiStore store = await manager.EditStoreAsync(id);
+            WebApiStoreResult result = await managerRepository.EditStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                WebApiStore store = result.Store;
+
+                return View(store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpPost]
         [Route("EditStore")]
         public async Task<ActionResult> EditStore(WebApiStore store)
         {
-            ModelStateResponse response = await manager.EditStoreAsync(store);
+            WebApiResult result = await managerRepository.EditStoreAsync(store);
 
-            if (!response.IsValid)
+            if (result.Success)
             {
-                foreach (var error in response.ModelSate)
+                return RedirectToAction("GetAllStores");
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
                 {
-                    ModelState.AddModelError(error.Key, error.Value.First());
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View(store);
             }
-
-            return RedirectToAction("GetAllStores");
         }
 
         [HttpGet]
         [Route("DetailsStore/{id}")]
         public async Task<ActionResult> DetailsStore(string id)
         {
-            WebApiStore store = await manager.DetailsStoreAsync(id);
+            WebApiStoreResult result = await managerRepository.DetailsStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                return View(result.Store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpGet]
         [Route("AbandonStore/{id}")]
         public async Task<ActionResult> AbandonStore(string id)
         {
-            WebApiStore store = await manager.DetailsStoreAsync(id);
+            WebApiStoreResult result = await managerRepository.DetailsStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                return View(result.Store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpPost]
-        [Route("AbandonStore/{id}")]
-        public async Task<ActionResult> AbandonStore(WebApiStore store)
+        [Route("UnassignStore/{id}")]
+        public async Task<ActionResult> AbandonStorePost(string id)
         {
-            Response storeUnassignResponse = await manager.AbandonStoreAsync(store.Id);
+            WebApiResult result = await managerRepository.AbandonStoreAsync(new WebApiStoreAssign { StoreId = id });
 
-            TempData["Message"] = storeUnassignResponse.Message;
-            TempData["Success"] = storeUnassignResponse.Success;
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
-            return RedirectToAction("GetAllStores");
+            return RedirectToAction("");
         }
     }
 }

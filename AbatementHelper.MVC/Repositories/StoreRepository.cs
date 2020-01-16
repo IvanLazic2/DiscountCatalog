@@ -74,8 +74,6 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiResult> CreateProductAsync(WebApiProduct product)
         {
-            AddTokenToHeader();
-
             product.Store = new WebApiStore
             {
                 Id = HttpContext.Current.Request.Cookies["StoreID"].Value,
@@ -84,6 +82,8 @@ namespace AbatementHelper.MVC.Repositories
 
             if (product.Store.Id != null)
             {
+                AddTokenToHeader();
+
                 var jsonContent = JsonConvert.SerializeObject(product);
 
                 var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -100,12 +100,12 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiListOfProductsResult> GetAllProductsAsync()
         {
-            AddTokenToHeader();
-
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
             if (storeId != null)
             {
+                AddTokenToHeader();
+
                 HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllProductsAsync/" + storeId);
 
                 if (request.IsSuccessStatusCode)
@@ -159,10 +159,10 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<byte[]> GetProductImageAsync(string id)
         {
-            AddTokenToHeader();
-
             if (id != null)
             {
+                AddTokenToHeader();
+
                 HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetProductImageAsync/" + id);
 
                 if (request.IsSuccessStatusCode)
@@ -178,8 +178,6 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiProductResult> EditProductAsync(WebApiProduct product)
         {
-            AddTokenToHeader();
-
             if (product.Id != null)
             {
                 product.Store = new WebApiStore
@@ -189,6 +187,8 @@ namespace AbatementHelper.MVC.Repositories
 
                 if (product.Store.Id != null)
                 {
+                    AddTokenToHeader();
+
                     HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
 
                     WebApiProductResult result = await request.Content.ReadAsAsync<WebApiProductResult>();
@@ -202,17 +202,15 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiResult> DeleteProductAsync(string id)
         {
-            AddTokenToHeader();
-
             if (id != null)
             {
-                HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
+                AddTokenToHeader();
 
+                HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
 
                 WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
                 return result;
-
             }
 
             return null;
@@ -220,10 +218,10 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiResult> RestoreProductAsync(string id)
         {
-            AddTokenToHeader();
-
             if (id != null)
             {
+                AddTokenToHeader();
+
                 HttpResponseMessage request = await apiClient.PutAsync("api/Store/RestoreProductAsync/" + id, null);
 
                 WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
@@ -236,12 +234,12 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync()
         {
-            AddTokenToHeader();
-
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
             if (storeId != null)
             {
+                AddTokenToHeader();
+
                 HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllDeletedProductsAsync/" + storeId);
 
                 WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
@@ -254,12 +252,12 @@ namespace AbatementHelper.MVC.Repositories
 
         public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync()
         {
-            AddTokenToHeader();
-
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
             if (storeId != null)
             {
+                AddTokenToHeader();
+
                 HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllExpiredProductsAsync/" + storeId);
 
                 if (request.IsSuccessStatusCode)

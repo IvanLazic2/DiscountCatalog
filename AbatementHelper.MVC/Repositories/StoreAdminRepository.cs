@@ -45,13 +45,13 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<ModelStateResponse> CreateStoreAsync(WebApiStore store)
+        //Store
+
+        public async Task<WebApiResult> CreateStoreAsync(WebApiStore store)
         {
-            AddTokenToHeader();
-
-            var modelState = new ModelStateResponse();
-
             store.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            AddTokenToHeader();
 
             var jsonContent = JsonConvert.SerializeObject(store);
 
@@ -59,137 +59,68 @@ namespace AbatementHelper.MVC.Repositeories
 
             HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/CreateStoreAsync", httpContent);
 
-            var resultContent = await request.Content.ReadAsStringAsync();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            if (!request.IsSuccessStatusCode)
-            {
-                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                modelState.Message = modelStateResult.message;
-
-                if (modelStateResult.ModelState != null)
-                {
-                    modelState.ModelSate = modelStateResult.ModelState;
-                }
-            }
-
-            return modelState;
+            return result;
         }
 
-        public async Task<List<WebApiStore>> GetAllStoresAsync()
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync()
         {
-            AddTokenToHeader();
-
             string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllStoresAsync/" + storeAdminId);
 
+            WebApiListOfStoresResult result = await request.Content.ReadAsAsync<WebApiListOfStoresResult>();
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<List<WebApiStore>>();
-
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
-        public async Task<WebApiStore> EditStoreAsync(string id)
+        public async Task<WebApiStoreResult> EditStoreAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/EditStoreAsync/" + id);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
-        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
-
-            var modelState = new ModelStateResponse();
 
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/EditStoreAsync", store);
 
-            var resultContent = await request.Content.ReadAsStringAsync();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            if (!request.IsSuccessStatusCode)
-            {
-                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                modelState.Message = modelStateResult.message;
-
-                if (modelStateResult.ModelState != null)
-                {
-                    modelState.ModelSate = modelStateResult.ModelState;
-                }
-            }
-
-            return modelState;
+            return result;
         }
 
-        public async Task<Response> PostStoreImageAsync(WebApiPostImage image)
-        {
-            if (image.Image != null && image.Id != null)
-            {
-                AddTokenToHeader();
-
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/PostStoreImageAsync", image);
-
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
-
-                    return resultContent;
-                }
-            }
-
-            return null;
-        }
-
-        public async Task<byte[]> GetStoreImageAsync(string id)
+        public async Task<WebApiResult> PostStoreImageAsync(WebApiPostImage image)
         {
             AddTokenToHeader();
 
-            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetStoreImageAsync/" + id);
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/PostStoreImageAsync", image);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<byte[]>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
-        public async Task<WebApiStore> DetailsStoreAsync(string id)
+        public async Task<byte[]> GetStoreImageAsync(string id)
         {
             if (id != null)
             {
                 AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/DetailsStoreAsync/" + id);
+                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetStoreImageAsync/" + id);
 
                 if (request.IsSuccessStatusCode)
                 {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
+                    var resultContent = await request.Content.ReadAsAsync<byte[]>();
 
                     return resultContent;
                 }
@@ -198,197 +129,126 @@ namespace AbatementHelper.MVC.Repositeories
             return null;
         }
 
-        public async Task<bool> DeleteStoreAsync(string id)
+        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/DetailsStoreAsync/" + id);
+
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> DeleteStoreAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.PutAsync("api/StoreAdmin/DeleteStoreAsync/" + id, null);
 
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<bool> RestoreStoreAsync(string id)
+        public async Task<WebApiResult> RestoreStoreAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.PutAsync("api/StoreAdmin/RestoreStoreAsync/" + id, null);
 
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<List<WebApiStore>> GetAllDeletedStoresAsync()
+        public async Task<WebApiListOfStoresResult> GetAllDeletedStoresAsync()
         {
-            AddTokenToHeader();
-
             string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (storeAdminId != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllDeletedStoresAsync/" + storeAdminId);
+            AddTokenToHeader();
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiStore>>();
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllDeletedStoresAsync/" + storeAdminId);
 
-                    return resultContent;
-                }
-            }
+            WebApiListOfStoresResult result = await request.Content.ReadAsAsync<WebApiListOfStoresResult>();
 
-            return null;
+            return result;
         }
 
-        public async Task<SelectedStore> SelectAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/SelectAsync/" + id);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<SelectedStore>();
+            WebApiSelectedStoreResult result = await request.Content.ReadAsAsync<WebApiSelectedStoreResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
         //Manager
 
-        public async Task<List<WebApiManager>> GetAllManagersAsync()
+        public async Task<WebApiListOfManagersResult> GetAllManagersAsync()
         {
-            AddTokenToHeader();
-
             string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (storeAdminId != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllManagersAsync/" + storeAdminId);
-
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiManager>>();
-
-                    return resultContent;
-                }
-            }
-
-            return null;
-        }
-
-        public async Task<ModelStateResponse> CreateManagerAsync(CreateManagerModel user)
-        {
             AddTokenToHeader();
 
-            var modelState = new ModelStateResponse();
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllManagersAsync/" + storeAdminId);
 
-            user.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            WebApiListOfManagersResult result = await request.Content.ReadAsAsync<WebApiListOfManagersResult>();
 
-            if (user.StoreAdminId != null)
-            {
-                var jsonContent = JsonConvert.SerializeObject(user);
-
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/CreateManagerAsync", httpContent);
-
-                var resultContent = await request.Content.ReadAsStringAsync();
-
-                if (!request.IsSuccessStatusCode)
-                {
-                    var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                    var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                    modelState.Message = modelStateResult.message;
-
-                    if (modelStateResult.ModelState != null)
-                    {
-                        modelState.ModelSate = modelStateResult.ModelState;
-                    }
-                }
-            }
-
-            return modelState;
+            return result;
         }
 
-        public async Task<WebApiManager> EditManagerAsync(string id)
+        public async Task<WebApiResult> CreateManagerAsync(CreateManagerModel user)
+        {
+            user.StoreAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            AddTokenToHeader();
+
+            var jsonContent = JsonConvert.SerializeObject(user);
+
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/CreateManagerAsync", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiManagerResult> EditManagerAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/EditManagerAsync/" + id);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<WebApiManager>();
+            WebApiManagerResult result = await request.Content.ReadAsAsync<WebApiManagerResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
-
+            return result;
         }
 
-        public async Task<ModelStateResponse> EditManagerAsync(WebApiManager user)
+        public async Task<WebApiResult> EditManagerAsync(WebApiManager user)
         {
             AddTokenToHeader();
 
-            var modelState = new ModelStateResponse();
-
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/EditManagerAsync", user);
 
-            var resultContent = await request.Content.ReadAsStringAsync();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            if (!request.IsSuccessStatusCode)
-            {
-                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                modelState.Message = modelStateResult.message;
-
-                if (modelStateResult.ModelState != null)
-                {
-                    modelState.ModelSate = modelStateResult.ModelState;
-                }
-            }
-
-            return modelState;
+            return result;
         }
 
-        public async Task<Response> PostManagerImageAsync(WebApiPostImage image)
+        public async Task<WebApiResult> PostManagerImageAsync(WebApiPostImage image)
         {
-            if (image.Image != null && image.Id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/PostManagerImageAsync", image);
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/StoreAdmin/PostManagerImageAsync", image);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<byte[]> GetManagerImageAsync(string id)
@@ -409,95 +269,61 @@ namespace AbatementHelper.MVC.Repositeories
             }
         }
 
-        public async Task<bool> DeleteManagerAsync(string id)
+        public async Task<WebApiResult> DeleteManagerAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.PutAsync("api/StoreAdmin/DeleteManagerAsync/" + id, null);
 
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<bool> RestoreManagerAsync(string id)
+        public async Task<WebApiResult> RestoreManagerAsync(string id)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.PutAsync("api/StoreAdmin/RestoreManagerAsync/" + id, null);
 
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<List<WebApiManager>> GetAllDeletedManagers()
+        public async Task<WebApiListOfManagersResult> GetAllDeletedManagers()
         {
             AddTokenToHeader();
 
             string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (storeAdminId != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllDeletedManagersAsync/" + storeAdminId);
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllDeletedManagersAsync/" + storeAdminId);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiManager>>();
+            WebApiListOfManagersResult result = await request.Content.ReadAsAsync<WebApiListOfManagersResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<WebApiManager> DetailsManagerAsync(string id)
+        public async Task<WebApiManagerResult> DetailsManagerAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/DetailsManagerAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/DetailsManagerAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiManager>();
+            WebApiManagerResult result = await request.Content.ReadAsAsync<WebApiManagerResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<List<WebApiManagerStore>> GetAllManagerStoresAsync(string id)
+        public async Task<WebApiListOfManagerStoresResult> GetAllManagerStoresAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllManagerStoresAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/StoreAdmin/GetAllManagerStoresAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiManagerStore>>();
+            WebApiListOfManagerStoresResult result = await request.Content.ReadAsAsync<WebApiListOfManagerStoresResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
         //public List<WebApiStore> GetAllNotAssignedStores(string id)
@@ -524,50 +350,34 @@ namespace AbatementHelper.MVC.Repositeories
         //    return stores;
         //}
 
-        public async Task<Response> AssignStoreAsync(WebApiStoreAssign storeAssign)
+        public async Task<WebApiResult> AssignStoreAsync(WebApiStoreAssign storeAssign)
         {
-            if (storeAssign.ManagerId != null && storeAssign.StoreId != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                var jsonContent = JsonConvert.SerializeObject(storeAssign);
+            var jsonContent = JsonConvert.SerializeObject(storeAssign);
 
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/AssignStoreAsync/", httpContent);
+            HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/AssignStoreAsync/", httpContent);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<Response> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
+        public async Task<WebApiResult> UnassignStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            if (storeUnassign.ManagerId != null && storeUnassign.StoreId != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                var jsonContent = JsonConvert.SerializeObject(storeUnassign);
+            var jsonContent = JsonConvert.SerializeObject(storeUnassign);
 
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/UnassignStoreAsync/", httpContent);
+            HttpResponseMessage request = await apiClient.PostAsync("api/StoreAdmin/UnassignStoreAsync/", httpContent);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
     }
 }

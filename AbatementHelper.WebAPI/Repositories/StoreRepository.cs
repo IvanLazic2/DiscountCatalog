@@ -444,39 +444,46 @@ namespace AbatementHelper.WebAPI.Repositories
 
             byte[] image = product.Image;
 
-            if (ImageProcessor.IsValid(image))
+            if (image != null)
             {
-                try
+                if (ImageProcessor.IsValid(image))
                 {
-                    using (var context = new ApplicationUserDbContext())
+                    try
                     {
-                        ProductEntity productEntity = await context.Products.FindAsync(product.Id);
-
-                        if (productEntity != null)
+                        using (var context = new ApplicationUserDbContext())
                         {
-                            context.Products.Attach(productEntity);
+                            ProductEntity productEntity = await context.Products.FindAsync(product.Id);
 
-                            productEntity.ProductImage = image;
+                            if (productEntity != null)
+                            {
+                                context.Products.Attach(productEntity);
 
-                            await context.SaveChangesAsync();
+                                productEntity.ProductImage = image;
 
-                            result.Message = "Image saved.";
-                        }
-                        else
-                        {
-                            result.ModelState.Add(string.Empty, "Product does not exist.");
+                                await context.SaveChangesAsync();
+
+                                result.Message = "Image saved.";
+                            }
+                            else
+                            {
+                                result.ModelState.Add(string.Empty, "Product does not exist.");
+                            }
                         }
                     }
+                    catch (Exception exception)
+                    {
+                        result.Exception = exception;
+                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                    }
                 }
-                catch (Exception exception)
+                else
                 {
-                    result.Exception = exception;
-                    result.ModelState.Add(string.Empty, "An exception has occured.");
+                    result.ModelState.Add(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Invalid image type.");
+                result.ModelState.Add(string.Empty, "Image is empty.");
             }
 
             return result;

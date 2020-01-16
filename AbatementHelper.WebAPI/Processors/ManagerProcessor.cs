@@ -47,21 +47,6 @@ namespace AbatementHelper.WebAPI.Processors
             }
 
             return applicationUser;
-
-            //return new ApplicationUser
-            //{
-            //    UserName = user.UserName,
-            //    FirstName = user.FirstName,
-            //    LastName = user.LastName,
-            //    Email = user.Email,
-            //    PhoneNumber = user.PhoneNumber,
-            //    Country = user.Country,
-            //    City = user.City,
-            //    PostalCode = user.PostalCode,
-            //    Street = user.Street,
-
-            //    TwoFactorEnabled = user.TwoFactorEnabled,
-            //};
         }
 
         public static ApplicationUser CreateManagerModelToApplicationUser(CreateManagerModel manager)
@@ -147,6 +132,29 @@ namespace AbatementHelper.WebAPI.Processors
                 Manager = webApiManager,
                 Assigned = assigned
             };
+        }  
+
+        public static async Task<WebApiManager> ApplicationUserToWebApiManagerAsync(ApplicationUser user)
+        {
+            var config = new MapperConfiguration(c =>
+            {
+                c.CreateMap<ApplicationUser, WebApiManager>()
+                    .ForMember(m => m.Stores, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            try
+            {
+                WebApiManager webApiManager = mapper.Map<ApplicationUser, WebApiManager>(user);
+
+                return webApiManager;
+            }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
         }
 
     }

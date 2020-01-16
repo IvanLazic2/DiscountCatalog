@@ -24,9 +24,9 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class StoreAdminRepository
     {
-        public async Task<WebApiUserResult> ReadUserById(string id)
+        public async Task<WebApiManagerResult> ReadUserById(string id)
         {
-            var result = new WebApiUserResult();
+            var result = new WebApiManagerResult();
 
             try
             {
@@ -36,7 +36,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     if (applicationUser != null)
                     {
-                        result.User = await UserProcessor.ApplicationUserToWebApiUser(applicationUser);
+                        result.Manager = await ManagerProcessor.ApplicationUserToWebApiManagerAsync(applicationUser);
                     }
                     else
                     {
@@ -188,7 +188,14 @@ namespace AbatementHelper.WebAPI.Repositories
                             {
                                 store.StoreAdmin = await context.Users.FindAsync(storeAdminId);
 
-                                tasks.Add(Task.Run(() => StoreProcessor.StoreEntityToWebApiStoreAsync(store)));
+                                if (store.StoreAdmin != null)
+                                {
+                                    tasks.Add(Task.Run(() => StoreProcessor.StoreEntityToWebApiStoreAsync(store)));
+                                }
+                                else
+                                {
+                                    result.ModelState.Add(string.Empty, "Store administrator does not exist.");
+                                }
                             }
                         }
 
@@ -362,7 +369,6 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                 }
 
-
                 using (var context = new ApplicationUserDbContext())
                 {
                     StoreEntity existingStore = context.Stores.FirstOrDefault(s => s.StoreName == store.StoreName);
@@ -424,41 +430,47 @@ namespace AbatementHelper.WebAPI.Repositories
 
             byte[] image = store.Image;
 
-            if (ImageProcessor.IsValid(image))
+            if (image != null)
             {
-                try
+                if (ImageProcessor.IsValid(image))
                 {
-                    using (var context = new ApplicationUserDbContext())
+                    try
                     {
-                        StoreEntity storeEntity = context.Stores.Find(store.Id);
-
-                        if (storeEntity != null)
+                        using (var context = new ApplicationUserDbContext())
                         {
-                            context.Stores.Attach(storeEntity);
+                            StoreEntity storeEntity = context.Stores.Find(store.Id);
 
-                            storeEntity.StoreImage = image;
+                            if (storeEntity != null)
+                            {
+                                context.Stores.Attach(storeEntity);
 
-                            await context.SaveChangesAsync();
+                                storeEntity.StoreImage = image;
 
-                            result.Message = "Image saved";
-                        }
-                        else
-                        {
-                            result.ModelState.Add(string.Empty, "Product does not exist.");
+                                await context.SaveChangesAsync();
+
+                                result.Message = "Image saved";
+                            }
+                            else
+                            {
+                                result.ModelState.Add(string.Empty, "Product does not exist.");
+                            }
                         }
                     }
+                    catch (Exception exception)
+                    {
+                        result.Exception = exception;
+                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                    }
                 }
-                catch (Exception exception)
+                else
                 {
-                    result.Exception = exception;
-                    result.ModelState.Add(string.Empty, "An exception has occured.");
+                    result.ModelState.Add(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Invalid image type.");
+                result.ModelState.Add(string.Empty, "Image is empty.");
             }
-
 
             return result;
         }
@@ -584,17 +596,47 @@ namespace AbatementHelper.WebAPI.Repositories
             return result;
         }
 
-        public async Task<SelectedStore> SelectStoreAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectStoreAsync(string id)
         {
             using (var context = new ApplicationUserDbContext())
             {
-                StoreEntity store = await context.Stores.FindAsync(id);
+                var result = new WebApiSelectedStoreResult();
 
-                return new SelectedStore
+                try
                 {
-                    Id = store.Id,
-                    StoreName = store.StoreName
-                };
+                    StoreEntity store = await context.Stores.FindAsync(id);
+
+                    if (store != null)
+                    {
+                        if (store.Approved)
+                        {
+                            SelectedStore selectedStore = new SelectedStore
+                            {
+                                Id = store.Id,
+                                StoreName = store.StoreName
+                            };
+
+                            result.Store = selectedStore;
+
+                            result.Message = $"Store {selectedStore.StoreName} selected.";
+                        }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, $"Store: {store.StoreName} has to be approved.");
+                        }
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                    }
+                }
+                catch (Exception exception)
+                {
+                    result.Exception = exception;
+                    result.ModelState.Add(string.Empty, "An exception has occured.");
+                }
+
+                return result;
             }
         }
 
@@ -779,39 +821,46 @@ namespace AbatementHelper.WebAPI.Repositories
 
             byte[] image = manager.Image;
 
-            if (ImageProcessor.IsValid(image))
+            if (image != null)
             {
-                try
+                if (ImageProcessor.IsValid(image))
                 {
-                    using (var context = new ApplicationUserDbContext())
+                    try
                     {
-                        ApplicationUser user = await context.Users.FindAsync(manager.Id);
-
-                        if (user != null)
+                        using (var context = new ApplicationUserDbContext())
                         {
-                            context.Users.Attach(user);
+                            ApplicationUser user = await context.Users.FindAsync(manager.Id);
 
-                            user.UserImage = image;
+                            if (user != null)
+                            {
+                                context.Users.Attach(user);
 
-                            await context.SaveChangesAsync();
+                                user.UserImage = image;
 
-                            result.Message = "Image saved.";
-                        }
-                        else
-                        {
-                            result.ModelState.Add(string.Empty, "Manager does not exist.");
+                                await context.SaveChangesAsync();
+
+                                result.Message = "Image saved.";
+                            }
+                            else
+                            {
+                                result.ModelState.Add(string.Empty, "Manager does not exist.");
+                            }
                         }
                     }
+                    catch (Exception exception)
+                    {
+                        result.Exception = exception;
+                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                    }
                 }
-                catch (Exception exception)
+                else
                 {
-                    result.Exception = exception;
-                    result.ModelState.Add(string.Empty, "An exception has occured.");
+                    result.ModelState.Add(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Invalid image type.");
+                result.ModelState.Add(string.Empty, "Image is empty.");
             }
 
             return result;
@@ -941,9 +990,9 @@ namespace AbatementHelper.WebAPI.Repositories
             return result;
         }
 
-        public async Task<List<WebApiManagerStore>> GetAllManagerStoresAsync(string managerId)
+        public async Task<WebApiListOfManagerStoresResult> GetAllManagerStoresAsync(string managerId)
         {
-            var managerStores = new List<WebApiManagerStore>();
+            var result = new WebApiListOfManagerStoresResult();
 
             try
             {
@@ -953,49 +1002,64 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     ApplicationUser user = await context.Users.FindAsync(managerId);
 
-                    ManagerEntity managerEntity = await context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefaultAsync();
-
-                    await context.Entry(managerEntity).Collection(m => m.Stores).LoadAsync();
-                    await context.Entry(managerEntity).Reference(m => m.StoreAdmin).LoadAsync();
-
-                    List<StoreEntity> storeEntities = context.Stores.ToList();
-
-                    foreach (var store in storeEntities)
+                    if (user != null)
                     {
-                        bool assigned;
+                        ManagerEntity managerEntity = await context.Managers.Where(m => m.User.Id == user.Id).FirstOrDefaultAsync();
 
-                        await context.Entry(store).Reference(s => s.StoreAdmin).LoadAsync();
-
-                        StoreEntity storeEntity = managerEntity.Stores.Where(s => s.Id == store.Id).FirstOrDefault();
-
-                        if (store.StoreAdmin.Id == managerEntity.StoreAdmin.Id)
+                        if (managerEntity != null)
                         {
-                            if (storeEntity != null)
+                            await context.Entry(managerEntity).Collection(m => m.Stores).LoadAsync();
+
+                            await context.Entry(managerEntity).Reference(m => m.StoreAdmin).LoadAsync();
+
+                            List<StoreEntity> storeEntities = context.Stores.Where(s => s.Approved && !s.Deleted).ToList();
+
+                            foreach (var store in storeEntities)
                             {
-                                assigned = true;
-                            }
-                            else
-                            {
-                                assigned = false;
+                                bool assigned;
+
+                                await context.Entry(store).Reference(s => s.StoreAdmin).LoadAsync();
+
+                                StoreEntity storeEntity = managerEntity.Stores.Where(s => s.Id == store.Id).FirstOrDefault();
+
+                                if (store.StoreAdmin.Id == managerEntity.StoreAdmin.Id)
+                                {
+                                    if (storeEntity != null)
+                                    {
+                                        assigned = true;
+                                    }
+                                    else
+                                    {
+                                        assigned = false;
+                                    }
+
+                                    tasks.Add(Task.Run(() => ManagerProcessor.CreateWebApiManagerStoreAsync(store, managerEntity, assigned)));
+                                }
                             }
 
-                            tasks.Add(Task.Run(() => ManagerProcessor.CreateWebApiManagerStoreAsync(store, managerEntity, assigned)));
+                            var results = await Task.WhenAll(tasks);
+
+                            result.Stores = results.ToList();
                         }
-
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        }
                     }
-
-                    var results = await Task.WhenAll(tasks);
-
-                    managerStores = results.ToList();
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                    }
                 }
 
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                throw;
+                result.Exception = exception;
+                result.ModelState.Add(string.Empty, "An exception has occured.");
             }
 
-            return managerStores;
+            return result;
         }
 
         public async Task<WebApiResult> AssignStoreAsync(WebApiStoreAssign storeAssign)
@@ -1007,19 +1071,41 @@ namespace AbatementHelper.WebAPI.Repositories
                 using (var context = new ApplicationUserDbContext())
                 {
                     ApplicationUser user = await context.Users.FindAsync(storeAssign.ManagerId);
+
                     ManagerEntity manager = await context.Managers.FirstOrDefaultAsync(m => m.User.Id == storeAssign.ManagerId);
 
-                    await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
+                    if (manager != null)
+                    {
+                        await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
 
-                    StoreEntity store = await context.Stores.FindAsync(storeAssign.StoreId);
+                        StoreEntity store = await context.Stores.FindAsync(storeAssign.StoreId);
 
-                    context.Managers.Attach(manager);
+                        if (store != null)
+                        {
+                            if (store.Approved)
+                            {
+                                context.Managers.Attach(manager);
 
-                    manager.Stores.Add(store);
+                                manager.Stores.Add(store);
 
-                    await context.SaveChangesAsync();
+                                await context.SaveChangesAsync();
 
-                    result.Message = "Store assigned.";
+                                result.Message = "Store assigned.";
+                            }
+                            else
+                            {
+                                result.ModelState.Add(string.Empty, "Store has to be approved.");
+                            }
+                        }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                        }
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                    }
                 }
             }
             catch (Exception exception)
@@ -1040,19 +1126,34 @@ namespace AbatementHelper.WebAPI.Repositories
                 using (var context = new ApplicationUserDbContext())
                 {
                     ApplicationUser user = await context.Users.FindAsync(storeUnassign.ManagerId);
+
                     ManagerEntity manager = await context.Managers.FirstOrDefaultAsync(m => m.User.Id == storeUnassign.ManagerId);
 
-                    await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
+                    if (manager != null)
+                    {
+                        await context.Entry(manager).Collection(m => m.Stores).LoadAsync();
 
-                    StoreEntity store = await context.Stores.FindAsync(storeUnassign.StoreId);
+                        StoreEntity store = await context.Stores.FindAsync(storeUnassign.StoreId);
 
-                    context.Managers.Attach(manager);
+                        if (store != null)
+                        {
+                            context.Managers.Attach(manager);
 
-                    manager.Stores.Remove(store);
+                            manager.Stores.Remove(store);
 
-                    await context.SaveChangesAsync();
+                            await context.SaveChangesAsync();
 
-                    result.Message = "Store unassigned.";
+                            result.Message = "Store unassigned.";
+                        }
+                        else
+                        {
+                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                        }
+                    }
+                    else
+                    {
+                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                    }
                 }
             }
             catch (Exception exception)

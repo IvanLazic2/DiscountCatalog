@@ -43,136 +43,78 @@ namespace AbatementHelper.MVC.Repositories
             }
         }
 
-        public async Task<List<WebApiStore>> GetAllStoresAsync()
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync()
         {
-            AddTokenToHeader();
-
             string managerId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (managerId != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/GetAllStoresAsync/" + managerId);
+            AddTokenToHeader();
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<List<WebApiStore>>();
+            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/GetAllStoresAsync/" + managerId);
 
-                    return resultContent;
-                }
-            }
+            WebApiListOfStoresResult result = await request.Content.ReadAsAsync<WebApiListOfStoresResult>();
 
-            return null;
+            return result;
         }
 
-        public async Task<SelectedStore> SelectAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
         {
             AddTokenToHeader();
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/SelectAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/SelectAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<SelectedStore>();
+            WebApiSelectedStoreResult result = await request.Content.ReadAsAsync<WebApiSelectedStoreResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<WebApiStore> EditStoreAsync(string id)
+        public async Task<WebApiStoreResult> EditStoreAsync(string id)
         {
             AddTokenToHeader();
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/EditStoreAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/EditStoreAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<ModelStateResponse> EditStoreAsync(WebApiStore store)
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
-
-            var modelState = new ModelStateResponse();
 
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Manager/EditStoreAsync", store);
 
-            var resultContent = await request.Content.ReadAsStringAsync();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            if (!request.IsSuccessStatusCode)
-            {
-                var obj = new { message = "", ModelState = new Dictionary<string, string[]>() };
-                var modelStateResult = JsonConvert.DeserializeAnonymousType(resultContent, obj);
-
-                modelState.Message = modelStateResult.message;
-
-                if (modelStateResult.ModelState != null)
-                {
-                    modelState.ModelSate = modelStateResult.ModelState;
-                }
-            }
-
-            return modelState;
+            return result;
         }
 
-        public async Task<WebApiStore> DetailsStoreAsync(string id)
+        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Manager/DetailsStoreAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/DetailsStoreAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiStore>();
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<Response> AbandonStoreAsync(string id)
+        public async Task<WebApiResult> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            WebApiStoreAssign storeUnassign = new WebApiStoreAssign();
+            AddTokenToHeader();
 
             storeUnassign.ManagerId = HttpContext.Current.Request.Cookies["UserID"].Value;
-            storeUnassign.StoreId = id;
 
-            if (storeUnassign.ManagerId != null && storeUnassign.StoreId != null)
-            {
-                AddTokenToHeader();
+            var jsonContent = JsonConvert.SerializeObject(storeUnassign);
 
-                var jsonContent = JsonConvert.SerializeObject(storeUnassign);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            HttpResponseMessage request = await apiClient.PostAsync("api/Manager/AbandonStoreAsync/", httpContent);
 
-                HttpResponseMessage request = await apiClient.PostAsync("api/Manager/AbandonStoreAsync/", httpContent);
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
-
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
     }
 }

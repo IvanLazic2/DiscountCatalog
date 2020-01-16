@@ -4,14 +4,15 @@
     ViewBag.Title = "EditStore";
 }
 
-<h2>EditStore</h2>
+
+<h2>Edit @Model.StoreName</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
-        <h4>dbstore</h4>
+
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.Id)
@@ -24,27 +25,99 @@
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.WorkingHoursWeek, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.WorkingHoursWeek, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.WorkingHoursWeek, "", new { @class = "text-danger" })
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursWeekBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursWeekBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursWeekBegin, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekBegin, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.WorkingHoursWeekends, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.WorkingHoursWeekends, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.WorkingHoursWeekends, "", new { @class = "text-danger" })
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursWeekEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursWeekEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursWeekEnd, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekEnd, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.WorkingHoursHolidays, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.WorkingHoursHolidays, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.WorkingHoursHolidays, "", new { @class = "text-danger" })
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursWeekendsBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursWeekendsBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursWeekendsEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursWeekendsEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursHolidaysBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursHolidaysBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            @Html.LabelFor(model => model.WorkingHoursHolidaysEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class='col-md-5'>
+                <div class="form-group">
+                    <div class='input-group date timepicker'>
+                        @Html.EditorFor(model => model.WorkingHoursHolidaysEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
@@ -87,7 +160,15 @@
         </div>
     </div>
 }
+}
 
 <div>
     @Html.ActionLink("Back to List", "GetAllStores")
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datetimepicker")
+}

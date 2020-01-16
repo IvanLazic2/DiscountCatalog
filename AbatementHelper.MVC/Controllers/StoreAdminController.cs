@@ -20,7 +20,7 @@ namespace AbatementHelper.MVC.Controllers
     [RoutePrefix("StoreAdmin")]
     public class StoreAdminController : Controller
     {
-        private StoreAdminRepository storeAdmin = new StoreAdminRepository();
+        private StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
 
         [HttpGet]
         [Route("Index")]
@@ -33,6 +33,8 @@ namespace AbatementHelper.MVC.Controllers
         [Route("GetAllStores")]
         public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiStore> stores = new List<WebApiStore>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -47,12 +49,18 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiStore> stores = await storeAdmin.GetAllStoresAsync();
+            WebApiListOfStoresResult result = await storeAdminRepository.GetAllStoresAsync();
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
+            if (result.Success)
             {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
+                stores = result.Stores;
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
             }
 
             if (!string.IsNullOrEmpty(searchString))
@@ -80,12 +88,6 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateStore")]
         public ActionResult CreateStore()
         {
-            if (TempData["Message"] != null && TempData["Success"] != null)
-            {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
-            }
-
             return View();
         }
 
@@ -93,13 +95,13 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateStore")]
         public async Task<ActionResult> CreateStore(WebApiStore store)
         {
-            ModelStateResponse response = await storeAdmin.CreateStoreAsync(store);
+            WebApiResult result = await storeAdminRepository.CreateStoreAsync(store);
 
-            if (!response.IsValid)
+            if (!result.Success)
             {
-                foreach (var error in response.ModelSate)
+                foreach (var error in result.ModelState)
                 {
-                    ModelState.AddModelError(error.Key, error.Value.First());
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View(store);
@@ -112,33 +114,51 @@ namespace AbatementHelper.MVC.Controllers
         [Route("EditStore/{id}")]
         public async Task<ActionResult> EditStore(string id)
         {
-            WebApiStore store = await storeAdmin.EditStoreAsync(id);
+            WebApiStoreResult result = await storeAdminRepository.EditStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                WebApiStore store = result.Store;
+
+                return View(store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpPost]
         [Route("EditStore")]
         public async Task<ActionResult> EditStore(WebApiStore store)
         {
-            ModelStateResponse response = await storeAdmin.EditStoreAsync(store);
+            WebApiResult result = await storeAdminRepository.EditStoreAsync(store);
 
-            if (!response.IsValid)
+            if (result.Success)
             {
-                foreach (var error in response.ModelSate)
+                return RedirectToAction("GetAllStores");
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
                 {
-                    ModelState.AddModelError(error.Key, error.Value.First());
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View(store);
             }
-
-            return RedirectToAction("GetAllStores");
         }
 
         [Route("PostStoreImage")]
-        public async Task<ActionResult> PostStoreImage(PostImage image)
+        public async Task PostStoreImage(PostImage image)
         {
+            WebApiResult result = new WebApiResult();
+
             if (image.File != null)
             {
                 using (MemoryStream ms = new MemoryStream())
@@ -155,7 +175,8 @@ namespace AbatementHelper.MVC.Controllers
                             Id = image.Id,
                             Image = array
                         };
-                        await storeAdmin.PostStoreImageAsync(webApiImage);
+
+                        result = await storeAdminRepository.PostStoreImageAsync(webApiImage);
                     }
                     else
                     {
@@ -169,19 +190,26 @@ namespace AbatementHelper.MVC.Controllers
                                 Id = image.Id,
                                 Image = arrayScaled
                             };
-                            await storeAdmin.PostStoreImageAsync(webApiImage);
+
+                            result = await storeAdminRepository.PostStoreImageAsync(webApiImage);
                         }
                     }
                 }
             }
 
-            return RedirectToAction("Index", "Home");
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
         }
 
         [Route("GetStoreImage/{id}")]
         public async Task<ActionResult> GetStoreImage(string id)
         {
-            byte[] byteArray = await storeAdmin.GetStoreImageAsync(id);
+            byte[] byteArray = await storeAdminRepository.GetStoreImageAsync(id);
 
             return File(byteArray, "image/png");
         }
@@ -190,25 +218,54 @@ namespace AbatementHelper.MVC.Controllers
         [Route("DetailsStore/{id}")]
         public async Task<ActionResult> DetailsStore(string id)
         {
-            WebApiStore store = await storeAdmin.DetailsStoreAsync(id);
+            WebApiStoreResult result = await storeAdminRepository.DetailsStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                return View(result.Store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpGet]
         [Route("DeleteStore/{id}")]
         public async Task<ActionResult> DeleteStore(string id)
         {
-            WebApiStore store = await storeAdmin.DetailsStoreAsync(id);
+            WebApiStoreResult result = await storeAdminRepository.DetailsStoreAsync(id);
 
-            return View(store);
+            if (result.Success)
+            {
+                return View(result.Store);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllStores");
+            }
         }
 
         [HttpPost]
         [Route("DeleteStore")]
         public async Task<ActionResult> DeleteStore(WebApiStore store)
         {
-            await storeAdmin.DeleteStoreAsync(store.Id);
+            WebApiResult result = await storeAdminRepository.DeleteStoreAsync(store.Id);
+
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
 
             return RedirectToAction("GetAllStores");
         }
@@ -217,6 +274,8 @@ namespace AbatementHelper.MVC.Controllers
         [Route("GetAllDeletedStores")]
         public async Task<ActionResult> GetAllDeletedStores(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiStore> stores = new List<WebApiStore>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -231,9 +290,19 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiStore> stores;
+            WebApiListOfStoresResult result = await storeAdminRepository.GetAllDeletedStoresAsync();
 
-            stores = await storeAdmin.GetAllDeletedStoresAsync();
+            if (result.Success)
+            {
+                stores = result.Stores;
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -260,7 +329,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("RestoreStore/{id}")]
         public async Task<ActionResult> RestoreStore(string id)
         {
-            await storeAdmin.RestoreStoreAsync(id);
+            WebApiResult result = await storeAdminRepository.RestoreStoreAsync(id);
+
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
 
             return RedirectToAction("GetAllDeletedStores");
         }
@@ -269,10 +343,12 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Select/{id}")]
         public async Task<ActionResult> Select(string id)
         {
-            if (id != null)
-            {
-                var store = await storeAdmin.SelectAsync(id);
+            WebApiSelectedStoreResult result = await storeAdminRepository.SelectAsync(id);
 
+            SelectedStore store = result.Store;
+
+            if (result.Success)
+            {
                 if (store != null)
                 {
                     Response.Cookies.Add(new HttpCookie("StoreID")
@@ -290,13 +366,21 @@ namespace AbatementHelper.MVC.Controllers
                 }
             }
 
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
+
             return RedirectToAction("GetAllStores");
+
         }
 
         //[HttpGet]
         [Route("GetAllManagers")]
         public async Task<ActionResult> GetAllManagers(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiManager> managers = new List<WebApiManager>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -311,13 +395,19 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiManager> managers = await storeAdmin.GetAllManagersAsync();
+            WebApiListOfManagersResult result = await storeAdminRepository.GetAllManagersAsync();
 
-            //if (TempData["Message"] != null && TempData["Success"] != null)
-            //{
-            //    ViewBag.Message = TempData["Message"].ToString();
-            //    ViewBag.Success = (bool)TempData["Success"];
-            //}
+            if (result.Success)
+            {
+                managers = result.Managers;
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -351,13 +441,13 @@ namespace AbatementHelper.MVC.Controllers
         [Route("CreateManager")]
         public async Task<ActionResult> CreateManager(CreateManagerModel manager)
         {
-            ModelStateResponse response = await storeAdmin.CreateManagerAsync(manager);
+            WebApiResult result = await storeAdminRepository.CreateManagerAsync(manager);
 
-            if (!response.IsValid)
+            if (!result.Success)
             {
-                foreach (var error in response.ModelSate)
+                foreach (var error in result.ModelState)
                 {
-                    ModelState.AddModelError(error.Key, error.Value.First());
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View(manager);
@@ -370,37 +460,59 @@ namespace AbatementHelper.MVC.Controllers
         [Route("DetailsManager/{id}")]
         public async Task<ActionResult> DetailsManager(string id)
         {
-            WebApiManager manager = await storeAdmin.DetailsManagerAsync(id);
+            WebApiManagerResult result = await storeAdminRepository.DetailsManagerAsync(id);
 
-            return View(manager);
+            if (result.Success)
+            {
+                WebApiManager manager = result.Manager;
+
+                return View(manager);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllManagers");
+            }
         }
 
         [HttpGet]
         [Route("EditManager/{id}")]
         public async Task<ActionResult> EditManager(string id)
         {
-            WebApiManager manager = await storeAdmin.EditManagerAsync(id);
+            WebApiManagerResult result = await storeAdminRepository.EditManagerAsync(id);
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
+            if (result.Success)
             {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
-            }
+                WebApiManager manager = result.Manager;
 
-            return View(manager);
+                return View(manager);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllManagers");
+            }
         }
 
         [HttpPost]
         [Route("EditManager")]
         public async Task<ActionResult> EditManager(WebApiManager manager)
         {
-            ModelStateResponse response = await storeAdmin.EditManagerAsync(manager);
+            WebApiResult result = await storeAdminRepository.EditManagerAsync(manager);
 
-            if (!response.IsValid)
+            if (!result.Success)
             {
-                foreach (var error in response.ModelSate)
+                foreach (var error in result.ModelState)
                 {
-                    ModelState.AddModelError(error.Key, error.Value.First());
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View(manager);
@@ -408,10 +520,12 @@ namespace AbatementHelper.MVC.Controllers
 
             return RedirectToAction("GetAllManagers");
         }
-        
+
         [Route("PostManagerImage")]
-        public async Task<ActionResult> PostManagerImage(PostImage image)
+        public async Task PostManagerImage(PostImage image)
         {
+            WebApiResult result = new WebApiResult();
+
             if (image.File != null)
             {
                 using (MemoryStream ms = new MemoryStream())
@@ -428,7 +542,8 @@ namespace AbatementHelper.MVC.Controllers
                             Id = image.Id,
                             Image = array
                         };
-                        await storeAdmin.PostManagerImageAsync(webApiImage);
+
+                        result = await storeAdminRepository.PostManagerImageAsync(webApiImage);
                     }
                     else
                     {
@@ -442,19 +557,26 @@ namespace AbatementHelper.MVC.Controllers
                                 Id = image.Id,
                                 Image = arrayScaled
                             };
-                            await storeAdmin.PostManagerImageAsync(webApiImage);
+
+                            result = await storeAdminRepository.PostManagerImageAsync(webApiImage);
                         }
                     }
                 }
             }
 
-            return RedirectToAction("Index", "Home");
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
         }
 
         [Route("GetManagerImage/{id}")]
         public async Task<ActionResult> GetManagerImage(string id)
         {
-            byte[] byteArray = await storeAdmin.GetManagerImageAsync(id);
+            byte[] byteArray = await storeAdminRepository.GetManagerImageAsync(id);
 
             return File(byteArray, "image/png");
         }
@@ -463,29 +585,48 @@ namespace AbatementHelper.MVC.Controllers
         [Route("DeleteManager/{id}")]
         public async Task<ActionResult> DeleteManager(string id)
         {
-            WebApiManager manager = await storeAdmin.DetailsManagerAsync(id);
+            WebApiManagerResult result = await storeAdminRepository.DetailsManagerAsync(id);
 
-            return View(manager);
+            if (result.Success)
+            {
+                WebApiManager manager = result.Manager;
+
+                return View(manager);
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("GetAllManagers");
+            }
         }
 
         [HttpPost]
         [Route("DeleteManager")]
         public async Task<ActionResult> DeleteManager(WebApiManager manager)
         {
-            if (await storeAdmin.DeleteManagerAsync(manager.Id))
+            WebApiResult result = await storeAdminRepository.DeleteManagerAsync(manager.Id);
+
+            if (!result.Success)
             {
-                return RedirectToAction("GetAllManagers");
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
             }
-            else
-            {
-                return RedirectToAction("Delete");
-            }
+
+            return RedirectToAction("GetAllManagers");
         }
 
         //[HttpGet]
         [Route("GetAllDeletedManager")]
         public async Task<ActionResult> GetAllDeletedManagers(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiManager> managers = new List<WebApiManager>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -500,7 +641,19 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            List<WebApiManager> managers = await storeAdmin.GetAllDeletedManagers();
+            WebApiListOfManagersResult result = await storeAdminRepository.GetAllDeletedManagers();
+
+            if (result.Success)
+            {
+                managers = result.Managers;
+            }
+            else
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -527,7 +680,15 @@ namespace AbatementHelper.MVC.Controllers
         [Route("RestoreManager/{id}")]
         public async Task<ActionResult> RestoreManager(string id)
         {
-            await storeAdmin.RestoreManagerAsync(id);
+            WebApiResult result = await storeAdminRepository.RestoreManagerAsync(id);
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             return RedirectToAction("GetAllDeletedManagers");
         }
@@ -536,6 +697,8 @@ namespace AbatementHelper.MVC.Controllers
         [Route("GetAllManagerStores/{id}")]
         public async Task<ActionResult> GetAllManagerStores(string id, string sortOrder, string currentFilter, string searchString, int? page)
         {
+            List<WebApiManagerStore> stores = new List<WebApiManagerStore>();
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
@@ -550,37 +713,51 @@ namespace AbatementHelper.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            //jos dodat error messages
+            WebApiManagerResult managerResult = await storeAdminRepository.DetailsManagerAsync(id);
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
+            if (managerResult.Success)
             {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
-            }
+                WebApiManager manager = managerResult.Manager;
 
-            WebApiManager manager = await storeAdmin.DetailsManagerAsync(id);
-
-            if (manager != null)
-            {
-                Response.Cookies.Add(new HttpCookie("ManagerID")
+                if (manager != null)
                 {
-                    Value = manager.Id,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("ManagerUserName")
-                {
-                    Value = manager.UserName,
-                    HttpOnly = true
-                });
+                    Response.Cookies.Add(new HttpCookie("ManagerID")
+                    {
+                        Value = manager.Id,
+                        HttpOnly = true
+                    });
+                    Response.Cookies.Add(new HttpCookie("ManagerUserName")
+                    {
+                        Value = manager.UserName,
+                        HttpOnly = true
+                    });
 
-                ViewBag.ManagerUserName = manager.UserName;
+                    ViewBag.ManagerUserName = manager.UserName;
+                }
             }
             else
             {
+                foreach (var error in managerResult.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
                 return RedirectToAction("GetAllManagers");
             }
 
-            List<WebApiManagerStore> stores = await storeAdmin.GetAllManagerStoresAsync(id);
+            WebApiListOfManagerStoresResult storeResult = await storeAdminRepository.GetAllManagerStoresAsync(id);
+
+            if (storeResult.Success)
+            {
+                stores = storeResult.Stores;
+            }
+            else
+            {
+                foreach (var error in storeResult.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -607,10 +784,15 @@ namespace AbatementHelper.MVC.Controllers
         [Route("AssignStore/{managerId}/{storeId}")]
         public async Task<ActionResult> AssignStore(string managerId, string storeId)
         {
-            Response assignStoreResponse = await storeAdmin.AssignStoreAsync(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+            WebApiResult result = await storeAdminRepository.AssignStoreAsync(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
 
-            TempData["Message"] = assignStoreResponse.Message;
-            TempData["Success"] = assignStoreResponse.Success;
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             return RedirectToAction("GetAllManagerStores", new { id = managerId });
         }
@@ -619,10 +801,15 @@ namespace AbatementHelper.MVC.Controllers
         [Route("UnassignStore/{managerId}/{storeId}")]
         public async Task<ActionResult> UnassignStore(string managerId, string storeId)
         {
-            Response storeUnassignResponse = await storeAdmin.UnassignStoreAsync(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
+            WebApiResult result = await storeAdminRepository.UnassignStoreAsync(new WebApiStoreAssign { ManagerId = managerId, StoreId = storeId });
 
-            TempData["Message"] = storeUnassignResponse.Message;
-            TempData["Success"] = storeUnassignResponse.Success;
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
             return RedirectToAction("GetAllManagerStores", new { id = managerId });
         }

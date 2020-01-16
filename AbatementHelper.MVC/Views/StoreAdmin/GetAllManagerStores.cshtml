@@ -24,15 +24,6 @@
             @Html.ActionLink("StoreName", "GetAllManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            WorkingHoursWeek
-        </th>
-        <th>
-            WorkingHoursWeekends
-        </th>
-        <th>
-            WorkingHoursHolidays
-        </th>
-        <th>
             Country
         </th>
         <th>
@@ -55,15 +46,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Store.StoreName)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeek)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursWeekends)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Store.WorkingHoursHolidays)
-                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Store.Country)
                 </td>

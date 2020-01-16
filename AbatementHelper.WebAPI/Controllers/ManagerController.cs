@@ -30,67 +30,57 @@ namespace AbatementHelper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllStoresAsync/{managerId}")]
-        public async Task<List<WebApiStore>> GetAllStoresAsync(string managerId)
+        [Route("GetAllStoresAsync/{id}")]
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync(string id)
         {
-            var stores = await managerRepository.GetAllStoresAsync(managerId);
+            WebApiListOfStoresResult result = await managerRepository.GetAllStoresAsync(id);
 
-            return stores;
+            return result;
         }
 
         [HttpGet]
         [Route("SelectAsync/{id}")]
-        public async Task<SelectedStore> SelectAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
         {
-            return await managerRepository.SelectStoreAsync(id);
+            WebApiSelectedStoreResult result = await managerRepository.SelectStoreAsync(id);
+
+            return result;
         }
 
         [HttpGet]
         [Route("EditStoreAsync/{id}")]
-        public async Task<WebApiStore> EditStoreAsync(string id)
+        public async Task<WebApiStoreResult> EditStoreAsync(string id)
         {
-            var store = await managerRepository.ReadStoreByIdAsync(id);
+            WebApiStoreResult result = await managerRepository.ReadStoreByIdAsync(id);
 
-            return store;
+            return result;
         }
 
         [HttpPut]
         [Route("EditStoreAsync")]
-        public async Task<IHttpActionResult> EditStoreAsync(WebApiStore store)
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
         {
-            SimulateValidation(store);
+            WebApiResult result = await managerRepository.EditStoreAsync(store);
 
-            ModelStateResponse response = await managerRepository.EditStoreAsync(store);
-
-            if (!response.IsValid)
-            {
-                foreach (var error in response.ModelState)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-
-                return BadRequest(ModelState);
-            }
-
-            return Ok();
+            return result;
         }
 
         [HttpGet]
         [Route("DetailsStoreAsync/{id}")]
-        public async Task<WebApiStore> DetailsStoreAsync(string id)
+        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
         {
-            WebApiStore store = await managerRepository.ReadStoreByIdAsync(id);
+            WebApiStoreResult result = await managerRepository.ReadStoreByIdAsync(id);
 
-            return store;
+            return result;
         }
 
         [HttpPost]
         [Route("AbandonStoreAsync")]
-        public async Task<Response> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
+        public async Task<WebApiResult> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
         {
-            Response response = await managerRepository.UnassignStoreAsync(storeUnassign);
+            WebApiResult result = await managerRepository.AbandonStoreAsync(storeUnassign);
 
-            return response;
+            return result;
         }
     }
 }

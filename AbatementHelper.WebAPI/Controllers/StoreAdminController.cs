@@ -57,7 +57,7 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("EditStoreAsync/{id}")]
-        public async Task<WebApiStoreResult> EditStore(string id)
+        public async Task<WebApiStoreResult> EditStoreAsync(string id)
         {
             WebApiStoreResult result = await storeAdminRepository.ReadStoreByIdAsync(id);
 
@@ -93,7 +93,7 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("DetailsStoreAsync/{id}")]
-        public async Task<WebApiStoreResult> DetailsStore(string id)
+        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
         {
             WebApiStoreResult result = await storeAdminRepository.ReadStoreByIdAsync(id);
 
@@ -129,9 +129,11 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("SelectAsync/{id}")]
-        public async Task<SelectedStore> SelectAsync(string id)
+        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
         {
-            return await storeAdminRepository.SelectStoreAsync(id);
+            WebApiSelectedStoreResult result = await storeAdminRepository.SelectStoreAsync(id);
+
+            return result;
         }
 
         [HttpGet]
@@ -157,18 +159,18 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("DetailsManagerAsync/{id}")]
-        public async Task<WebApiUserResult> DetailsManager(string id)
+        public async Task<WebApiManagerResult> DetailsManager(string id)
         {
-            WebApiUserResult result = await storeAdminRepository.ReadUserById(id);
+            WebApiManagerResult result = await storeAdminRepository.ReadUserById(id);
 
             return result;
         }
 
         [HttpGet]
         [Route("EditManagerAsync/{id}")]
-        public async Task<WebApiUserResult> EditManager(string id)
+        public async Task<WebApiManagerResult> EditManager(string id)
         {
-            WebApiUserResult result = await storeAdminRepository.ReadUserById(id);
+            WebApiManagerResult result = await storeAdminRepository.ReadUserById(id);
 
             return result;
         }
@@ -231,9 +233,11 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllManagerStoresAsync/{id}")]
-        public async Task<List<WebApiManagerStore>> GetAllAssignedStoresAsync(string id)
+        public async Task<WebApiListOfManagerStoresResult> GetAllAssignedStoresAsync(string id)
         {
-            return await storeAdminRepository.GetAllManagerStoresAsync(id);
+            WebApiListOfManagerStoresResult result = await storeAdminRepository.GetAllManagerStoresAsync(id);
+
+            return result;
         }
 
         [HttpPost]

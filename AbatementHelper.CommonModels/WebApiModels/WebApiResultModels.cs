@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AbatementHelper.CommonModels.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -7,7 +8,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
 {
     public class WebApiResult
     {
-        //public string Value { get; set; }
         public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
         public string Message { get; set; }
         public bool Success
@@ -37,259 +37,58 @@ namespace AbatementHelper.CommonModels.WebApiModels
         public Exception Exception { get; set; }
     }
 
-    public class WebApiUserResult
+    public class WebApiUserResult : WebApiResult
     {
         public WebApiUser User { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiListOfUsersResult
+    public class WebApiListOfUsersResult : WebApiResult
     {
         public List<WebApiUser> Users { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiStoreResult
+    public class WebApiStoreResult : WebApiResult
     {
         public WebApiStore Store { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiListOfStoresResult
+    public class WebApiListOfStoresResult : WebApiResult
     {
         public List<WebApiStore> Stores { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiManagerResult
+    public class WebApiManagerResult : WebApiResult
     {
         public WebApiManager Manager { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiListOfManagersResult
+    public class WebApiListOfManagersResult : WebApiResult
     {
         public List<WebApiManager> Managers { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiProductResult
+    public class WebApiProductResult : WebApiResult
     {
         public WebApiProduct Product { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
     }
 
-    public class WebApiListOfProductsResult
+    public class WebApiListOfProductsResult : WebApiResult
     {
         public List<WebApiProduct> Products { get; set; }
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
-        public string Message { get; set; }
-        public bool Success
-        {
-            get
-            {
-                if (ModelState.Count > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Exception != null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-            private set
-            {
-            }
-        }
-        public Exception Exception { get; set; }
+    }
+
+    public class WebApiSelectedStoreResult : WebApiResult
+    {
+        public SelectedStore Store { get; set; }
+    }
+
+    public class WebApiManagerStoreResult : WebApiResult
+    {
+        public WebApiManagerStore Store { get; set; }
+    }
+
+    public class WebApiListOfManagerStoresResult : WebApiResult
+    {
+        public List<WebApiManagerStore> Stores { get; set; }
     }
 }
