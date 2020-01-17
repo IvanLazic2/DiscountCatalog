@@ -8,7 +8,8 @@ namespace AbatementHelper.CommonModels.WebApiModels
 {
     public class WebApiResult
     {
-        public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
+        //public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
+        public List<KeyValuePair<string, string>> ModelState { get; set; } = new List<KeyValuePair<string, string>>();
         public string Message { get; set; }
         public bool Success
         {
@@ -35,6 +36,12 @@ namespace AbatementHelper.CommonModels.WebApiModels
             }
         }
         public Exception Exception { get; set; }
+
+        public void AddModelError(string key, string value)
+        {
+            var element = new KeyValuePair<string, string>(key, value);
+            ModelState.Add(element);
+        }
     }
 
     public class WebApiUserResult : WebApiResult
@@ -90,5 +97,10 @@ namespace AbatementHelper.CommonModels.WebApiModels
     public class WebApiListOfManagerStoresResult : WebApiResult
     {
         public List<WebApiManagerStore> Stores { get; set; }
+    }
+
+    public class WebApiAuthenticatedUserResult : WebApiResult
+    {
+        public AuthenticatedUser User { get; set; }
     }
 }

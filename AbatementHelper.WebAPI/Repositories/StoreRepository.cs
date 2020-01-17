@@ -47,7 +47,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Products = products;
@@ -86,7 +86,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Products = products;
@@ -140,7 +140,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                         if (processedProduct.Store == null)
                         {
-                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                            result.AddModelError(string.Empty, "Store does not exist.");
                         }
                         else
                         {
@@ -161,7 +161,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     foreach (var error in modelState.ModelState)
                     {
-                        result.ModelState.Add(error.Key, error.Value);
+                        result.AddModelError(error.Key, error.Value);
                     }
 
                     result.Exception = modelState.Exception;
@@ -171,7 +171,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -212,7 +212,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                         if (productEntity == null)
                         {
-                            result.ModelState.Add(string.Empty, "Product does not exist.");
+                            result.AddModelError(string.Empty, "Product does not exist.");
                         }
                         else
                         {
@@ -239,7 +239,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     foreach (var error in modelState.ModelState)
                     {
-                        result.ModelState.Add(error.Key, error.Value);
+                        result.AddModelError(error.Key, error.Value);
                     }
 
                     result.Exception = modelState.Exception;
@@ -248,7 +248,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -272,14 +272,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                        result.AddModelError(string.Empty, "Product does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
 
@@ -308,14 +308,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                        result.AddModelError(string.Empty, "Product does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -353,7 +353,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Products = products;
@@ -383,14 +383,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Product does not exist.");
+                        result.AddModelError(string.Empty, "Product does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -428,7 +428,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Products = products;
@@ -466,24 +466,24 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Product does not exist.");
+                                result.AddModelError(string.Empty, "Product does not exist.");
                             }
                         }
                     }
                     catch (Exception exception)
                     {
                         result.Exception = exception;
-                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                        result.AddModelError(string.Empty, "An exception has occured.");
                     }
                 }
                 else
                 {
-                    result.ModelState.Add(string.Empty, "Invalid image type.");
+                    result.AddModelError(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Image is empty.");
+                result.AddModelError(string.Empty, "Image is empty.");
             }
 
             return result;

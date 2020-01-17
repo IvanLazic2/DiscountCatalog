@@ -34,8 +34,7 @@ namespace AbatementHelper.WebAPI.Controllers
         private UserRepository userRepository = new UserRepository();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
-        private AuthenticationManagerRepository authenticate = new AuthenticationManagerRepository();
-        private Response response = new Response();
+        //private AuthenticationManagerRepository authentication = new AuthenticationManagerRepository();
 
         public AccountController()
         {
@@ -282,7 +281,7 @@ namespace AbatementHelper.WebAPI.Controllers
 
                 IList<string> userRoles = await new UserManager().GetRolesAsync(user.Id);
 
-                
+
 
                 //string userRole = await entityReader.ReadRole(user.Id);
 
@@ -343,9 +342,9 @@ namespace AbatementHelper.WebAPI.Controllers
         // POST api/Account/Register
         [AllowAnonymous]
         [Route("RegisterAsync")]
-        public async Task<Response> Register(RegisterBindingModel model)
+        public async Task<WebApiResult> Register(RegisterBindingModel model)
         {
-            Response response = new Response();
+            var result = new WebApiResult();
 
             if (ModelState.IsValid)
             {
@@ -355,39 +354,42 @@ namespace AbatementHelper.WebAPI.Controllers
                     UserName = model.Email.Split('@')[0],
                 };
 
-                IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+                IdentityResult identityResult = await UserManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
+                if (identityResult.Succeeded)
                 {
-                    IdentityResult UserRoleResult = await UserManager.AddToRoleAsync(user.Id, model.Role);
+                    IdentityResult userRoleResult = await UserManager.AddToRoleAsync(user.Id, model.Role);
 
-                    if (UserRoleResult.Succeeded)
+                    if (userRoleResult.Succeeded)
                     {
-                        response.Message = "Successfully registered";
+                        result.Message = "Successfully registered.";
                     }
                     else
                     {
-                        response.Errors = UserRoleResult.Errors;
-                        response.Success = false;
+                        foreach (var error in userRoleResult.Errors)
+                        {
+                            result.AddModelError(string.Empty, error);
+                        }
                     }
                 }
                 else
                 {
-                    response.Errors = result.Errors;
-                    response.Success = false;
-                } 
+                    foreach (var error in identityResult.Errors)
+                    {
+                        result.AddModelError(string.Empty, error);
+                    }
+                }
             }
             else
             {
-                response.Message = "Error";
-                response.Success = false;
+                foreach (var error in ModelState)
+                {
+                    result.AddModelError(error.Key, error.Value.Value.RawValue.ToString());/////????
+                }
             }
 
-            return response;
+            return result;
         }
-
-        
-
 
         // POST api/Account/RegisterExternal
         [OverrideAuthentication]
@@ -426,61 +428,59 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [AllowAnonymous]
         [Route("AuthenticateAsync")]
-        public async Task<Response> AuthenticateAsync(AuthenticationModel model)
+        public async Task<WebApiAuthenticatedUserResult> AuthenticateAsync(AuthenticationModel model)
         {
-            //var user = await ReturnUserName(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationUserDbContext())), "aaa@aaa.aaa", "Aaa123");
+            var result = new WebApiAuthenticatedUserResult();
 
             var userName = await userRepository.ReturnUserNameAsync(model.EmailOrUserName);
 
-            var existingUser = await userRepository.ReturnUser(userName);
-
-
-            if (existingUser == null)
+            if (userName != null)
             {
-                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
-                response.Message = $"User {model.EmailOrUserName} does not exist.";
-                response.Success = false;
+                var existingUser = await userRepository.ReturnUserByUserNameAsync(userName);
 
-                return response;
+                if (existingUser != null)
+                {
+                    WebApiAuthenticatedUserResult authenticationResult = await userRepository.AuthenticateAsync(userName, model.Password);
+
+                    if (authenticationResult.Success)
+                    {
+                        result.User = authenticationResult.User;
+
+                        result.Message = $"Logged in as {userName}";
+                    }
+                    else
+                    {
+                        foreach (var error in authenticationResult.ModelState)
+                        {
+                            result.AddModelError(error.Key, error.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    result.AddModelError(string.Empty, "Account does not exist.");
+                }
             }
 
-            var result = await authenticate.Authenticate(userName, model.Password);
-
-            if (authenticate.LoginSuccessful)
-            {
-                response.User = result;
-                response.ResponseCode = (int)System.Net.HttpStatusCode.OK;
-                response.Success = true;
-                response.Message = $"Logged in as {userName}";
-            }
-            else
-            {
-                response.ResponseCode = (int)System.Net.HttpStatusCode.BadRequest;
-                response.Success = false;
-                response.Message = "Incorrect password!";
-            }
-
-            return response;
+            return result;
         }
 
         [HttpGet]
         [Route("DetailsAsync/{id}")]
-        public async Task<WebApiUser> DetailsAsync(string id)
+        public async Task<WebApiUserResult> DetailsAsync(string id)
         {
-            ApplicationUser user = await userRepository.ReadUserByIdAsync(id);
+            WebApiUserResult result = await userRepository.ReadUserByIdAsync(id);
 
-            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
-
-            return webApiUser;
+            return result;
         }
 
         [HttpPut]
         [Route("PostUserImageAsync")]
-        public async Task<Response> PostUserImageAsync(WebApiPostImage user)
+        public async Task<WebApiResult> PostUserImageAsync(WebApiPostImage user)
         {
-            Response response = await userRepository.PostUserImageAsync(user);
+            WebApiResult result = await userRepository.PostUserImageAsync(user);
 
-            return response;
+            return result;
         }
 
         [HttpGet]
@@ -496,38 +496,38 @@ namespace AbatementHelper.WebAPI.Controllers
 
         [HttpGet]
         [Route("EditAsync/{id}")]
-        public async Task<WebApiUser> EditAsync(string id)
+        public async Task<WebApiUserResult> EditAsync(string id)
         {
-            ApplicationUser user = await userRepository.ReadUserByIdAsync(id);
+            WebApiUserResult result = await userRepository.ReadUserByIdAsync(id);
 
-            WebApiUser webApiUser = await UserProcessor.ApplicationUserToWebApiUser(user);
-
-            return webApiUser;
+            return result;
         }
 
         [HttpPut]
         [Route("EditAsync")]
-        public async Task<Response> EditAsync(WebApiUser user)
+        public async Task<WebApiResult> EditAsync(WebApiUser user)
         {
-            return await userRepository.Edit(user);
+            WebApiResult result = await userRepository.EditAsync(user);
+
+            return result;
         }
 
         [HttpPut]
         [Route("DeleteAsync/{id}")]
-        public async Task<IHttpActionResult> DeleteAsync(string id)
+        public async Task<WebApiResult> DeleteAsync(string id)
         {
-            await userRepository.DeleteAsync(id);
+            WebApiResult result = await userRepository.DeleteAsync(id);
 
-            return Ok();
+            return result;
         }
 
         [HttpPut]
         [Route("RestoreAsync/{id}")]
-        public async Task<IHttpActionResult> RestoreAsync(string id)
+        public async Task<WebApiResult> RestoreAsync(string id)
         {
-            await userRepository.RestoreAsync(id);
+            WebApiResult result = await userRepository.RestoreAsync(id);
 
-            return Ok();
+            return result;
         }
 
         protected override void Dispose(bool disposing)

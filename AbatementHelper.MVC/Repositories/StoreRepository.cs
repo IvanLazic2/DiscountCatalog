@@ -80,195 +80,129 @@ namespace AbatementHelper.MVC.Repositories
                 StoreName = HttpContext.Current.Request.Cookies["StoreName"].Value
             };
 
-            if (product.Store.Id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                var jsonContent = JsonConvert.SerializeObject(product);
+            var jsonContent = JsonConvert.SerializeObject(product);
 
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage request = await apiClient.PostAsync("api/Store/CreateProductAsync", httpContent);
+            HttpResponseMessage request = await apiClient.PostAsync("api/Store/CreateProductAsync", httpContent);
 
-                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                return result;
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<WebApiListOfProductsResult> GetAllProductsAsync()
         {
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            if (storeId != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllProductsAsync/" + storeId);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllProductsAsync/" + storeId);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
+            var result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
-                    return resultContent;
-                }
-            }
+            return result;
 
-            return null;
         }
 
         public async Task<WebApiProductResult> ProductDetailsAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Store/ProductDetailsAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Store/ProductDetailsAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    WebApiProductResult resultContent = await request.Content.ReadAsAsync<WebApiProductResult>();
+            WebApiProductResult result = await request.Content.ReadAsAsync<WebApiProductResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<WebApiResult> PostProductImageAsync(WebApiPostImage image)
         {
-            if (image.Image != null && image.Id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/PostProductImageAsync", image);
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/PostProductImageAsync", image);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return result;
-                }
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<byte[]> GetProductImageAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetProductImageAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetProductImageAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<byte[]>();
+            var resultContent = await request.Content.ReadAsAsync<byte[]>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return resultContent;
         }
 
         public async Task<WebApiProductResult> EditProductAsync(WebApiProduct product)
         {
-            if (product.Id != null)
+            product.Store = new WebApiStore
             {
-                product.Store = new WebApiStore
-                {
-                    Id = HttpContext.Current.Request.Cookies["StoreID"].Value
-                };
+                Id = HttpContext.Current.Request.Cookies["StoreID"].Value
+            };
 
-                if (product.Store.Id != null)
-                {
-                    AddTokenToHeader();
+            AddTokenToHeader();
 
-                    HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Store/EditProductAsync", product);
 
-                    WebApiProductResult result = await request.Content.ReadAsAsync<WebApiProductResult>();
+            WebApiProductResult result = await request.Content.ReadAsAsync<WebApiProductResult>();
 
-                    return result;
-                }
-            }
+            return result;
 
-            return null;
         }
 
         public async Task<WebApiResult> DeleteProductAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
+            HttpResponseMessage request = await apiClient.PutAsync("api/Store/DeleteProductAsync/" + id, null);
 
-                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                return result;
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<WebApiResult> RestoreProductAsync(string id)
         {
-            if (id != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.PutAsync("api/Store/RestoreProductAsync/" + id, null);
+            HttpResponseMessage request = await apiClient.PutAsync("api/Store/RestoreProductAsync/" + id, null);
 
-                WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                return result;
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync()
         {
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            if (storeId != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllDeletedProductsAsync/" + storeId);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllDeletedProductsAsync/" + storeId);
 
-                WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
+            WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
-                return result;
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync()
         {
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            if (storeId != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllExpiredProductsAsync/" + storeId);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Store/GetAllExpiredProductsAsync/" + storeId);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
+            WebApiListOfProductsResult result = await request.Content.ReadAsAsync<WebApiListOfProductsResult>();
 
-                    return result;
-                }
-            }
-
-            return null;
+            return result;
         }
     }
 }

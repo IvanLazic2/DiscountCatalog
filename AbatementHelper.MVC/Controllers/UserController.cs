@@ -20,7 +20,6 @@ namespace AbatementHelper.MVC.Controllers
     {
         private AccountRepository account = new AccountRepository();
         
-
         [HttpGet]
         public ActionResult AccountTypeSelection()
         {
@@ -34,7 +33,6 @@ namespace AbatementHelper.MVC.Controllers
             return RedirectToAction("Registration", "User", new { accountType });
         }
 
-        //Registration action
         [HttpGet]
         public ActionResult Registration(string accountType)
         {
@@ -47,26 +45,26 @@ namespace AbatementHelper.MVC.Controllers
                 return RedirectToAction("AccountTypeSelection", "User");
             }
         }
-        //Registration POST action
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registration(User user)
         {
             user.Role = Session["accountType"].ToString();
 
-            var result = await account.RegisterAsync(user);
+            WebApiResult result = await account.RegisterAsync(user);
 
-            if (result.Success)
+            if (!result.Success)
             {
-                TempData["Success"] = "Registration Successful, please log in!";
-                return RedirectToAction("Login");
-            }
-            else
-            {
-                ViewBag.Message = "Register Unsuccessful";
-                return RedirectToAction("Registration");
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(user);
             }
 
+            return RedirectToAction("Login");
         }
 
         [HttpGet]
@@ -78,10 +76,7 @@ namespace AbatementHelper.MVC.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(AuthenticationModel user)
         {
-            var result = await account.LoginAsync(user);
-
-            TempData["Message"] = result.Message;
-            TempData["Success"] = result.Success;
+            WebApiAuthenticatedUserResult result = await account.LoginAsync(user);
 
             if (result.Success)
             {
@@ -121,10 +116,9 @@ namespace AbatementHelper.MVC.Controllers
             }
             else
             {
-                if (TempData["Message"] != null && TempData["Success"] != null)
+                foreach (var error in result.ModelState)
                 {
-                    ViewBag.Message = TempData["Message"].ToString();
-                    ViewBag.Success = (bool)TempData["Success"];
+                    ModelState.AddModelError(error.Key, error.Value);
                 }
 
                 return View();
@@ -147,13 +141,19 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Details")]
         public async Task<ActionResult> Details()
         {
-            WebApiUser user = await account.DetailsAsync();
+            WebApiUserResult result = await account.DetailsAsync();
 
-            if (TempData["Message"] != null && TempData["Success"] != null)
+            if (!result.Success)
             {
-                ViewBag.Message = TempData["Message"].ToString();
-                ViewBag.Success = (bool)TempData["Success"];
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("Index", "Home");
             }
+
+            WebApiUser user = result.User;
 
             return View(user);
         }
@@ -161,12 +161,15 @@ namespace AbatementHelper.MVC.Controllers
         [Route("PostUserImage")]
         public async Task<ActionResult> PostUserImage(PostImage image)
         {
+            var result = new WebApiResult();
+
             if (image.File != null)
             {
                 // ZA SPREMANJE NA SERVER
                 //string image = System.IO.Path.GetFileName(file.FileName);
                 //string path = System.IO.Path.Combine(Server.MapPath("sad tu napisem path npr. ~/images/user il tak nest"), image);
                 //file.SaveAs(path);
+                //i u bazu stavim adresu.
 
                 //ZA SPREMANJE NA BAZU
                 using (MemoryStream ms = new MemoryStream())
@@ -184,7 +187,8 @@ namespace AbatementHelper.MVC.Controllers
                             Image = array
 
                         };
-                        await account.PostUserImageAsync(webApiImage);
+
+                        result = await account.PostUserImageAsync(webApiImage);
                     }
                     else
                     {
@@ -200,12 +204,18 @@ namespace AbatementHelper.MVC.Controllers
 
                             };
 
-                            await account.PostUserImageAsync(webApiImage);
+                            result = await account.PostUserImageAsync(webApiImage);
                         }
                     }
-                    
                 }
+            }
 
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
             }
 
             return RedirectToAction("Index", "Home");
@@ -219,40 +229,65 @@ namespace AbatementHelper.MVC.Controllers
             return File(byteArray, "image/png");
         }
 
-        //Edit GET
-
         [HttpGet]
         [Route("Edit")]
         public async Task<ActionResult> Edit()
         {
-            WebApiUser user = new WebApiUser();
+            var result = new WebApiUserResult();
 
-            user = await account.EditAsync();
+            result = await account.EditAsync();
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            WebApiUser user = result.User;
 
             return View(user);
         }
-
-        //Edit POST
 
         [HttpPost]
         [Route("Edit")]
         public async Task<ActionResult> Edit(WebApiUser user)
         {
-            Response editResponse = await account.EditAsync(user);
+            WebApiResult result = await account.EditAsync(user);
 
-            TempData["Message"] = editResponse.Message;
-            TempData["Success"] = editResponse.Success;
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(user);
+            }
 
             return RedirectToAction("Details");
         }
-
-        //Delete
 
         [HttpGet]
         [Route("Delete")]
         public async Task<ActionResult> Delete()
         {
-            WebApiUser user = await account.DetailsAsync();
+            WebApiUserResult result = await account.DetailsAsync();
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return RedirectToAction("Details");
+            }
+
+            WebApiUser user = result.User;
 
             return View(user);
         }
@@ -261,11 +296,21 @@ namespace AbatementHelper.MVC.Controllers
         [Route("Delete")]
         public async Task<ActionResult> Delete(WebApiUser user)
         {
-            await account.DeleteAsync(user);
+            WebApiResult result = await account.DeleteAsync(user);
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(user);
+            }
+
+            Logout();
 
             return RedirectToAction("Index", "Home");
         }
-
-
     }
 }

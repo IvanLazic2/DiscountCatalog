@@ -40,14 +40,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -73,14 +73,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                        result.AddModelError(string.Empty, "Store does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "Store does not exist.");
+                result.AddModelError(string.Empty, "Store does not exist.");
             }
 
             return result;
@@ -194,7 +194,7 @@ namespace AbatementHelper.WebAPI.Repositories
                                 }
                                 else
                                 {
-                                    result.ModelState.Add(string.Empty, "Store administrator does not exist.");
+                                    result.AddModelError(string.Empty, "Store administrator does not exist.");
                                 }
                             }
                         }
@@ -208,7 +208,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Stores = stores;
@@ -253,7 +253,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Stores = stores;
@@ -275,7 +275,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     foreach (var error in validationResponse.ModelState)
                     {
-                        result.ModelState.Add(error.Key, error.Value);
+                        result.AddModelError(error.Key, error.Value);
                     }
                 }
 
@@ -307,13 +307,13 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Store administrator does not exist.");
+                                result.AddModelError(string.Empty, "Store administrator does not exist.");
                             }
                         }
                     }
                     else
                     {
-                        result.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store name is already taken");
+                        result.AddModelError(ObjectExtensions.GetPropertyName(() => store.StoreName), $"Store name is already taken");
                     }
 
                     //try
@@ -345,7 +345,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -365,7 +365,7 @@ namespace AbatementHelper.WebAPI.Repositories
                 {
                     foreach (var error in validationResponse.ModelState)
                     {
-                        result.ModelState.Add(error.Key, error.Value);
+                        result.AddModelError(error.Key, error.Value);
                     }
                 }
 
@@ -405,12 +405,12 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Store does not exist.");
+                                result.AddModelError(string.Empty, "Store does not exist.");
                             }
                         }
                         else
                         {
-                            result.ModelState.Add(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
+                            result.AddModelError(ObjectExtensions.GetPropertyName(() => store.StoreName), "Store name is already taken.");
                         }
                     }
                 }
@@ -418,7 +418,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -452,24 +452,24 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Product does not exist.");
+                                result.AddModelError(string.Empty, "Product does not exist.");
                             }
                         }
                     }
                     catch (Exception exception)
                     {
                         result.Exception = exception;
-                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                        result.AddModelError(string.Empty, "An exception has occured.");
                     }
                 }
                 else
                 {
-                    result.ModelState.Add(string.Empty, "Invalid image type.");
+                    result.AddModelError(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Image is empty.");
+                result.AddModelError(string.Empty, "Image is empty.");
             }
 
             return result;
@@ -508,14 +508,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                        result.AddModelError(string.Empty, "Store does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -553,7 +553,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Stores = stores;
@@ -583,14 +583,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                        result.AddModelError(string.Empty, "Store does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -622,18 +622,18 @@ namespace AbatementHelper.WebAPI.Repositories
                         }
                         else
                         {
-                            result.ModelState.Add(string.Empty, $"Store: {store.StoreName} has to be approved.");
+                            result.AddModelError(string.Empty, $"Store: {store.StoreName} has to be approved.");
                         }
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Store does not exist.");
+                        result.AddModelError(string.Empty, "Store does not exist.");
                     }
                 }
                 catch (Exception exception)
                 {
                     result.Exception = exception;
-                    result.ModelState.Add(string.Empty, "An exception has occured.");
+                    result.AddModelError(string.Empty, "An exception has occured.");
                 }
 
                 return result;
@@ -677,7 +677,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Managers = managers;
@@ -709,7 +709,7 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             foreach (var error in managerValidationResult.ModelState)
                             {
-                                result.ModelState.Add(error.Key, error.Value);
+                                result.AddModelError(error.Key, error.Value);
                             }
                         }
                     }
@@ -721,7 +721,7 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             foreach (var error in roleResult.Errors)
                             {
-                                result.ModelState.Add(string.Empty, error);
+                                result.AddModelError(string.Empty, error);
                             }
                         }
                         else
@@ -734,7 +734,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -771,7 +771,7 @@ namespace AbatementHelper.WebAPI.Repositories
                         {
                             foreach (var error in updateResult.Errors)
                             {
-                                result.ModelState.Add(string.Empty, error);
+                                result.AddModelError(string.Empty, error);
                             }
                         }
                         else
@@ -781,7 +781,7 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
@@ -805,7 +805,7 @@ namespace AbatementHelper.WebAPI.Repositories
 
                             if (originalEntity.Email != userEntitiy.Email)
                             {
-                                result.ModelState.Add(ObjectExtensions.GetPropertyName(() => userEntitiy.Email), "Email is already taken.");
+                                result.AddModelError(ObjectExtensions.GetPropertyName(() => userEntitiy.Email), "Email is already taken.");
                             }
                         }
                     }
@@ -843,24 +843,24 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Manager does not exist.");
+                                result.AddModelError(string.Empty, "Manager does not exist.");
                             }
                         }
                     }
                     catch (Exception exception)
                     {
                         result.Exception = exception;
-                        result.ModelState.Add(string.Empty, "An exception has occured.");
+                        result.AddModelError(string.Empty, "An exception has occured.");
                     }
                 }
                 else
                 {
-                    result.ModelState.Add(string.Empty, "Invalid image type.");
+                    result.AddModelError(string.Empty, "Invalid image type.");
                 }
             }
             else
             {
-                result.ModelState.Add(string.Empty, "Image is empty.");
+                result.AddModelError(string.Empty, "Image is empty.");
             }
 
             return result;
@@ -899,14 +899,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -947,7 +947,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             result.Managers = managers;
@@ -977,14 +977,14 @@ namespace AbatementHelper.WebAPI.Repositories
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -1043,12 +1043,12 @@ namespace AbatementHelper.WebAPI.Repositories
                         }
                         else
                         {
-                            result.ModelState.Add(string.Empty, "Manager does not exist.");
+                            result.AddModelError(string.Empty, "Manager does not exist.");
                         }
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
 
@@ -1056,7 +1056,7 @@ namespace AbatementHelper.WebAPI.Repositories
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -1094,24 +1094,24 @@ namespace AbatementHelper.WebAPI.Repositories
                             }
                             else
                             {
-                                result.ModelState.Add(string.Empty, "Store has to be approved.");
+                                result.AddModelError(string.Empty, "Store has to be approved.");
                             }
                         }
                         else
                         {
-                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                            result.AddModelError(string.Empty, "Store does not exist.");
                         }
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;
@@ -1147,19 +1147,19 @@ namespace AbatementHelper.WebAPI.Repositories
                         }
                         else
                         {
-                            result.ModelState.Add(string.Empty, "Store does not exist.");
+                            result.AddModelError(string.Empty, "Store does not exist.");
                         }
                     }
                     else
                     {
-                        result.ModelState.Add(string.Empty, "Manager does not exist.");
+                        result.AddModelError(string.Empty, "Manager does not exist.");
                     }
                 }
             }
             catch (Exception exception)
             {
                 result.Exception = exception;
-                result.ModelState.Add(string.Empty, "An exception has occured.");
+                result.AddModelError(string.Empty, "An exception has occured.");
             }
 
             return result;

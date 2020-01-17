@@ -69,7 +69,7 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (var error in priceValidatorResult.Errors)
                 {
-                    result.ModelState.Add(error.Key, error.Value);
+                    result.AddModelError(error.Key, error.Value);
                 }
 
                 return result;
@@ -85,7 +85,7 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (ValidationFailure failure in discountValidatorResult.Errors)
                 {
-                    result.ModelState.Add(failure.PropertyName, failure.ErrorMessage);
+                    result.AddModelError(failure.PropertyName, failure.ErrorMessage);
                 }
 
                 return result;
@@ -113,7 +113,7 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (var error in priceValidatorResult.Errors)
                 {
-                    result.ModelState.Add(error.Key, error.Value);
+                    result.AddModelError(error.Key, error.Value);
                 }
 
                 return result;
@@ -129,7 +129,7 @@ namespace AbatementHelper.WebAPI.Controllers
             {
                 foreach (ValidationFailure failure in discountValidatorResult.Errors)
                 {
-                    result.ModelState.Add(failure.PropertyName, failure.ErrorMessage);
+                    result.AddModelError(failure.PropertyName, failure.ErrorMessage);
                 }
 
                 return result;

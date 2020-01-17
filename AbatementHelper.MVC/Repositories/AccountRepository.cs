@@ -54,39 +54,7 @@ namespace AbatementHelper.MVC.Repositories
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        //public async Task<Response> Login(string email, string userName, string password)
-        //{
-        //    var data = new FormUrlEncodedContent(new[]
-        //    {
-        //        new KeyValuePair<string, string>("Email", email),
-        //        new KeyValuePair<string, string>("UserName", userName),
-        //        new KeyValuePair<string, string>("Password", password)
-        //    });
-
-        //    var request = await apiClient.PostAsync("/api/Login/AuthenticateAsync", data);
-
-        //    var response = request.Content.ReadAsStringAsync();
-
-        //    string responseString = response.Result;
-
-        //    responseModel = JsonConvert.DeserializeObject<Response>(responseString);
-
-        //    ResponseMessageText = responseModel.ResponseMessage;
-
-        //    if (responseModel.ResponseCode == (int)HttpStatusCode.OK)
-        //    {
-
-        //        LoginSuccessful = true;
-        //    }
-        //    else
-        //    {
-        //        LoginSuccessful = false;
-        //    }
-
-        //    return responseModel;
-        //}
-
-        public async Task<Response> RegisterAsync(User user)
+        public async Task<WebApiResult> RegisterAsync(User user)
         {
             var jsonContent = JsonConvert.SerializeObject(user);
 
@@ -94,12 +62,12 @@ namespace AbatementHelper.MVC.Repositories
 
             HttpResponseMessage request = await apiClient.PostAsync("api/Account/RegisterAsync", httpContent);
 
-            Response result = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
             return result;
         }
 
-        public async Task<Response> LoginAsync(AuthenticationModel authentication)
+        public async Task<WebApiAuthenticatedUserResult> LoginAsync(AuthenticationModel authentication)
         {
             var jsonContent = JsonConvert.SerializeObject(authentication);
 
@@ -107,54 +75,34 @@ namespace AbatementHelper.MVC.Repositories
 
             HttpResponseMessage request = await apiClient.PostAsync("api/Account/AuthenticateAsync", httpContent);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var result = await request.Content.ReadAsAsync<Response>();
+            WebApiAuthenticatedUserResult result = await request.Content.ReadAsAsync<WebApiAuthenticatedUserResult>();
 
-                return result;
-            }
+            return result;
 
-            return null;
         }
 
-        public async Task<WebApiUser> DetailsAsync()
+        public async Task<WebApiUserResult> DetailsAsync()
         {
             AddTokenToHeader();
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/Account/DetailsAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Account/DetailsAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
+            WebApiUserResult result = await request.Content.ReadAsAsync<WebApiUserResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<Response> PostUserImageAsync(WebApiPostImage image)
+        public async Task<WebApiResult> PostUserImageAsync(WebApiPostImage image)
         {
-            if (image.Id != null && image.Image != null)
-            {
-                AddTokenToHeader();
+            AddTokenToHeader();
 
-                HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Account/PostUserImageAsync", image);
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Account/PostUserImageAsync", image);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
         public async Task<byte[]> GetUserImageAsync(string id)
@@ -163,89 +111,59 @@ namespace AbatementHelper.MVC.Repositories
 
             HttpResponseMessage request = await apiClient.GetAsync("api/Account/GetUserImageAsync/" + id);
 
-            var resultContent = await request.Content.ReadAsAsync<byte[]>();
+            var result = await request.Content.ReadAsAsync<byte[]>();
 
-            return resultContent;
+            return result;
         }
 
-        public async Task<WebApiUser> EditAsync()
+        public async Task<WebApiUserResult> EditAsync()
         {
-            WebApiUser user = new WebApiUser();
-
             AddTokenToHeader();
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.GetAsync("api/Account/EditAsync/" + id);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Account/EditAsync/" + id);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
+            WebApiUserResult result = await request.Content.ReadAsAsync<WebApiUserResult>();
 
-                    return resultContent;
-                }
-            }
-
-            return null;
+            return result;
         }
 
-        public async Task<Response> EditAsync(WebApiUser user)
+        public async Task<WebApiResult> EditAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
             HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Account/EditAsync", user);
 
-            if (request.IsSuccessStatusCode)
-            {
-                Response resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            return result;
         }
 
-        public async Task<bool> DeleteAsync(WebApiUser user)
+        public async Task<WebApiResult> DeleteAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.PutAsync("api/Account/DeleteAsync/" + id, null);
+            HttpResponseMessage request = await apiClient.PutAsync("api/Account/DeleteAsync/" + id, null);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            return false;
+            return result;
         }
 
-
-        public async Task<bool> RestoreAsync(WebApiUser user)
+        public async Task<WebApiResult> RestoreAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
             string id = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            if (id != null)
-            {
-                HttpResponseMessage request = await apiClient.PutAsync("api/Account/RestoreAsync/" + id, null);
+            HttpResponseMessage request = await apiClient.PutAsync("api/Account/RestoreAsync/" + id, null);
 
-                if (request.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-            }
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
 
-            return false;
+            return result;
         }
     }
 }
