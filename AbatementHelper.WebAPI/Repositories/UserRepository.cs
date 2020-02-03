@@ -120,28 +120,6 @@ namespace AbatementHelper.WebAPI.Repositories
 
             try
             {
-                //using (var context = new ApplicationUserDbContext())
-                //{
-                //    ApplicationUser userEntity = context.Users.Find(user.Id);
-
-                //    context.Users.Attach(userEntity);
-
-                //    userEntity.UserName = user.UserName;
-                //    userEntity.FirstName = user.FirstName;
-                //    userEntity.LastName = user.LastName;
-                //    userEntity.Email = user.Email;
-                //    userEntity.PhoneNumber = user.PhoneNumber;
-                //    userEntity.Country = user.Country;
-                //    userEntity.City = user.City;
-                //    userEntity.PostalCode = user.PostalCode;
-                //    userEntity.Street = user.Street;
-                //    userEntity.TwoFactorEnabled = user.TwoFactorEnabled;
-
-                //    await context.SaveChangesAsync();
-
-                //    result.Message = "Account info updated.";
-                //}
-
                 using (var userManager = new UserManager())
                 {
                     ApplicationUser userEntity = await userManager.FindByIdAsync(user.Id);

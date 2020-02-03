@@ -150,8 +150,6 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("CreateManagerAsync")]
         public async Task<WebApiResult> CreateManagerAsync(CreateManagerModel manager)
         {
-            //SimulateValidation(manager);
-
             WebApiResult result = await storeAdminRepository.CreateManagerAsync(manager, manager.Password);
 
             return result;
@@ -161,7 +159,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("DetailsManagerAsync/{id}")]
         public async Task<WebApiManagerResult> DetailsManager(string id)
         {
-            WebApiManagerResult result = await storeAdminRepository.ReadUserById(id);
+            WebApiManagerResult result = await storeAdminRepository.ReadUserByIdAsync(id);
 
             return result;
         }
@@ -170,7 +168,7 @@ namespace AbatementHelper.WebAPI.Controllers
         [Route("EditManagerAsync/{id}")]
         public async Task<WebApiManagerResult> EditManager(string id)
         {
-            WebApiManagerResult result = await storeAdminRepository.ReadUserById(id);
+            WebApiManagerResult result = await storeAdminRepository.ReadUserByIdAsync(id);
 
             return result;
         }
@@ -181,7 +179,7 @@ namespace AbatementHelper.WebAPI.Controllers
         {
             //SimulateValidation(manager);
 
-            WebApiResult result = await storeAdminRepository.EditManager(manager);
+            WebApiResult result = await storeAdminRepository.EditManagerAsync(manager);
 
             return result;
         }

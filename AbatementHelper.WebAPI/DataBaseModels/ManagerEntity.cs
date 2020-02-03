@@ -10,9 +10,9 @@ namespace AbatementHelper.WebAPI.DataBaseModels
     public class ManagerEntity
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        //[Required]
+        [Required]
         public ApplicationUser User { get; set; }
-        //[Required]
+        [Required]
         public ApplicationUser StoreAdmin { get; set; }
         public ICollection<StoreEntity> Stores { get; set; }
 

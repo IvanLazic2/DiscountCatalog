@@ -1,4 +1,5 @@
-﻿using AbatementHelper.CommonModels.Models;
+﻿using AbatementHelper.CommonModels.CreateModels;
+using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using Newtonsoft.Json;
 using System;
@@ -50,79 +51,121 @@ namespace AbatementHelper.MVC.Repositeories
 
             HttpResponseMessage request = await apiClient.GetAsync("api/Admin/GetAllUsersAsync/");
 
-            if (request.IsSuccessStatusCode)
-            {
-                WebApiListOfUsersResult resultContent = await request.Content.ReadAsAsync<WebApiListOfUsersResult>();
+            WebApiListOfUsersResult result = await request.Content.ReadAsAsync<WebApiListOfUsersResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
-
+            return result;
         }
 
-        public async Task<WebApiUser> EditUserAsync(string id)
-        {
-            WebApiUser user = new WebApiUser();
-
-            AddTokenToHeader();
-
-            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/EditAsync/" + id);
-
-            if (request.IsSuccessStatusCode)
-            {
-                WebApiUser resultContent = await request.Content.ReadAsAsync<WebApiUser>();
-
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public async Task<Response> EditUserAsync(WebApiUser user)
+        public async Task<WebApiListOfStoresResult> GetAllStoresAsync()
         {
             AddTokenToHeader();
 
-            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Admin/EditAsync", user);
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/GetAllStoresAsync/");
 
-            if (request.IsSuccessStatusCode)
-            {
-                Response resultContent = await request.Content.ReadAsAsync<Response>();
+            WebApiListOfStoresResult result = await request.Content.ReadAsAsync<WebApiListOfStoresResult>();
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
-
+            return result;
         }
 
-        public async Task<WebApiUser> DetailsUserAsync(string id)
-        {
-            WebApiUser user = new WebApiUser();
+        //create user
 
+        public async Task<WebApiResult> CreateStoreAsync(WebApiStore store)
+        {
             AddTokenToHeader();
 
-            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/DetailsAsync/" + id);
+            var jsonContent = JsonConvert.SerializeObject(store);
 
-            if (request.IsSuccessStatusCode)
-            {
-                var resultContent = await request.Content.ReadAsAsync<WebApiUser>();
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                return resultContent;
-            }
-            else
-            {
-                return null;
-            }
+            HttpResponseMessage request = await apiClient.PostAsync("api/Admin/CreateStoreAsync", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<bool> DeleteUserAsync(WebApiUser user)
+        public async Task<WebApiResult> CreateManagerAsync(CreateManagerModel manager)
+        {
+            AddTokenToHeader();
+
+            var jsonContent = JsonConvert.SerializeObject(manager);
+
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage request = await apiClient.PostAsync("api/Admin/CreateManagerAsync", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiStoreResult> EditStoreAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/EditStoreAsync/" + id);
+
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Admin/EditStoreAsync", store);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiUserResult> EditUserAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/EditUserAsync/" + id);
+
+            WebApiUserResult result = await request.Content.ReadAsAsync<WebApiUserResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> EditUserAsync(WebApiUser user)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Admin/EditUserAsync", user);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiUserResult> UserDetailsAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/UserDetailsAsync/" + id);
+
+            WebApiUserResult result = await request.Content.ReadAsAsync<WebApiUserResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiStoreResult> StoreDetailsAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync("api/Admin/StoreDetailsAsync/" + id);
+
+            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> DeleteUserAsync(WebApiUser user)
         {
             AddTokenToHeader();
 
@@ -130,32 +173,48 @@ namespace AbatementHelper.MVC.Repositeories
 
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/DeleteAsync/", httpContent);
-            
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }  
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/DeleteUserAsync/", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
 
-        public async Task<bool> RestoreUserAsync(string id)
+        public async Task<WebApiResult> DeleteStoreAsync(WebApiStore store)
         {
             AddTokenToHeader();
 
-            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/RestoreAsync/" + id, null);
+            var jsonContent = JsonConvert.SerializeObject(store);
 
-            if (request.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/DeleteStoreAsync/", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> RestoreUserAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/RestoreUserAsync/" + id, null);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
+
+        public async Task<WebApiResult> RestoreStoreAsync(string id)
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.PutAsync("api/Admin/RestoreStoreAsync/" + id, null);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
         }
     }
 }

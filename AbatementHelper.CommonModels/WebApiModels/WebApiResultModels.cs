@@ -8,7 +8,6 @@ namespace AbatementHelper.CommonModels.WebApiModels
 {
     public class WebApiResult
     {
-        //public Dictionary<string, string> ModelState { get; set; } = new Dictionary<string, string>();
         public List<KeyValuePair<string, string>> ModelState { get; set; } = new List<KeyValuePair<string, string>>();
         public string Message { get; set; }
         public bool Success

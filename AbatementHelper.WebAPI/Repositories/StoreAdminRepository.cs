@@ -24,7 +24,7 @@ namespace AbatementHelper.WebAPI.Repositories
 {
     public class StoreAdminRepository
     {
-        public async Task<WebApiManagerResult> ReadUserById(string id)
+        public async Task<WebApiManagerResult> ReadUserByIdAsync(string id)
         {
             var result = new WebApiManagerResult();
 
@@ -726,7 +726,31 @@ namespace AbatementHelper.WebAPI.Repositories
                         }
                         else
                         {
-                            result.Message = "Manager created.";
+                            using (var context = new ApplicationUserDbContext())
+                            {
+                                ApplicationUser storeAdmin = context.Users.Find(user.StoreAdminId);
+                                ApplicationUser applicationUser = context.Users.Find(processedUser.Id);
+
+                                if (storeAdmin != null)
+                                {
+                                    ManagerEntity manager = new ManagerEntity
+                                    {
+                                        Id = Guid.NewGuid().ToString(),
+                                        StoreAdmin = storeAdmin,
+                                        User = applicationUser,
+                                    };
+
+                                    context.Managers.Add(manager);
+
+                                    context.SaveChanges();
+
+                                    result.Message = "Manager created.";
+                                }
+                                else
+                                {
+                                    result.AddModelError(string.Empty, "Store admin does not exist.");
+                                }
+                            }
                         }
                     }
                 }
@@ -740,7 +764,7 @@ namespace AbatementHelper.WebAPI.Repositories
             return result;
         }
 
-        public async Task<WebApiResult> EditManager(WebApiManager user)
+        public async Task<WebApiResult> EditManagerAsync(WebApiManager user)
         {
             var result = new WebApiResult();
 
