@@ -37,9 +37,16 @@ namespace AbatementHelper.WebAPI.Controllers
             WebApiListOfStoresResult result = await adminRepository.GetAllStoresAsync();
 
             return result;
-        } 
+        }
 
-        //create user
+        [HttpPost]
+        [Route("CreateUserAsync")]
+        public async Task<WebApiResult> CreateUserAsync(CreateUserModel user)
+        {
+            WebApiResult result = await adminRepository.CreateUserAsync(user, user.Password);
+
+            return result;
+        }
 
         [HttpPost]
         [Route("CreateStoreAsync")]

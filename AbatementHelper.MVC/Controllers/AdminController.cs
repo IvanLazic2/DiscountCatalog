@@ -31,9 +31,23 @@ namespace AbatementHelper.MVC.Controllers
 
         [HttpPost]
         [Route("CreateUser")]
-        public async Task<ActionResult> CreateUser(WebApiUser user)
+        public async Task<ActionResult> CreateUser(CreateUserModel user)
         {
-            return RedirectToAction("GetAllUsers");
+            var result = await adminRepository.CreateUserAsync(user);
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(user);
+            }
+            else
+            {
+                return RedirectToAction("GetAllUsers");
+            }
         }
 
         [Route("CreateStore")]

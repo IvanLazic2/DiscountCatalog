@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateModels\CreateManagerModel.cs" />
+    <Compile Include="CreateModels\CreateUserModel.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\AuthenticationModel.cs" />

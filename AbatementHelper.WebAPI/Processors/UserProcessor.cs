@@ -1,4 +1,5 @@
-﻿using AbatementHelper.CommonModels.Models;
+﻿using AbatementHelper.CommonModels.CreateModels;
+using AbatementHelper.CommonModels.Models;
 using AbatementHelper.CommonModels.WebApiModels;
 using AbatementHelper.WebAPI.Models;
 using AutoMapper;
@@ -16,8 +17,6 @@ namespace AbatementHelper.WebAPI.Processors
     {
         public static async Task<WebApiUser> ApplicationUserToWebApiUser(ApplicationUser user)
         {
-            
-
             WebApiUser webApiUser = new WebApiUser();
 
             IList<string> roles = new List<string>();
@@ -27,7 +26,8 @@ namespace AbatementHelper.WebAPI.Processors
                 roles = await userManager.GetRolesAsync(user.Id);
             }
 
-            var config = new MapperConfiguration(c => {
+            var config = new MapperConfiguration(c =>
+            {
                 c.CreateMap<ApplicationUser, WebApiUser>()
                     .ForMember(u => u.Role, act => act.Ignore());
             });
@@ -56,7 +56,8 @@ namespace AbatementHelper.WebAPI.Processors
         {
             ApplicationUser applicationUser = new ApplicationUser();
 
-            var config = new MapperConfiguration(c => {
+            var config = new MapperConfiguration(c =>
+            {
                 c.CreateMap<WebApiUser, ApplicationUser>()
                     .ForMember(u => u.Roles, act => act.Ignore());
             });
@@ -78,6 +79,38 @@ namespace AbatementHelper.WebAPI.Processors
                             userManager.AddToRole(user.Id, user.Role);
                         }
                     }
+                }
+            }
+            catch (Exception exception)
+            {
+
+                throw;
+            }
+
+            return applicationUser;
+        }
+
+        public static async Task<ApplicationUser> CreateUserModelToApplicationUser(CreateUserModel user)
+        {
+            var applicationUser = new ApplicationUser();
+
+            var config = new MapperConfiguration(c =>
+            {
+                c.CreateMap<CreateUserModel, ApplicationUser>()
+                    .ForMember(m => m.UserName, act => act.Ignore())
+                    .ForMember(m => m.Id, act => act.Ignore());
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            try
+            {
+                applicationUser = mapper.Map<CreateUserModel, ApplicationUser>(user);
+
+                if (applicationUser != null && applicationUser.Email != null)
+                {
+                    applicationUser.Id = Guid.NewGuid().ToString();
+                    applicationUser.UserName = user.Email.Split('@')[0];
                 }
             }
             catch (Exception exception)

@@ -67,7 +67,20 @@ namespace AbatementHelper.MVC.Repositeories
             return result;
         }
 
-        //create user
+        public async Task<WebApiResult> CreateUserAsync(CreateUserModel user)
+        {
+            AddTokenToHeader();
+
+            var jsonContent = JsonConvert.SerializeObject(user);
+
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage request = await apiClient.PostAsync("api/Admin/CreateUserAsync", httpContent);
+
+            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
+
+            return result;
+        }
 
         public async Task<WebApiResult> CreateStoreAsync(WebApiStore store)
         {

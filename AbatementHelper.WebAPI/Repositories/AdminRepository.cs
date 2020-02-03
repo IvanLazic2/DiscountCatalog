@@ -143,6 +143,52 @@ namespace AbatementHelper.WebAPI.Repositories
 
         //create user
 
+        public async Task<WebApiResult> CreateUserAsync(CreateUserModel user, string password)
+        {
+            var result = new WebApiResult();
+
+            try
+            {
+                ApplicationUser processedUser = await UserProcessor.CreateUserModelToApplicationUser(user);
+
+                using (var userManager = new UserManager())
+                {
+                    var createResult = await userManager.CreateAsync(processedUser, password);
+
+                    if (!createResult.Succeeded)
+                    {
+                        foreach (var error in createResult.Errors)
+                        {
+                            result.AddModelError(string.Empty, error);
+                        }
+                    }
+                    else
+                    {
+                        var roleResult = await userManager.AddToRoleAsync(processedUser.Id, user.Role);
+
+                        if (!roleResult.Succeeded)
+                        {
+                            foreach (var error in roleResult.Errors)
+                            {
+                                result.AddModelError(string.Empty, error);
+                            }
+                        }
+                        else
+                        {
+                            result.Message = "User created.";
+                        }
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                result.Exception = exception;
+                result.AddModelError(string.Empty, "An exception has occured.");
+            }
+
+            return result;
+        }
+
         public async Task<WebApiResult> CreateStoreAsync(WebApiStore store)
         {
             var result = new WebApiResult();
@@ -224,6 +270,13 @@ namespace AbatementHelper.WebAPI.Repositories
 
                     if (!createResult.Succeeded)
                     {
+                        foreach (var error in createResult.Errors)
+                        {
+                            result.AddModelError(string.Empty, error);
+                        }
+                    }
+                    else
+                    {
                         var managerValidation = new ManagerValidation();
 
                         ModelStateResponse managerValidationResult = await managerValidation.ValidateAsync(processedUser);
@@ -235,43 +288,43 @@ namespace AbatementHelper.WebAPI.Repositories
                                 result.AddModelError(error.Key, error.Value);
                             }
                         }
-                    }
-                    else
-                    {
-                        var roleResult = await userManager.AddToRoleAsync(processedUser.Id, "Manager");
-
-                        if (!roleResult.Succeeded)
-                        {
-                            foreach (var error in roleResult.Errors)
-                            {
-                                result.AddModelError(string.Empty, error);
-                            }
-                        }
                         else
                         {
-                            using (var context = new ApplicationUserDbContext())
+                            var roleResult = await userManager.AddToRoleAsync(processedUser.Id, "Manager");
+
+                            if (!roleResult.Succeeded)
                             {
-                                ApplicationUser storeAdmin = context.Users.Find(user.StoreAdminId);
-                                ApplicationUser applicationUser = context.Users.Find(processedUser.Id);
-
-                                if (storeAdmin != null)
+                                foreach (var error in roleResult.Errors)
                                 {
-                                    ManagerEntity manager = new ManagerEntity
-                                    {
-                                        Id = Guid.NewGuid().ToString(),
-                                        StoreAdmin = storeAdmin,
-                                        User = applicationUser,
-                                    };
-
-                                    context.Managers.Add(manager);
-
-                                    context.SaveChanges();
-
-                                    result.Message = "Manager created.";
+                                    result.AddModelError(string.Empty, error);
                                 }
-                                else
+                            }
+                            else
+                            {
+                                using (var context = new ApplicationUserDbContext())
                                 {
-                                    result.AddModelError(string.Empty, "Store admin does not exist.");
+                                    ApplicationUser storeAdmin = context.Users.Find(user.StoreAdminId);
+                                    ApplicationUser applicationUser = context.Users.Find(processedUser.Id);
+
+                                    if (storeAdmin != null)
+                                    {
+                                        ManagerEntity manager = new ManagerEntity
+                                        {
+                                            Id = Guid.NewGuid().ToString(),
+                                            StoreAdmin = storeAdmin,
+                                            User = applicationUser,
+                                        };
+
+                                        context.Managers.Add(manager);
+
+                                        context.SaveChanges();
+
+                                        result.Message = "Manager created.";
+                                    }
+                                    else
+                                    {
+                                        result.AddModelError(string.Empty, "Store admin does not exist.");
+                                    }
                                 }
                             }
                         }
@@ -324,27 +377,34 @@ namespace AbatementHelper.WebAPI.Repositories
 
                             IdentityRole existingRole = identityRoles.FirstOrDefault(r => r.Name == user.Role);
 
-                            if (roles.FirstOrDefault() != user.Role && existingRole != null)
+                            if (existingRole != null)
                             {
-                                var removeResult = await userManager.RemoveFromRoleAsync(user.Id, roles.FirstOrDefault());
-
-                                if (!removeResult.Succeeded)
+                                if (roles.FirstOrDefault() != user.Role)
                                 {
-                                    foreach (var error in removeResult.Errors)
+                                    var removeResult = await userManager.RemoveFromRoleAsync(user.Id, roles.FirstOrDefault());
+
+                                    if (!removeResult.Succeeded)
                                     {
-                                        result.AddModelError(string.Empty, error);
+                                        foreach (var error in removeResult.Errors)
+                                        {
+                                            result.AddModelError(string.Empty, error);
+                                        }
+                                    }
+
+                                    var addResult = await userManager.AddToRoleAsync(user.Id, user.Role);
+
+                                    if (!addResult.Succeeded)
+                                    {
+                                        foreach (var error in addResult.Errors)
+                                        {
+                                            result.AddModelError(string.Empty, error);
+                                        }
                                     }
                                 }
-
-                                var addResult = await userManager.AddToRoleAsync(user.Id, user.Role);
-
-                                if (!addResult.Succeeded)
-                                {
-                                    foreach (var error in addResult.Errors)
-                                    {
-                                        result.AddModelError(string.Empty, error);
-                                    }
-                                }
+                            }
+                            else
+                            {
+                                result.AddModelError(ObjectExtensions.GetPropertyName(() => user.Role), "Role does not exist.");
                             }
 
                             await context.SaveChangesAsync();
