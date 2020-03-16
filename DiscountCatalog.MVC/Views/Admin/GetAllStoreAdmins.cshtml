@@ -1,0 +1,166 @@
+﻿@model PagedList.IPagedList<DiscountCatalog.Common.Models.StoreAdmin>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetAllStoreAdmins";
+}
+
+<h2>All Store Administrators</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateStoreAdmin")
+</p>
+
+@using (Html.BeginForm("GetAllStoreAdmins", "Admin", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("UserName", "GetAllStoreAdmins", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            FirstName
+        </th>
+        <th>
+            LastName
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            EmailConfirmed
+        </th>
+        <th>
+            PhoneNumber
+        </th>
+        <th>
+            PhoneNumberConfirmed
+        </th>
+        <th>
+            Country
+        </th>
+        <th>
+            City
+        </th>
+        <th>
+            PostalCode
+        </th>
+        <th>
+            Street
+        </th>
+        <th>
+            Role
+        </th>
+        <th>
+            TwoFactorEnabled
+        </th>
+        <th>
+            Approved
+        </th>
+        <th>
+            Deleted
+        </th>
+        <th>
+            Managers
+        </th>
+        <th>
+            Stores
+        </th>
+        <th></th>
+    </tr>
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.EmailConfirmed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.PhoneNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.PhoneNumberConfirmed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Country)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.PostalCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Street)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Role)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.TwoFactorEnabled)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Approved)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Deleted)
+        </td>
+        <td>
+            @{ 
+                foreach (var manager in item.Managers)
+                {
+                    @Html.ActionLink(manager.Identity.UserName + " ", "ManagerDetails", new { id = manager.Id });
+                }
+            }
+        </td>
+        <td>
+            @{ 
+                foreach (var store in item.Stores)
+                {
+                    @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
+                }
+            }
+        </td>
+        <td>
+            @if (item.Identity.Deleted != true)
+            {
+                @Html.ActionLink("Edit", "EditStoreAdmin", new { id = item.Id })
+                @Html.ActionLink("Details", "StoreAdminDetails", new { id = item.Id })
+                @Html.ActionLink("Delete", "DeleteStoreAdmin", new { id = item.Id })
+            }
+            else
+            {
+                @Html.ActionLink("Restore", "RestoreStoreAdmin", new { id = item.Id });
+            }
+        </td>
+    </tr>
+        }
+    }
+
+</table>
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllStoreAdmins",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

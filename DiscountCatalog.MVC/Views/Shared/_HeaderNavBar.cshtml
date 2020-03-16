@@ -1,0 +1,55 @@
+﻿<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("About", "About", "Home")</li>
+                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+
+                <li>@Html.ActionLink("Register", "AccountTypeSelection", "Account")</li>
+                <li>@Html.ActionLink("Login", "Login", "Account")</li>
+
+                @{
+
+
+                    if (Request.Cookies["Access_Token"] != null && Request.Cookies["Role"] != null)
+                    {
+                        if (Request.Cookies["Role"].Value == "Admin")
+                        {
+                            Html.RenderPartial("_Admin");
+                        }
+                        if (Request.Cookies["Role"].Value == "User")
+                        {
+                            Html.RenderPartial("_User");
+                        }
+                        if (Request.Cookies["Role"].Value == "StoreAdmin")
+                        {
+                            Html.RenderPartial("_StoreAdmin");
+                        }
+                        if (Request.Cookies["Role"].Value == "Manager")
+                        {
+                            Html.RenderPartial("_Manager");
+                        }
+                        if (Request.Cookies["Role"].Value == "Store")
+                        {
+                            Html.RenderPartial("_Store");
+                        }
+
+                        <li>@Html.ActionLink("Log out", "Logout", "Account")</li>
+                        Html.RenderPartial("_Avatar");
+                    }
+
+                }
+
+            </ul>
+        </div>
+    </div>
+</div>

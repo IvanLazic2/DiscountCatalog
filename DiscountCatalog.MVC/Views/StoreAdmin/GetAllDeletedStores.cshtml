@@ -1,0 +1,93 @@
+﻿@model PagedList.IPagedList<DiscountCatalog.Common.WebApiModels.WebApiStore>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetAllDeletedStores";
+}
+
+<h2>Deleted stores</h2>
+
+@if (Model != null && Model.Count() != 0)
+{
+    using (Html.BeginForm("GetAllDeletedStores", "StoreAdmin", FormMethod.Get))
+    {
+        <p>
+            Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+            <input type="submit" value="Search" />
+        </p>
+    }
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("StoreName", "GetAllDeletedStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+            </th>
+            <th>
+                WorkingHoursWeek
+            </th>
+            <th>
+                WorkingHoursWeekends
+            </th>
+            <th>
+                WorkingHoursHolidays
+            </th>
+            <th>
+                Country
+            </th>
+            <th>
+                City
+            </th>
+            <th>
+                PostalCode
+            </th>
+            <th>
+                Street
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            if (item.Deleted)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StoreName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Country)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.City)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostalCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Street)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Restore", "RestoreStore", new { id = item.Id })
+                    </td>
+                </tr>
+            }
+
+        }
+
+    </table>
+}
+else
+{
+    <p class="text-danger">- No deleted stores</p>
+}
+
+@Html.ActionLink("All stores", "GetAllStores")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllDeletedStores",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+

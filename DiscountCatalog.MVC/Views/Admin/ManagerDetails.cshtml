@@ -1,0 +1,139 @@
+﻿@model DiscountCatalog.Common.Models.Manager
+
+@{
+    ViewBag.Title = "DetailsManager";
+}
+
+<h2>@Model.Identity.UserName - Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.UserName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.EmailConfirmed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.EmailConfirmed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.PhoneNumberConfirmed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.PhoneNumberConfirmed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.City)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.City)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.PostalCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.PostalCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Street)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Street)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Role)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Role)
+        </dd>
+
+        <dt>
+            StoreAdmin
+        </dt>
+
+        <dd>
+            @{
+                @Html.ActionLink(Model.Administrator.Identity.UserName + " ", "StoreAdminDetails", new { id = Model.Administrator.Id });
+            }
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Approved)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Approved)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Identity.Deleted)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Identity.Deleted)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "EditManager", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "GetAllManagers")
+</p>

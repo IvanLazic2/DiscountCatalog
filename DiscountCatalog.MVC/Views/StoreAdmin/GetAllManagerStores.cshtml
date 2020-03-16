@@ -1,0 +1,93 @@
+﻿@model PagedList.IPagedList<DiscountCatalog.Common.WebApiModels.WebApiManagerStore>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetAllAssignedStores";
+}
+
+@*<h2>Assign or unassign stores for @Model.ToList().First().Manager.UserName</h2>*@
+
+<h2>Assign or unassign stores for @ViewBag.ManagerUserName</h2>
+
+@using (Html.BeginForm("GetAllManagerStores", "StoreAdmin", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("StoreName", "GetAllManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            Country
+        </th>
+        <th>
+            City
+        </th>
+        <th>
+            PostalCode
+        </th>
+        <th>
+            Street
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        if (!item.Store.Deleted)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.StoreName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.Country)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Store.Street)
+                </td>
+                <td>
+                    @if (item.Assigned)
+                    {
+                        @Html.ActionLink("Unassign", "UnassignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Assign", "AssignStore", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                    }
+                </td>
+            </tr>
+        }
+
+    }
+
+</table>
+
+
+
+@Html.ActionLink("Back to the list", "GetAllManagers")
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllManagerStores",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

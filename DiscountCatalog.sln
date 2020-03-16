@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.WebAPI", "AbatementHelper.WebAPI\AbatementHelper.WebAPI.csproj", "{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscountCatalog.WebAPI", "DiscountCatalog.WebAPI\DiscountCatalog.WebAPI.csproj", "{8F5B1746-79BA-42BF-8AE9-E0CC6C22C13F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.MVC", "AbatementHelper.MVC\AbatementHelper.MVC.csproj", "{AA43863B-49B1-4747-9C83-DB851C70C298}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscountCatalog.MVC", "DiscountCatalog.MVC\DiscountCatalog.MVC.csproj", "{AA43863B-49B1-4747-9C83-DB851C70C298}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbatementHelper.CommonModels", "AbatementHelper.CommonModels\AbatementHelper.CommonModels.csproj", "{A769336C-E076-404B-B29F-69618A7CEB3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscountCatalog.Common", "DiscountCatalog.Common\DiscountCatalog.Common.csproj", "{A769336C-E076-404B-B29F-69618A7CEB3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

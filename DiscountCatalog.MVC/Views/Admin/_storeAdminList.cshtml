@@ -1,0 +1,118 @@
+﻿@model PagedList.IPagedList<DiscountCatalog.Common.Models.StoreAdmin>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetAllStoreAdmins";
+}
+
+<h2>All Store Administrators</h2>
+
+<p>
+    @Html.ActionLink("Create New", "CreateStoreAdmin")
+</p>
+
+@using (Html.BeginForm("GetAllStoreAdmins", "Admin", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @*@Html.ActionLink("UserName", "GetAllStoreAdmins", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })*@ UserName
+        </th>
+        <th>
+            FirstName
+        </th>
+        <th>
+            LastName
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            PhoneNumber
+        </th>
+        <th>
+            Country
+        </th>
+        <th>
+            City
+        </th>
+        <th>
+            PostalCode
+        </th>
+        <th>
+            Street
+        </th>
+        <th>
+            Role
+        </th>
+        <th>
+            Approved
+        </th>
+        <th>
+            Deleted
+        </th>
+        <th></th>
+    </tr>
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Country)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Street)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Approved)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Identity.Deleted)
+                </td>
+                <td>
+                    @Html.ActionLink("Select", "SelectStoreAdmin", new { id = item.Id })
+                </td>
+            </tr>
+        }
+    }
+
+</table>
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("GetAllStoreAdmins",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+

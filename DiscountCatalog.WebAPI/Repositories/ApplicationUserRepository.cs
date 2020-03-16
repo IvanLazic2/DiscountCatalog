@@ -1,0 +1,56 @@
+﻿using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web;
+
+namespace AbatementHelper.WebAPI.Repositories
+{
+    public class ApplicationUserRepository : IRepository<ApplicationUser>
+    {
+        protected readonly DbContext Context;
+
+        public ApplicationUserRepository(DbContext context)
+        {
+            Context = context;
+        }
+
+        public void Add(ApplicationUser entity)
+        {
+            Context.Set<ApplicationUser>().Add(entity);
+        }
+
+        public void AddRange(IEnumerable<ApplicationUser> entities)
+        {
+            Context.Set<ApplicationUser>().AddRange(entities);
+        }
+
+        public IEnumerable<ApplicationUser> Find(Expression<Func<ApplicationUser, bool>> predicate)
+        {
+            return Context.Set<ApplicationUser>().Where(predicate);
+        }
+
+        public ApplicationUser Get(string id)
+        {
+            return Context.Set<ApplicationUser>().Find(id);
+        }
+
+        public IEnumerable<ApplicationUser> GetAll()
+        {
+            return Context.Set<ApplicationUser>().ToList();
+        }
+
+        public void Remove(ApplicationUser entity)
+        {
+            Context.Set<ApplicationUser>().Remove(entity);
+        }
+
+        public void RemoveRange(IEnumerable<ApplicationUser> entities)
+        {
+            Context.Set<ApplicationUser>().RemoveRange(entities);
+        }
+    }
+}
