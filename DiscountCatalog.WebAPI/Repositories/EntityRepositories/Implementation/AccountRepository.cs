@@ -4,10 +4,12 @@ using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.Models.Extended;
 using DiscountCatalog.WebAPI.Extensions;
 using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Models.Entities;
 using DiscountCatalog.WebAPI.ModelState;
 using DiscountCatalog.WebAPI.Paging;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 using DiscountCatalog.WebAPI.Validation.Validators;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -22,7 +24,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class AccountRepository : Repository<ApplicationUser>, IAccountRepository
     {
@@ -117,7 +119,9 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             {
                 SuccessMessage = "User created."
             };
-            user.UserName = user.Email.Split('@')[0];//aaa
+            user.UserName = user.Email.Split('@')[0];
+            user.Approved = true;
+            user.Deleted = false;
             var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();
             user.Roles.Add(GetIdentityUserRole(identityRole, user));
             var validator = new UserValidator();

@@ -1,10 +1,10 @@
-﻿@model DiscountCatalog.Common.WebApiModels.WebApiManager
+﻿@model DiscountCatalog.MVC.REST.Manager.ManagerREST
 
 @{
     ViewBag.Title = "DeleteManager";
 }
 
-<h2>Delete @Model.UserName</h2>
+<h2>Delete @Model.Identity.UserName</h2>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -12,93 +12,76 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.UserName)
+            @Html.DisplayNameFor(model => model.Identity.UserName)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.UserName)
+            @Html.DisplayFor(model => model.Identity.UserName)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.DisplayNameFor(model => model.Identity.FirstName)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.FirstName)
+            @Html.DisplayFor(model => model.Identity.FirstName)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.DisplayNameFor(model => model.Identity.LastName)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.LastName)
+            @Html.DisplayFor(model => model.Identity.LastName)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayNameFor(model => model.Identity.Email)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Email)
+            @Html.DisplayFor(model => model.Identity.Email)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PhoneNumber)
+            @Html.DisplayNameFor(model => model.Identity.PhoneNumber)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PhoneNumber)
+            @Html.DisplayFor(model => model.Identity.PhoneNumber)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.StoreAdminName)
+            @Html.DisplayNameFor(model => model.Identity.Country)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.StoreAdminName)
+            @Html.DisplayFor(model => model.Identity.Country)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Country)
+            @Html.DisplayNameFor(model => model.Identity.City)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Country)
+            @Html.DisplayFor(model => model.Identity.City)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.City)
+            @Html.DisplayNameFor(model => model.Identity.PostalCode)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.City)
+            @Html.DisplayFor(model => model.Identity.PostalCode)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PostalCode)
+            @Html.DisplayNameFor(model => model.Identity.Street)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PostalCode)
+            @Html.DisplayFor(model => model.Identity.Street)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Street)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Street)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TwoFactorEnabled)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TwoFactorEnabled)
-        </dd>
-
 
     </dl>
 

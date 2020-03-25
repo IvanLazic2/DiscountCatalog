@@ -1,0 +1,133 @@
+﻿@model DiscountCatalog.MVC.REST.Manager.ManagerREST
+
+@{
+    ViewBag.Title = "ManagerDetails";
+}
+
+<h2>@Model.Identity.UserName - Details</h2>
+
+@if (Model != null)
+{
+    using (Html.BeginForm("PostManagerImage", "StoreAdmin", FormMethod.Post,
+                            new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">Upload Image:</label>
+        <input type="hidden" name="id" id="id" value="@Model.Id">
+        <input type="file" name="file" id="file" style="width: 100%;" />
+        <input type="submit" value="Upload" class="submit" />
+    }
+
+        <div>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+
+                </dt>
+                <dd>
+                    <div style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id })); width: 100px; height: 100px;"></div>
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.UserName)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.UserName)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.FirstName)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.FirstName)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.LastName)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.LastName)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.Email)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.Email)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.PhoneNumber)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.PhoneNumber)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.Country)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.Country)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.City)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.City)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.PostalCode)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.PostalCode)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.Street)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.Street)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Identity.Approved)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Identity.Approved)
+                </dd>
+
+                <dt>
+                    Stores
+                </dt>
+
+                <dd>
+                    @{
+                        foreach (var store in Model.Stores)
+                        {
+                            @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
+                        }
+                    }
+                </dd>
+
+
+
+            </dl>
+            <p>@Html.ActionLink("Assign stores", "GetManagerStores", new { id = Model.Id })</p>
+        </div>
+    <p>
+        @Html.ActionLink("Edit", "EditManager", new { id = Model.Id }) |
+        @Html.ActionLink("Back to List", "GetAllManagers")
+    </p>
+}
+
+

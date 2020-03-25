@@ -1,5 +1,6 @@
 ﻿using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Repositories;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class RoleRepository : Repository<IdentityRole>, IRoleRepository
     {

@@ -4,6 +4,10 @@ using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.Models.Extended;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
+using DiscountCatalog.WebAPI.REST.Account;
+using DiscountCatalog.WebAPI.REST.Manager;
+using DiscountCatalog.WebAPI.REST.Store;
+using DiscountCatalog.WebAPI.REST.StoreAdmin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +23,13 @@ namespace AbatementHelper.WebAPI.Mapping
             {
                 //BINDING MODELS
 
-                c.CreateMap<UserBindingModel, ApplicationUser>();
+                //c.CreateMap<UserBindingModel, ApplicationUser>();
 
-                c.CreateMap<StoreAdminBindingModel, ApplicationUser>();
+                //c.CreateMap<StoreAdminBindingModel, ApplicationUser>();
 
-                c.CreateMap<StoreBindingModel, StoreEntity>();
+                //c.CreateMap<StoreBindingModel, StoreEntity>();
 
-                c.CreateMap<ManagerBindingModel, ApplicationUser>();
+                //c.CreateMap<ManagerBindingModel, ApplicationUser>();
 
                 //COMMON MODELS
 
@@ -54,6 +58,27 @@ namespace AbatementHelper.WebAPI.Mapping
 
 
                 //c.CreateMap<AuthenticatedUser, AuthenticatedUserResult>();
+
+                //REST
+
+                c.CreateMap<ApplicationUser, AccountREST>();
+                c.CreateMap<ManagerEntity, ManagerREST>();
+                c.CreateMap<StoreEntity, StoreREST>();
+                c.CreateMap<StoreAdminEntity, StoreAdminREST>();
+
+                //REST POST
+
+                c.CreateMap<AccountRESTPost, ApplicationUser>();
+                c.CreateMap<ManagerRESTPost, ManagerEntity>();
+                c.CreateMap<StoreRESTPost, StoreEntity>();
+                c.CreateMap<StoreAdminRESTPost, StoreAdminEntity>();
+
+                //REST PUT
+
+                c.CreateMap<AccountRESTPut, ApplicationUser>();
+                c.CreateMap<ManagerRESTPut, ManagerEntity>();
+                c.CreateMap<StoreRESTPut, StoreEntity>();
+                c.CreateMap<StoreAdminRESTPut, StoreAdminEntity>();
             });
 
             return config.CreateMapper();

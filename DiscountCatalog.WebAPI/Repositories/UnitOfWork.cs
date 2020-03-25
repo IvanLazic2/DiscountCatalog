@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Repositories.EntityRepositories;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation;
 
 namespace DiscountCatalog.WebAPI.Repositories
 {

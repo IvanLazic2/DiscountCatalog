@@ -1,4 +1,5 @@
 ﻿using DiscountCatalog.WebAPI.Repositories.EntityRepositories;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 using System;
 using System.Collections.Generic;
 using System.Linq;

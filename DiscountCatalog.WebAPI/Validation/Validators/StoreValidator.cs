@@ -11,6 +11,11 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
     {
         public StoreValidator()
         {
+            RuleFor(s => s.Id)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Id not set");
+
             RuleFor(s => s.StoreName)
                 .NotNull()
                 .WithMessage("Store name should not be empty.");

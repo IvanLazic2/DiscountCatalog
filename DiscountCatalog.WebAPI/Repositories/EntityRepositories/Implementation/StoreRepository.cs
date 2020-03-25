@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using DiscountCatalog.WebAPI.ModelState;
 using DiscountCatalog.WebAPI.Validation.Validators;
 using DiscountCatalog.WebAPI.Extensions;
+using DiscountCatalog.WebAPI.Processors;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class StoreRepository : Repository<StoreEntity>, IStoreRepository
     {
@@ -59,6 +61,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             {
                 SuccessMessage = "Store created."
             };
+            store.Approved = true;
+            store.Deleted = false;
             store.Administrator = DbContext.StoreAdmins.Find(storeAdminId);
             var validator = new StoreValidator();
             var validationResult = await validator.ValidateAsync(store);
@@ -144,7 +148,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
                 dbStore.City = store.City;
                 dbStore.PostalCode = store.PostalCode;
                 dbStore.Street = store.Street;
-                dbStore.Approved = store.Approved;
 
                 var validator = new StoreValidator();
                 var validationResult = await validator.ValidateAsync(dbStore);
@@ -196,6 +199,75 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
                 .Include(s => s.Managers)
                 .Include(s => s.Products)
                 .FirstOrDefault(s => s.Id == id && s.Approved && !s.Deleted);
+        }
+
+        //public IEnumerable<StoreEntity> GetAllLoadedByStoreAdminId(string id, string sortOrder, string searchString)
+        //{
+        //    var stores = DbContext.Stores
+        //        .Include(s => s.Managers)
+        //        .Include(s => s.Administrator.Identity)
+        //        .Where(s => s.Administrator.Id == id)
+        //        .ToList();
+
+        //    stores = Search(stores, searchString);
+        //    stores = Order(stores, sortOrder);
+
+        //    return stores;
+        //}
+
+        //public IEnumerable<StoreEntity> GetAllApprovedByStoreAdminId(string id, string sortOrder, string searchString)
+        //{
+        //    var stores = DbContext.Stores
+        //        .Include(s => s.Managers)
+        //        .Include(s => s.Administrator.Identity)
+        //        .Where(s => s.Administrator.Id == id && s.Approved && !s.Deleted)
+        //        .ToList();
+
+        //    stores = Search(stores, searchString);
+        //    stores = Order(stores, sortOrder);
+
+        //    return stores;
+        //}
+
+        //public StoreEntity GetLoadedByStoreAdminId(string id, string storeId)
+        //{
+        //    return DbContext.Stores
+        //        .Include(s => s.Managers)
+        //        .Include(s => s.Administrator.Identity)
+        //        .FirstOrDefault(s => s.Administrator.Id == id && s.Id == storeId);
+        //}
+
+        //public StoreEntity GetApprovedByStoreAdminId(string id, string storeId)
+        //{
+        //    return DbContext.Stores
+        //        .Include(s => s.Managers)
+        //        .Include(s => s.Administrator.Identity)
+        //        .FirstOrDefault(s => s.Administrator.Id == id && s.Id == storeId && s.Approved && !s.Deleted);
+        //}
+
+        public Result PostStoreImage(string id, byte[] image)
+        {
+            var result = new Result();
+
+            if (ImageProcessor.IsValid(image))
+            {
+                StoreEntity store = GetApproved(id);
+
+                store.StoreImage = image;
+            }
+            else
+            {
+                result.AddModelError(string.Empty, "Image is not valid.");
+            }
+
+            return result;
+        }
+
+        public byte[] GetStoreImage(string id)
+        {
+            StoreEntity store = GetApproved(id);
+
+            return store.StoreImage;
         }
     }
 }

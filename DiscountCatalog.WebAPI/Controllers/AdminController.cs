@@ -132,36 +132,36 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         }
 
-        [HttpPost]
-        [Route("CreateManager")]
-        public async Task<IHttpActionResult> CreateManager(ManagerBindingModel model)
-        {
-            try
-            {
-                using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-                {
-                    var user = mapper.Map<ApplicationUser>(model);
+        //[HttpPost]
+        //[Route("CreateManager")]
+        //public async Task<IHttpActionResult> CreateManager(ManagerBindingModel model)
+        //{
+        //    try
+        //    {
+        //        using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //        {
+        //            var user = mapper.Map<ApplicationUser>(model);
 
-                    Result result = await uow.Managers.CreateAsync(user, model.Password, new ManagerEntity(), model.StoreAdminId);
+        //            Result result = await uow.Managers.CreateAsync(user, model.Password, new ManagerEntity(), model.StoreAdminId);
 
-                    uow.Complete();
+        //            uow.Complete();
 
-                    if (result.Success)
-                    {
-                        return Content(HttpStatusCode.OK, result);
-                    }
-                    else
-                    {
-                        return Content(HttpStatusCode.BadRequest, result);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
+        //            if (result.Success)
+        //            {
+        //                return Content(HttpStatusCode.OK, result);
+        //            }
+        //            else
+        //            {
+        //                return Content(HttpStatusCode.BadRequest, result);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
         #endregion
 
@@ -413,19 +413,19 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetManagerByIdentityId/{id}")]
-        public IHttpActionResult GetManagerByIdentityId(string id)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var managers = uow.Managers.GetLoadedByIdentityId(id);
+        //[HttpGet]
+        //[Route("GetManagerByIdentityId/{id}")]
+        //public IHttpActionResult GetManagerByIdentityId(string id)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var managers = uow.Managers.GetLoadedByIdentityId(id);
 
-                var mapped = mapper.Map<List<Manager>>(managers);
+        //        var mapped = mapper.Map<List<Manager>>(managers);
 
-                return Ok(mapped);
-            }
-        }
+        //        return Ok(mapped);
+        //    }
+        //}
 
         [HttpGet]
         [Route("GetManager/{id}")]

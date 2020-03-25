@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.Entity;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 
-
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class ManagerStoreRepository : Repository<ManagerStore>, IManagerStoreRepository
     {
@@ -104,7 +104,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             }
         }
 
-        public Result Assign(string managerId, string storeId)
+        public Result Assign(string storeAdminId, string managerId, string storeId)
         {
 
             var modelState = new EntityModelState()
@@ -114,8 +114,12 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
 
             ManagerEntity manager = DbContext.Managers
                 .Include(m => m.Stores)
-                .FirstOrDefault(m => m.Id == managerId && m.Identity.Approved && !m.Identity.Deleted);
-            StoreEntity store = DbContext.Stores.FirstOrDefault(s => s.Id == storeId && s.Approved && !s.Deleted);
+                .Include(m => m.Administrator.Identity)
+                .FirstOrDefault(m => m.Id == managerId && m.Administrator.Identity.Id == storeAdminId && m.Identity.Approved && !m.Identity.Deleted);
+
+            StoreEntity store = DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminId && s.Approved && !s.Deleted);
 
             ManagerStoreValidator validator = new ManagerStoreValidator();
             ValidationResult validationResult = validator.Validate(new ManagerStoreModel(manager, store));
@@ -130,13 +134,9 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             }
 
             return modelState.GetResult();
-
-
-
-
         }
 
-        public Result Unassign(string managerId, string storeId)
+        public Result Unassign(string storeAdminId, string managerId, string storeId)
         {
             var modelState = new EntityModelState()
             {
@@ -144,9 +144,13 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             };
 
             ManagerEntity manager = DbContext.Managers
-                 .Include(m => m.Stores)
-                 .FirstOrDefault(m => m.Id == managerId && m.Identity.Approved && !m.Identity.Deleted);
-            StoreEntity store = DbContext.Stores.FirstOrDefault(s => s.Id == storeId && s.Approved && !s.Deleted);
+                .Include(m => m.Stores)
+                .Include(m => m.Administrator.Identity)
+                .FirstOrDefault(m => m.Id == managerId && m.Administrator.Identity.Id == storeAdminId && m.Identity.Approved && !m.Identity.Deleted);
+
+            StoreEntity store = DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminId && s.Approved && !s.Deleted);
 
             ManagerStoreValidator validator = new ManagerStoreValidator();
             ValidationResult validationResult = validator.Validate(new ManagerStoreModel(manager, store));

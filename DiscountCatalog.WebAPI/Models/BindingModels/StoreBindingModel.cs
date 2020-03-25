@@ -7,7 +7,6 @@ namespace AbatementHelper.WebAPI.Models.BindingModels
 {
     public class StoreBindingModel
     {
-        public string Id { get; set; }
         public string StoreName { get; set; }
         public string WorkingHoursWeekBegin { get; set; }
         public string WorkingHoursWeekEnd { get; set; }

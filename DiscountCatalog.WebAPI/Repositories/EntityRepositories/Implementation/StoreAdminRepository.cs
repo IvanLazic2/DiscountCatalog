@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Data.Entity;
 using DiscountCatalog.WebAPI.Extensions;
+using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class StoreAdminRepository : Repository<StoreAdminEntity>, IStoreAdminRepository
     {
@@ -103,7 +104,9 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
             var identity = DbContext.Users.Find(identityId);
             return DbContext.StoreAdmins
                 .Include(s => s.Identity)
-                .Include(s => s.Managers)
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Managers.Select(m => m.Stores))
+                .Include(s => s.Managers.Select(m => m.Administrator))
                 .Include(s => s.Stores)
                 .FirstOrDefault(s => s.Identity.Id == identity.Id);
         }

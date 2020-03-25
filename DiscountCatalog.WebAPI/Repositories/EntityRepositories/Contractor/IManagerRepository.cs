@@ -7,27 +7,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories
+namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
 {
     public interface IManagerRepository : IRepository<ManagerEntity>
     {
-        Task<Result> CreateAsync(ApplicationUser user, string password, ManagerEntity manager, string storeAdminId);
+        Task<Result> CreateAsync(string storeAdminId, ManagerEntity manager, string password);
 
         IEnumerable<ManagerEntity> GetAllApproved(string sortOrder, string searchString);
         IEnumerable<ManagerEntity> GetAllDeleted(string sortOrder, string searchString);
         IEnumerable<ManagerEntity> GetAllLoaded(string sortOrder, string searchString);
 
-        IEnumerable<ManagerEntity> GetAllByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
-        IEnumerable<ManagerEntity> GetAllDeletedByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
+        //IEnumerable<ManagerEntity> GetAllByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
+        //IEnumerable<ManagerEntity> GetAllDeletedByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
 
         ManagerEntity GetApproved(string id);
         ManagerEntity GetLoaded(string id);
 
-        ManagerEntity GetByIdentityId(string identityId);
-        ManagerEntity GetLoadedByIdentityId(string identityId);
-        ManagerEntity GetApprovedByIdentityId(string identityId);
+        //ManagerEntity GetByIdentityId(string identityId);
+        //ManagerEntity GetLoadedByIdentityId(string identityId);
+        //ManagerEntity GetApprovedByIdentityId(string identityId);
 
-        ManagerEntity GetByStoreAdminId(string storeAdminId, string managerId);
+        //ManagerEntity GetByStoreAdminId(string storeAdminId, string managerId);
 
 
         Task<Result> UpdateAsync(ManagerEntity manager);

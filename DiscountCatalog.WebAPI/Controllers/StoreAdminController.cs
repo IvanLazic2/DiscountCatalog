@@ -7,8 +7,12 @@ using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
 using DiscountCatalog.WebAPI.Models.Result;
+using DiscountCatalog.WebAPI.Paging.Contractor;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories;
+using DiscountCatalog.WebAPI.REST.Manager;
+using DiscountCatalog.WebAPI.Service.Contractor;
+using DiscountCatalog.WebAPI.Service.Implementation;
 using DiscountCatalog.WebAPI.Validators;
 using FluentValidation.Results;
 using PagedList;
@@ -28,230 +32,170 @@ namespace DiscountCatalog.WebAPI.Controllers
     public class StoreAdminController : ApiController
     {
         private readonly IMapper mapper;
+        private readonly IManagerService managerService;
 
         public StoreAdminController()
         {
             mapper = AutoMapping.Initialise();
+            managerService = new ManagerService();
         }
-
-        //private void SimulateValidation(object model)
-        //{
-        //    var validationContext = new ValidationContext(model, null, null);
-        //    var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
-        //    Validator.TryValidateObject(model, validationContext, validationResults, true);
-        //    foreach (var validationResult in validationResults)
-        //    {
-        //        ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-        //    }
-        //}
 
         #region Manager
 
         [HttpPost]
         [Route("CreateManager")]
-        public async Task<IHttpActionResult> CreateManager(ManagerBindingModel model)
+        public async Task<IHttpActionResult> CreateManager(ManagerRESTPost model)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            Result result = await managerService.CreateAsync(model);
+
+            if (result.Success)
             {
-                var user = mapper.Map<ApplicationUser>(model);
-
-                Result result = await uow.Managers.CreateAsync(user, model.Password, new ManagerEntity(), model.StoreAdminId);
-
-                uow.Complete();
-
-                if (result.Success)
-                {
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("GetAllManagers/{id}")]
-        public IHttpActionResult GetAllManagers(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetAllManagers/{storeAdminId}")]
+        public IHttpActionResult GetAllManagers(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            IPagingList<ManagerREST> list = managerService.GetAll(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(list);
+        }
+
+        [HttpGet]
+        [Route("GetAllDeletedManagers/{storeAdminId}")]
+        public IHttpActionResult GetAllDeletedManagers(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<ManagerREST> list = managerService.GetAllDeleted(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(list);
+        }
+
+        [HttpGet]
+        [Route("GetManager/{storeAdminId}")]
+        public IHttpActionResult GetManager(string storeAdminId, string managerId)
+        {
+            ManagerREST manager = managerService.Get(storeAdminId, managerId);
+
+            return Ok(manager);
+        }
+
+        [HttpPut]
+        [Route("EditManager/{storeAdminId}")]
+        public async Task<IHttpActionResult> EditManager(string storeAdminId, ManagerRESTPut model)
+        {
+            Result result = await managerService.UpdateAsync(storeAdminId, model);
+
+            if (result.Success)
             {
-                var managers = uow.Managers.GetAllByStoreAdminId(id, sortOrder, searchString);
-
-                var mapped = mapper.Map<List<Manager>>(managers);
-
-                var subset = mapped.ToPagedList(pageIndex, pageSize);
-                var result = new { items = subset, metaData = subset.GetMetaData() };
-
-                return Ok(result);
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("GetAllDeletedManagers/{id}")]
-        public IHttpActionResult GetAllDeletedManagers(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("DeleteManager/{storeAdminId}")]
+        public IHttpActionResult DeleteManager(string storeAdminId, string managerId)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            Result result = managerService.Delete(storeAdminId, managerId);
+
+            if (result.Success)
             {
-                var managers = uow.Managers.GetAllDeletedByStoreAdminId(id, sortOrder, searchString);
-
-                var mapped = mapper.Map<List<Manager>>(managers);
-
-                var subset = mapped.ToPagedList(pageIndex, pageSize);
-                var result = new { items = subset, metaData = subset.GetMetaData() };
-
-                return Ok(result);
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("GetManager/{id}")]
-        public IHttpActionResult GetManager(string id, string managerId)
+        [Route("RestoreManager/{storeAdminId}")]
+        public IHttpActionResult RestoreManager(string storeAdminId, string managerId)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            Result result = managerService.Restore(storeAdminId, managerId);
+
+            if (result.Success)
             {
-                var manager = uow.Managers.GetByStoreAdminId(id, managerId);
-
-                var mapped = mapper.Map<Manager>(manager);
-
-                return Ok(mapped);
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpPut]
-        [Route("EditManager")]
-        public async Task<IHttpActionResult> EditManager(ManagerBindingModel model)
+        [Route("PostManagerImage/{storeAdminId}")]
+        public async Task<IHttpActionResult> PostManagerImage(string storeAdminId, string managerId, byte[] image)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var manager = new ManagerEntity { Identity = mapper.Map<ApplicationUser>(model) };
-                Result result = await uow.Managers.UpdateAsync(manager);
+            Result result = await managerService.PostImageAsync(storeAdminId, managerId, image);
 
-                if (result.Success)
-                {
-                    uow.Complete();
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    uow.Dispose();
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("DeleteManager/{id}")]
-        public IHttpActionResult DeleteManager(string id, string managerId)
+        [Route("GetManagerImage/{storeAdminId}")]
+        public async Task<byte[]> GetManagerImage(string storeAdminId, string managerId)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            byte[] image = await managerService.GetImageAsync(managerId);
+
+            return image;
+        }
+
+        [HttpGet]
+        [Route("GetManagerStores/{storeAdminId}")]
+        public IHttpActionResult GetManagerStores(string storeAdminId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<ManagerStore> managerStores = managerService.GetManagerStores(storeAdminId, managerId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(managerStores);
+        }
+
+        [HttpGet]
+        [Route("Assign/{storeAdminId}")]
+        public IHttpActionResult Assign(string storeAdminId, string managerId, string storeId)
+        {
+            Result result = managerService.Assign(storeAdminId, managerId, storeId);
+
+            if (result.Success)
             {
-                Result result = uow.Managers.MarkAsDeleted(managerId);
-
-                uow.Complete();
-
-                if (result.Success)
-                {
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("RestoreManager/{id}")]
-        public IHttpActionResult RestoreManager(string id, string managerId)
+        [Route("Unassign/{storeAdminId}")]
+        public IHttpActionResult Unassign(string storeAdminId, string managerId, string storeId)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            Result result = managerService.Unassign(storeAdminId, managerId, storeId);
+
+            if (result.Success)
             {
-                Result result = uow.Managers.MarkAsRestored(managerId);
-
-                uow.Complete();
-
-                if (result.Success)
-                {
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
+                return Content(HttpStatusCode.OK, result);
             }
-        }
-
-        [HttpPut]
-        [Route("PostManagerImage/{id}")]
-        public async Task<Result> PostManagerImage(string id, string managerId, byte[] image)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            else
             {
-                Result result = await uow.Accounts.PostUserImage(managerId, image);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        [HttpGet]
-        [Route("GetManagerImage/{id}")]
-        public async Task<byte[]> GetManagerImage(string id, string managerId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                byte[] image = await uow.Accounts.GetUserImage(managerId);
-
-                return ImageProcessor.CreateThumbnail(image);
-
-                //return image;
-            }
-
-            //return ImageProcessor.CreateThumbnail(byteArray);
-        }
-
-        [HttpGet]
-        [Route("GetManagerStores/{id}")]
-        public IHttpActionResult GetManagerStores(string id, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                List<ManagerStore> managerStores = uow.ManagerStores.GetManagerStores(managerId, sortOrder, searchString).ToList();
-
-                var subset = managerStores.ToPagedList(pageIndex, pageSize);
-                var result = new { items = subset, metaData = subset.GetMetaData() };
-
-                return Ok(result);
-            }
-        }
-
-        [HttpPut]
-        [Route("Assign/{id}")]
-        public Result Assign(string id, string managerId, string storeId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.ManagerStores.Assign(managerId, storeId);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        [HttpPut]
-        [Route("Unassign/{id}")]
-        public Result Unassign(string id, string managerId, string storeId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.ManagerStores.Unassign(managerId, storeId);
-
-                uow.Complete();
-
-                return result;
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
@@ -283,40 +227,40 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         }
 
-        [HttpGet]
-        [Route("GetAllStores")]
-        public IHttpActionResult GetAllStores(string sortOrder, string searchString, int pageIndex, int pageSize)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var stores = uow.Stores.GetAllApproved(sortOrder, searchString);
+        //[HttpGet]
+        //[Route("GetAllStores/{id}")]
+        //public IHttpActionResult GetAllStores(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var stores = uow.Stores.GetAllApprovedByStoreAdminId(id, sortOrder, searchString);
 
-                var mapped = mapper.Map<List<Store>>(stores);
+        //        var mapped = mapper.Map<List<Store>>(stores);
 
-                var subset = mapped.ToPagedList(pageIndex, pageSize);
-                var result = new { items = subset, metaData = subset.GetMetaData() };
+        //        var subset = mapped.ToPagedList(pageIndex, pageSize);
+        //        var result = new { items = subset, metaData = subset.GetMetaData() };
 
-                return Ok(result);
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //}
 
-        [HttpGet]
-        [Route("GetStore/{id}")]
-        public IHttpActionResult GetStore(string id)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var store = uow.Stores.GetLoaded(id);
+        //[HttpGet]
+        //[Route("GetStore/{id}")]
+        //public IHttpActionResult GetStore(string id, string storeId)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var store = uow.Stores.GetApprovedByStoreAdminId(id, storeId);
 
-                var mapped = mapper.Map<Store>(store);
+        //        var mapped = mapper.Map<Store>(store);
 
-                return Ok(mapped);
-            }
-        }
+        //        return Ok(mapped);
+        //    }
+        //}
 
         [HttpPut]
-        [Route("EditStore")]
-        public async Task<IHttpActionResult> EditStore(StoreBindingModel model)
+        [Route("EditStore/{id}")]
+        public async Task<IHttpActionResult> EditStore(string id, StoreBindingModel model)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
@@ -378,11 +322,52 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //Select
+        [HttpPut]
+        [Route("PostStoreImage/{id}")]
+        public Result PostStoreImage(string id, string storeId, byte[] image)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                Result result = uow.Stores.PostStoreImage(storeId, image);
 
-        //PostStoreImage
+                uow.Complete();
 
-        //GetStoreImage
+                return result;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetStoreImage/{id}")]
+        public byte[] GeStoreImage(string id, string storeId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                byte[] image = uow.Stores.GetStoreImage(storeId);
+
+                return ImageProcessor.CreateThumbnail(image);
+
+                //return image;
+            }
+
+            //return ImageProcessor.CreateThumbnail(byteArray);
+        }
+
+        //[HttpGet]
+        //[Route("SelectStore")]
+        //public SelectedStore SelectStore(string id, string storeId)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var store = uow.Stores.GetApprovedByStoreAdminId(id, storeId);
+
+        //        return new SelectedStore
+        //        {
+        //            Id = store.Id,
+        //            StoreName = store.StoreName
+        //        };
+        //    }
+        //}
+
 
         #endregion
 

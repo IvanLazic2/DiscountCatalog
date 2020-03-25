@@ -204,6 +204,12 @@
     <Compile Include="ModelBinders\CustomDateModelBinder.cs" />
     <Compile Include="ModelBinders\DecimalModelBinder.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
+    <Compile Include="REST\Account\AccountREST.cs" />
+    <Compile Include="REST\Manager\ManagerREST.cs" />
+    <Compile Include="REST\Manager\ManagerRESTPost.cs" />
+    <Compile Include="REST\Manager\ManagerRESTPut.cs" />
+    <Compile Include="REST\StoreAdmin\StoreAdminREST.cs" />
+    <Compile Include="REST\Store\StoreREST.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="Models\Extended\Address.cs" />
     <Compile Include="Models\Extended\Store.cs" />
@@ -228,6 +234,7 @@
     <Compile Include="Repositories\MVCRepositories\StoreRepository.cs" />
     <Compile Include="Validators\DiscountValidator.cs" />
     <Compile Include="ViewModels\ManagerViewModel.cs" />
+    <Compile Include="ViewModels\Manager\ManagerCreationViewModel.cs" />
     <Compile Include="ViewModels\StoreViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\ProductViewModel.cs" />
@@ -494,11 +501,11 @@
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\StoreAdmin\CreateManager.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllManagers.cshtml" />
-    <Content Include="Views\StoreAdmin\DetailsManager.cshtml" />
+    <Content Include="Views\StoreAdmin\ManagerDetails.cshtml" />
     <Content Include="Views\StoreAdmin\EditManager.cshtml" />
     <Content Include="Views\StoreAdmin\DeleteManager.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllDeletedManagers.cshtml" />
-    <Content Include="Views\StoreAdmin\GetAllManagerStores.cshtml" />
+    <Content Include="Views\StoreAdmin\GetManagerStores.cshtml" />
     <Content Include="Views\Manager\GetAllStores.cshtml" />
     <Content Include="Views\Manager\EditStore.cshtml" />
     <Content Include="Views\Manager\DetailsStore.cshtml" />
