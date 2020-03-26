@@ -4,6 +4,7 @@ using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.MVC.Models;
 using DiscountCatalog.MVC.Models.Paging;
 using DiscountCatalog.MVC.REST.Manager;
+using DiscountCatalog.MVC.REST.Store;
 using DiscountCatalog.MVC.ViewModels;
 using DiscountCatalog.MVC.ViewModels.Manager;
 using Newtonsoft.Json;
@@ -55,8 +56,7 @@ namespace DiscountCatalog.MVC.Repositories
 
             string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeleted" +
-                $"Managers/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeletedManagers/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ManagerREST>>();
 
@@ -182,7 +182,7 @@ namespace DiscountCatalog.MVC.Repositories
 
         #region Store
 
-        public async Task<Result> CreateStore(StoreViewModel store)
+        public async Task<Result> CreateStore(StoreRESTPost store)
         {
             AddTokenToHeader();
 
@@ -195,34 +195,34 @@ namespace DiscountCatalog.MVC.Repositories
             return result;
         }
 
-        public async Task<PagingEntity<Store>> GetAllStores(string sortOrder, string searchString, int pageIndex, int pageSize)
+        public async Task<PagingEntity<StoreREST>> GetAllStores(string sortOrder, string searchString, int pageIndex, int pageSize)
         {
             AddTokenToHeader();
 
-            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllStores/{id}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllStores/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
-            var result = await request.Content.ReadAsAsync<PagingEntity<Store>>();
+            var result = await request.Content.ReadAsAsync<PagingEntity<StoreREST>>();
 
             return result;
         }
 
-        public async Task<PagingEntity<Store>> GetAllDeletedStores(string sortOrder, string searchString, int pageIndex, int pageSize)
+        public async Task<PagingEntity<StoreREST>> GetAllDeletedStores(string sortOrder, string searchString, int pageIndex, int pageSize)
         {
             AddTokenToHeader();
 
-            string id = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
             var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeleted" +
-                $"Stores/{id}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+                $"Stores/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
-            var result = await request.Content.ReadAsAsync<PagingEntity<Store>>();
+            var result = await request.Content.ReadAsAsync<PagingEntity<StoreREST>>();
 
             return result;
         }
 
-        public async Task<Store> GetStore(string id)
+        public async Task<StoreREST> GetStore(string id)
         {
             AddTokenToHeader();
 
@@ -230,16 +230,16 @@ namespace DiscountCatalog.MVC.Repositories
 
             var request = await apiClient.GetAsync($"api/StoreAdmin/GetStore/{storeAdminId}?storeId={id}");
 
-            var result = await request.Content.ReadAsAsync<Store>();
+            var result = await request.Content.ReadAsAsync<StoreREST>();
 
             return result;
         }
 
-        public async Task<Result> EditStore(Store store)
+        public async Task<Result> EditStore(StoreRESTPut store)
         {
             AddTokenToHeader();
 
-            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditManager/{store.Id}", store);
+            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditStore/{store.Id}", store);
 
             var result = await request.Content.ReadAsAsync<Result>();
 

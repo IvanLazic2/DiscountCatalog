@@ -205,11 +205,17 @@
     <Compile Include="ModelBinders\DecimalModelBinder.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
     <Compile Include="REST\Account\AccountREST.cs" />
+    <Compile Include="REST\Account\AccountRESTPost.cs" />
+    <Compile Include="REST\Account\AccountRESTPut.cs" />
     <Compile Include="REST\Manager\ManagerREST.cs" />
     <Compile Include="REST\Manager\ManagerRESTPost.cs" />
     <Compile Include="REST\Manager\ManagerRESTPut.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminREST.cs" />
+    <Compile Include="REST\StoreAdmin\StoreAdminRESTPost.cs" />
+    <Compile Include="REST\StoreAdmin\StoreAdminRESTPut.cs" />
     <Compile Include="REST\Store\StoreREST.cs" />
+    <Compile Include="REST\Store\StoreRESTPost.cs" />
+    <Compile Include="REST\Store\StoreRESTPut.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="Models\Extended\Address.cs" />
     <Compile Include="Models\Extended\Store.cs" />

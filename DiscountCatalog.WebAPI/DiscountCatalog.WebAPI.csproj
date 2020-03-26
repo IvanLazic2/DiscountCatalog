@@ -324,7 +324,9 @@
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Service\Contractor\IManagerService.cs" />
     <Compile Include="Service\Contractor\IService.cs" />
+    <Compile Include="Service\Contractor\IStoreService.cs" />
     <Compile Include="Service\Implementation\ManagerService.cs" />
+    <Compile Include="Service\Implementation\StoreService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation\Validators\ManagerStoreValidator.cs" />
     <Compile Include="Validation\Validators\ManagerValidator.cs" />

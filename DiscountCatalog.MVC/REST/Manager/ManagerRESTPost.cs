@@ -9,7 +9,7 @@ namespace DiscountCatalog.MVC.REST.Manager
 {
     public class ManagerRESTPost
     {
-        public AccountREST Identity { get; set; }
+        public AccountRESTPost Identity { get; set; }
         public string StoreAdminId { get; set; }
 
         [Required]

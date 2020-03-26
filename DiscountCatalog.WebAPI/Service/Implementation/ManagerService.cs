@@ -28,6 +28,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             mapper = AutoMapping.Initialise();
         }
 
+        #region Methods
+
         public IList<ManagerREST> Search(IList<ManagerREST> managers, string searchString)
         {
             if (!string.IsNullOrEmpty(searchString))
@@ -124,17 +126,17 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public IPagingList<ManagerREST> GetAllDeleted(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IPagingList<ManagerREST> GetAllDeleted(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize) //ovo neradi!!!!!!!!!!!!!
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var storeAdmin = uow.StoreAdmins.GetLoaded(storeAdminId);
+                var storeAdmin = uow.StoreAdmins.GetLoadedByIdentityId(storeAdminId);
 
                 IEnumerable<ManagerEntity> managers = storeAdmin.Managers
                     .Where(m => m.Identity.Deleted)
                     .ToList();
 
-                IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers.Select(m => m.Identity));
+                IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
@@ -183,7 +185,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 uow.Complete();
 
-                return result;
+                return result; // isprobat dal postimage radi!!!!!!!!!!!
             }
         }
 
@@ -249,12 +251,15 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 var storeAdmin = uow.StoreAdmins.GetLoadedByIdentityId(storeAdminId);
 
-                ManagerEntity manager = storeAdmin.Managers.FirstOrDefault(m => m.Id == managerId);
+                ManagerEntity manager = storeAdmin.Managers
+                    .FirstOrDefault(m => m.Id == managerId);
 
                 var mapped = mapper.Map<ManagerREST>(manager);
 
                 return mapped;
             }
         }
+
+        #endregion
     }
 }

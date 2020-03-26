@@ -61,9 +61,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 SuccessMessage = "Store created."
             };
-            store.Approved = true;
-            store.Deleted = false;
-            store.Administrator = DbContext.StoreAdmins.Find(storeAdminId);
+            UnitOfWork uow = new UnitOfWork(DbContext);
+            store.Administrator = uow.StoreAdmins.GetByIdentityId(storeAdminId);
             var validator = new StoreValidator();
             var validationResult = await validator.ValidateAsync(store);
             modelState.Add(validationResult);

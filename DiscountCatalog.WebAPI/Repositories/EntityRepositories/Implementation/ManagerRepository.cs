@@ -29,6 +29,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         {
         }
 
+        #region Methods
+
         public async Task<Result> CreateAsync(string storeAdminId, ManagerEntity manager, string password)
         {
             var modelState = new EntityModelState
@@ -98,22 +100,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 .FirstOrDefault(m => m.Id == id);
         }
 
-        //public ManagerEntity GetByIdentityId(string identityId)
-        //{
-        //    return DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .FirstOrDefault(m => m.Identity.Id == identityId);
-        //}
-
-        //public ManagerEntity GetLoadedByIdentityId(string identityId)
-        //{
-        //    return DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .Include(m => m.Administrator.Identity)
-        //        .Include(m => m.Stores)
-        //        .FirstOrDefault(m => m.Identity.Id == identityId);
-        //}
-
         public async Task<Result> UpdateAsync(ManagerEntity manager)
         {
             var uow = new UnitOfWork(DbContext);
@@ -166,51 +152,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        //public ManagerEntity GetApprovedByIdentityId(string identityId)
-        //{
-        //    return DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .Include(m => m.Administrator.Identity)
-        //        .Include(m => m.Stores)
-        //        .FirstOrDefault(m => m.Identity.Id == identityId && !m.Identity.Deleted && m.Identity.Approved);
-        //}
-
-        //public IEnumerable<ManagerEntity> GetAllByStoreAdminId(string storeAdminId, string sortOrder, string searchString)
-        //{
-        //    var managers = DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .Include(m => m.Administrator.Identity)
-        //        .Include(m => m.Stores)
-        //        .Where(m => m.Administrator.Identity.Id == storeAdminId && m.Identity.Approved && ! m.Identity.Deleted)
-        //        .ToList();
-
-        //    managers = Search(managers, searchString);
-        //    managers = Order(managers, sortOrder);
-
-        //    return managers;
-        //}
-
-        //public ManagerEntity GetByStoreAdminId(string storeAdminId, string managerId)
-        //{
-        //    return DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .Include(m => m.Administrator.Identity)
-        //        .Include(m => m.Stores)
-        //        .FirstOrDefault(m => m.Administrator.Identity.Id == storeAdminId && m.Id == managerId && m.Identity.Approved && !m.Identity.Deleted);
-        //}
-
-        //public IEnumerable<ManagerEntity> GetAllDeletedByStoreAdminId(string storeAdminId, string sortOrder, string searchString)
-        //{
-        //    var managers = DbContext.Managers
-        //        .Include(m => m.Identity)
-        //        .Include(m => m.Administrator.Identity)
-        //        .Where(m => m.Administrator.Identity.Id == storeAdminId && m.Identity.Deleted)
-        //        .ToList();
-
-        //    managers = Search(managers, searchString);
-        //    managers = Order(managers, sortOrder);
-
-        //    return managers;
-        //}
+        #endregion
     }
 }

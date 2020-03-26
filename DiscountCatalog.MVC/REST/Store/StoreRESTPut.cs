@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DiscountCatalog.WebAPI.REST.Store
+namespace DiscountCatalog.MVC.REST.Store
 {
-    public class StoreRESTPost
+    public class StoreRESTPut
     {
+        public string Id { get; set; }
         public string StoreName { get; set; }
         public string WorkingHoursWeekBegin { get; set; }
         public string WorkingHoursWeekEnd { get; set; }
@@ -18,7 +19,5 @@ namespace DiscountCatalog.WebAPI.REST.Store
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
-
-        public string StoreAdminId { get; set; }
     }
 }

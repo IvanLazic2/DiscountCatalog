@@ -18,6 +18,7 @@ using DiscountCatalog.MVC.Models.Paging;
 using DiscountCatalog.MVC.ViewModels.Manager;
 using DiscountCatalog.MVC.REST.Manager;
 using DiscountCatalog.Common.Models;
+using DiscountCatalog.MVC.REST.Store;
 
 namespace DiscountCatalog.MVC.Controllers
 {
@@ -300,12 +301,14 @@ namespace DiscountCatalog.MVC.Controllers
 
         #region Store
 
+        [HttpGet]
         public ActionResult CreateStore()
         {
             return View();
         }
 
-        public async Task<ActionResult> CreateStore(StoreViewModel store)
+        [HttpPost]
+        public async Task<ActionResult> CreateStore(StoreRESTPost store)
         {
             Result result = await storeAdminRepository.CreateStore(store);
 
@@ -343,9 +346,9 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 4;
 
-            PagingEntity<Store> stores = await storeAdminRepository.GetAllStores(sortOrder, searchString, pageIndex, pageSize);
+            PagingEntity<StoreREST> stores = await storeAdminRepository.GetAllStores(sortOrder, searchString, pageIndex, pageSize);
 
-            StaticPagedList<Store> list = new StaticPagedList<Store>(stores.Items, stores.MetaData.PageNumber, stores.MetaData.PageSize, stores.MetaData.TotalItemCount);
+            StaticPagedList<StoreREST> list = new StaticPagedList<StoreREST>(stores.Items, stores.MetaData.PageNumber, stores.MetaData.PageSize, stores.MetaData.TotalItemCount);
 
             return View(list);
         }
@@ -369,12 +372,15 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 4;
 
-            PagingEntity<Store> stores = await storeAdminRepository.GetAllDeletedStores(sortOrder, searchString, pageIndex, pageSize);
+            PagingEntity<StoreREST> stores = await storeAdminRepository.GetAllDeletedStores(sortOrder, searchString, pageIndex, pageSize);
 
-            StaticPagedList<Store> list = new StaticPagedList<Store>(stores.Items, stores.MetaData.PageNumber, stores.MetaData.PageSize, stores.MetaData.TotalItemCount);
+            StaticPagedList<StoreREST> list = new StaticPagedList<StoreREST>(stores.Items, stores.MetaData.PageNumber, stores.MetaData.PageSize, stores.MetaData.TotalItemCount);
 
             return View(list);
+
         }
+
+        //TU SAM STAO!!!!!!!!!!
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<DiscountCatalog.Common.Models.Store>
+﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Store.StoreREST>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
@@ -48,43 +48,41 @@
 
     @foreach (var item in Model)
     {
-        if (!item.Deleted)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StoreName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.City)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PostalCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Street)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Approved)
-                </td>
-                <td>
-                    @{
-                        foreach (var manager in item.Managers)
-                        {
-                            @Html.ActionLink(manager.UserName + " ", "DetailsManager", new { id = manager.Id });
-                        }
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Street)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Approved)
+            </td>
+            <td>
+                @{
+                    foreach (var manager in item.Managers)
+                    {
+                        @Html.ActionLink(manager.Identity.UserName + " ", "ManagerDetails", new { id = manager.Id });
                     }
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
-                    @Html.ActionLink("Details", "StoreDetails", new { id = item.Id })
-                    @Html.ActionLink("Delete", "DeleteStore", new { id = item.Id })
-                    @Html.ActionLink("Select", "Select", new { id = item.Id })
-                </td>
-            </tr>
-        }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
+                @Html.ActionLink("Details", "StoreDetails", new { id = item.Id })
+                @Html.ActionLink("Delete", "DeleteStore", new { id = item.Id })
+                @Html.ActionLink("Select", "Select", new { id = item.Id })
+            </td>
+        </tr>
+
 
     }
 
