@@ -12,11 +12,14 @@ using DiscountCatalog.WebAPI.Validation.Validators;
 using DiscountCatalog.WebAPI.Extensions;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
+using DiscountCatalog.WebAPI.REST.Store;
 
 namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
     public class StoreRepository : Repository<StoreEntity>, IStoreRepository
     {
+        #region Properties
+
         public ApplicationUserDbContext DbContext
         {
             get
@@ -25,35 +28,22 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             }
         }
 
+        #endregion
+
+        #region Constructors
+
         public StoreRepository(ApplicationUserDbContext context)
-            : base(context)
+                    : base(context)
         {
         }
 
-        private List<StoreEntity> Search(IEnumerable<StoreEntity> stores, string searchString)
-        {
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                stores = stores.Where(s => s.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
-            }
+        #endregion
 
-            return stores.ToList();
-        }
+        #region Methods
 
-        private List<StoreEntity> Order(IEnumerable<StoreEntity> store, string sortOrder)
-        {
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    store = store.OrderByDescending(s => s.StoreName).ToList();
-                    break;
-                default:
-                    store = store.OrderBy(s => s.StoreName).ToList();
-                    break;
-            }
+        //CREATE
 
-            return store.ToList();
-        }
+        #region Create
 
         public async Task<Result> CreateAsync(StoreEntity store, string storeAdminId)
         {
@@ -73,67 +63,137 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        public IEnumerable<StoreEntity> GetAllApproved(string sortOrder, string searchString)
+        #endregion
+
+        //GET ALL
+
+        #region GetAllApproved
+
+        public IEnumerable<StoreEntity> GetAllApproved()
         {
-            var stores = DbContext.Stores
-                .Include(s => s.Administrator)
-                .Include(s => s.Managers)
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .Where(s => s.Approved && !s.Deleted)
                 .ToList();
-
-            stores = Search(stores, searchString);
-            stores = Order(stores, sortOrder);
-
-            return stores;
         }
 
-        public IEnumerable<StoreEntity> GetAllLoaded(string sortOrder, string searchString)
+        public IEnumerable<StoreEntity> GetAllApproved(string storeAdminIdentityId)
         {
-            var stores = DbContext.Stores
-                .Include(s => s.Administrator)
-                .Include(s => s.Managers)
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Products)
+                .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted)
+                .ToList();
+        }
+
+        #endregion
+
+        #region GetAllDeleted
+
+        public IEnumerable<StoreEntity> GetAllDeleted()
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Where(s => s.Deleted)
+                .ToList();
+        }
+
+        public IEnumerable<StoreEntity> GetAllDeleted(string storeAdminIdentityId)
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Deleted)
+                .ToList();
+        }
+
+        #endregion
+
+        #region GetAllLoaded
+
+        public IEnumerable<StoreEntity> GetAllLoaded()
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .ToList();
-
-            stores = Search(stores, searchString);
-            stores = Order(stores, sortOrder);
-
-            return stores;
         }
 
-        public StoreEntity GetLoaded(string id)
+        public IEnumerable<StoreEntity> GetAllLoaded(string storeAdminIdentityId)
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Products)
+                .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId)
+                .ToList();
+        }
+
+        #endregion
+
+        //GET
+
+        #region GetApproved
+
+        public StoreEntity GetApproved(string storeId)
         {
             return DbContext.Stores
                 .Include(s => s.Administrator)
-                .Include(s => s.Managers)
+                .Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
-                .FirstOrDefault(s => s.Id == id);
+                .FirstOrDefault(s => s.Id == storeId && s.Approved && !s.Deleted);
         }
 
-        public IEnumerable<StoreEntity> GetAllDeleted(string sortOrder, string searchString)
+        public StoreEntity GetApproved(string storeAdminIdentityId, string storeId)
         {
-            var stores = DbContext.Stores
+            return DbContext.Stores
                 .Include(s => s.Administrator)
-                .Where(s => s.Deleted)
-                .ToList();
-
-            stores = Search(stores, searchString);
-            stores = Order(stores, sortOrder);
-
-            return stores;
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Products)
+                .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
         }
 
-        public async Task<Result> UpdateAsync(StoreEntity store)
+        #endregion
+
+        #region GetLoaded
+
+        public StoreEntity GetLoaded(string storeId)
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator)
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Products)
+                .FirstOrDefault(s => s.Id == storeId);
+        }
+
+        public StoreEntity GetLoaded(string storeAdminIdentityId, string storeId)
+        {
+            return DbContext.Stores
+                .Include(s => s.Administrator)
+                .Include(s => s.Managers.Select(m => m.Identity))
+                .Include(s => s.Products)
+                .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminIdentityId);
+        }
+
+
+        #endregion
+
+        //UPDATE
+
+        #region Update
+
+        public async Task<Result> UpdateAsync(StoreRESTPut store)
         {
             var modelState = new EntityModelState
             {
                 SuccessMessage = "Info updated."
             };
 
-            var dbStore = DbContext.Stores
-                .Include(s => s.Administrator)
-                .FirstOrDefault(s => s.Id == store.Id);
+            var dbStore = GetApproved(store.Id);
+
             if (dbStore != null)
             {
                 dbStore.StoreName = store.StoreName;
@@ -152,16 +212,58 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 var validationResult = await validator.ValidateAsync(dbStore);
                 modelState.Add(validationResult);
             }
+
             return modelState.GetResult();
         }
 
-        public Result MarkAsDeleted(string id)
+        public async Task<Result> UpdateAsync(string storeAdminIdentityId, StoreRESTPut store)
+        {
+            var modelState = new EntityModelState
+            {
+                SuccessMessage = "Info updated."
+            };
+
+            var dbStore = GetApproved(storeAdminIdentityId, store.Id);
+
+            if (dbStore != null)
+            {
+                dbStore.StoreName = store.StoreName;
+                dbStore.WorkingHoursWeekBegin = store.WorkingHoursWeekBegin;
+                dbStore.WorkingHoursWeekEnd = store.WorkingHoursWeekEnd;
+                dbStore.WorkingHoursWeekendsBegin = store.WorkingHoursWeekendsBegin;
+                dbStore.WorkingHoursWeekendsEnd = store.WorkingHoursWeekendsEnd;
+                dbStore.WorkingHoursHolidaysBegin = store.WorkingHoursHolidaysBegin;
+                dbStore.WorkingHoursHolidaysEnd = store.WorkingHoursHolidaysEnd;
+                dbStore.Country = store.Country;
+                dbStore.City = store.City;
+                dbStore.PostalCode = store.PostalCode;
+                dbStore.Street = store.Street;
+
+                var validator = new StoreValidator();
+                var validationResult = await validator.ValidateAsync(dbStore);
+                modelState.Add(validationResult);
+            }
+            else
+            {
+                modelState.Add("Store does not exist.");
+            }
+
+            return modelState.GetResult();
+        }
+
+        #endregion
+
+        //DELETE
+
+        #region MarkAsDeleted
+
+        public Result MarkAsDeleted(string storeId)
         {
             var modelState = new EntityModelState()
             {
                 SuccessMessage = "Store deleted."
             };
-            var store = Get(id);
+            var store = GetApproved(storeId);
             if (store != null)
             {
                 store.Deleted = true;
@@ -173,16 +275,16 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        public Result MarkAsRestored(string id)
+        public Result MarkAsDeleted(string storeAdminIdentityId, string storeId)
         {
             var modelState = new EntityModelState()
             {
-                SuccessMessage = "Store restored."
+                SuccessMessage = "Store deleted."
             };
-            var store = Get(id);
+            var store = GetApproved(storeAdminIdentityId, storeId);
             if (store != null)
             {
-                store.Deleted = false;
+                store.Deleted = true;
             }
             else
             {
@@ -191,58 +293,62 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        public StoreEntity GetApproved(string id)
+        #endregion
+
+        //RESTORE
+
+        #region MarkAsRestored
+
+        public Result MarkAsRestored(string storeId)
         {
-            return DbContext.Stores
-                .Include(s => s.Administrator)
-                .Include(s => s.Managers)
-                .Include(s => s.Products)
-                .FirstOrDefault(s => s.Id == id && s.Approved && !s.Deleted);
+            var modelState = new EntityModelState()
+            {
+                SuccessMessage = "Store restored."
+            };
+
+            var store = DbContext.Stores
+                .FirstOrDefault(s => s.Id == storeId && s.Deleted);
+
+            if (store != null)
+            {
+                store.Deleted = false;
+            }
+            else
+            {
+                modelState.Add("Store does not exist.");
+            }
+
+            return modelState.GetResult();
         }
 
-        //public IEnumerable<StoreEntity> GetAllLoadedByStoreAdminId(string id, string sortOrder, string searchString)
-        //{
-        //    var stores = DbContext.Stores
-        //        .Include(s => s.Managers)
-        //        .Include(s => s.Administrator.Identity)
-        //        .Where(s => s.Administrator.Id == id)
-        //        .ToList();
+        public Result MarkAsRestored(string storeAdminIdentityId, string storeId)
+        {
+            var modelState = new EntityModelState()
+            {
+                SuccessMessage = "Store restored."
+            };
 
-        //    stores = Search(stores, searchString);
-        //    stores = Order(stores, sortOrder);
+            var store = DbContext.Stores
+                .Include(s => s.Administrator.Identity)
+                .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminIdentityId && s.Deleted);
 
-        //    return stores;
-        //}
+            if (store != null)
+            {
+                store.Deleted = false;
+            }
+            else
+            {
+                modelState.Add("Store does not exist.");
+            }
 
-        //public IEnumerable<StoreEntity> GetAllApprovedByStoreAdminId(string id, string sortOrder, string searchString)
-        //{
-        //    var stores = DbContext.Stores
-        //        .Include(s => s.Managers)
-        //        .Include(s => s.Administrator.Identity)
-        //        .Where(s => s.Administrator.Id == id && s.Approved && !s.Deleted)
-        //        .ToList();
+            return modelState.GetResult();
+        }
 
-        //    stores = Search(stores, searchString);
-        //    stores = Order(stores, sortOrder);
+        #endregion
 
-        //    return stores;
-        //}
+        //GET AND POST IMAGE
 
-        //public StoreEntity GetLoadedByStoreAdminId(string id, string storeId)
-        //{
-        //    return DbContext.Stores
-        //        .Include(s => s.Managers)
-        //        .Include(s => s.Administrator.Identity)
-        //        .FirstOrDefault(s => s.Administrator.Id == id && s.Id == storeId);
-        //}
-
-        //public StoreEntity GetApprovedByStoreAdminId(string id, string storeId)
-        //{
-        //    return DbContext.Stores
-        //        .Include(s => s.Managers)
-        //        .Include(s => s.Administrator.Identity)
-        //        .FirstOrDefault(s => s.Administrator.Id == id && s.Id == storeId && s.Approved && !s.Deleted);
-        //}
+        #region Get/Post Image
 
         public Result PostStoreImage(string id, byte[] image)
         {
@@ -252,11 +358,18 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 StoreEntity store = GetApproved(id);
 
-                store.StoreImage = image;
+                if (store != null)
+                {
+                    store.StoreImage = image;
+                }
+                else
+                {
+                    result.Add("Store does not exist.");
+                }
             }
             else
             {
-                result.AddModelError(string.Empty, "Image is not valid.");
+                result.Add("Image is not valid.");
             }
 
             return result;
@@ -268,5 +381,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
             return store.StoreImage;
         }
+
+        #endregion
+
+        #endregion
+
     }
 }

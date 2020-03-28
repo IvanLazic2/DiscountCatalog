@@ -2,13 +2,20 @@
     @{
         string userId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-        <div class="avatar" style="background-image: url(@Url.Action("GetUserImage", "Account", new { id = userId })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
+        if (!string.IsNullOrEmpty(userId))
+        {
+            <div class="avatar" style="background-image: url(@Url.Action("GetUserImage", "Account", new { id = userId })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
+        }
+
     }
 </li>
 <li>
     @{
         string email = HttpContext.Current.Request.Cookies["Email"].Value;
 
-        @Html.ActionLink(email, "Details", "Account")
+        if (!string.IsNullOrEmpty(email))
+        {
+            @Html.ActionLink(email, "Details", "Account")
+        }
     }
 </li>

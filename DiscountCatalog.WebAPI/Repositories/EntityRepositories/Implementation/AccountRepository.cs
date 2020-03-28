@@ -250,24 +250,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return _userManager.GetRolesAsync(id);
         }
 
-        public Task<bool> IsInRoleAsync(string id, string role)
+        public async Task<bool> IsInRoleAsync(string id, string role)
         {
-            return _userManager.IsInRoleAsync(id, role);
+            if (!string.IsNullOrEmpty(role) && !string.IsNullOrEmpty(id))
+            {
+                return await _userManager.IsInRoleAsync(id, role);
+            }
 
-            //var uow = new UnitOfWork(DbContext);
-            //var identityRole = await uow.Roles.FindByNameAsync(role);
-
-            //var user = DbContext.Users.FirstOrDefault(u => u.Id == id && 
-            //    u.Roles.FirstOrDefault(r => r.RoleId == identityRole.Id).RoleId == identityRole.Id);
-
-            //if (user != null)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
+            return false;
         }
 
         public Task<IdentityResult> RemoveFromRoleAsync(string id, string role)
@@ -451,8 +441,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public ApplicationUser GetApprovedByName(string name)
         {
             return DbContext.Users
-                .Include(u => u.Roles)
-                .FirstOrDefault(u => u.UserName == name && !u.Deleted && u.Approved);
+               .Include(u => u.Roles)
+               .FirstOrDefault(u => u.UserName == name && !u.Deleted && u.Approved);
         }
     }
 }

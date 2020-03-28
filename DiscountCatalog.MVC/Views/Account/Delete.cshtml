@@ -1,4 +1,4 @@
-﻿@model DiscountCatalog.Common.Models.User
+﻿@model DiscountCatalog.MVC.REST.Account.AccountREST
 
 @{
     ViewBag.Title = "Delete";
@@ -42,19 +42,11 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.EmailConfirmed)
-        </dt>
-
-        <dt>
             @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-
-        <dd>
-            @Html.DisplayFor(model => model.PhoneNumberConfirmed)
         </dd>
 
         <dt>

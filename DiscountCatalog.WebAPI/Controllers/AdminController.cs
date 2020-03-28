@@ -368,7 +368,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var managers = uow.Managers.GetAllLoaded(sortOrder, searchString);
+                var managers = uow.Managers.GetAllLoaded();
 
                 var mapped = mapper.Map<List<Manager>>(managers);
 
@@ -385,7 +385,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var managers = uow.Managers.GetAllApproved(sortOrder, searchString);
+                var managers = uow.Managers.GetAllApproved();
 
                 var mapped = mapper.Map<List<Manager>>(managers);
 
@@ -402,7 +402,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var managers = uow.Managers.GetAllDeleted(sortOrder, searchString);
+                var managers = uow.Managers.GetAllDeleted();
 
                 var mapped = mapper.Map<List<Manager>>(managers);
 
@@ -449,7 +449,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var stores = uow.Stores.GetAllLoaded(sortOrder, searchString);
+                var stores = uow.Stores.GetAllLoaded();
 
                 var mapped = mapper.Map<List<Store>>(stores);
 
@@ -466,7 +466,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var stores = uow.Stores.GetAllApproved(sortOrder, searchString);
+                var stores = uow.Stores.GetAllApproved();
 
                 var mapped = mapper.Map<List<Store>>(stores);
 
@@ -483,7 +483,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                var stores = uow.Stores.GetAllDeleted(sortOrder, searchString);
+                var stores = uow.Stores.GetAllDeleted();
 
                 var mapped = mapper.Map<List<Store>>(stores);
 
@@ -589,49 +589,49 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         }
 
-        [HttpPut]
-        [Route("EditManager")]
-        public async Task<IHttpActionResult> EditManager(ManagerBindingModel model)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var manager = new ManagerEntity { Identity = mapper.Map<ApplicationUser>(model) };
-                Result result = await uow.Managers.UpdateAsync(manager);
+        //[HttpPut]
+        //[Route("EditManager")]
+        //public async Task<IHttpActionResult> EditManager(ManagerBindingModel model)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var manager = new ManagerEntity { Identity = mapper.Map<ApplicationUser>(model) };
+        //        Result result = await uow.Managers.UpdateAsync(manager);
 
-                if (result.Success)
-                {
-                    uow.Complete();
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    uow.Dispose();
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
-            }
-        }
+        //        if (result.Success)
+        //        {
+        //            uow.Complete();
+        //            return Content(HttpStatusCode.OK, result);
+        //        }
+        //        else
+        //        {
+        //            uow.Dispose();
+        //            return Content(HttpStatusCode.BadRequest, result);
+        //        }
+        //    }
+        //}
 
-        [HttpPut]
-        [Route("EditStore")]
-        public async Task<IHttpActionResult> EditStore(StoreBindingModel model)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                var store = mapper.Map<StoreEntity>(model);
-                Result result = await uow.Stores.UpdateAsync(store);
+        //[HttpPut]
+        //[Route("EditStore")]
+        //public async Task<IHttpActionResult> EditStore(StoreBindingModel model)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        var store = mapper.Map<StoreEntity>(model);
+        //        Result result = await uow.Stores.UpdateAsync(store);
 
-                if (result.Success)
-                {
-                    uow.Complete();
-                    return Content(HttpStatusCode.OK, result);
-                }
-                else
-                {
-                    uow.Dispose();
-                    return Content(HttpStatusCode.BadRequest, result);
-                }
-            }
-        }
+        //        if (result.Success)
+        //        {
+        //            uow.Complete();
+        //            return Content(HttpStatusCode.OK, result);
+        //        }
+        //        else
+        //        {
+        //            uow.Dispose();
+        //            return Content(HttpStatusCode.BadRequest, result);
+        //        }
+        //    }
+        //}
 
         #endregion
 

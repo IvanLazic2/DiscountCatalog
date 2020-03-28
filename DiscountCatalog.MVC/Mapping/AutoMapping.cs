@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DiscountCatalog.Common.Models;
+using DiscountCatalog.MVC.REST.Manager;
+using DiscountCatalog.MVC.REST.Store;
 using DiscountCatalog.MVC.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,12 @@ namespace AbatementHelper.MVC.Mapping
                 //VIEWMODELS
 
                 c.CreateMap<User, UserViewModel>();
+
+                //REST
+
+                c.CreateMap<StoreRESTPut, StoreREST>();
+
+                c.CreateMap<ManagerRESTPut, ManagerREST>();
 
             });
 

@@ -32,9 +32,15 @@ namespace DiscountCatalog.WebAPI.Controllers
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {
+        #region Properties
+
         private readonly IMapper mapper;
         private readonly IManagerService managerService;
         public readonly IStoreService storeService;
+
+        #endregion
+
+        #region Constructors
 
         public StoreAdminController()
         {
@@ -42,6 +48,8 @@ namespace DiscountCatalog.WebAPI.Controllers
             managerService = new ManagerService();
             storeService = new StoreService();
         }
+
+        #endregion
 
         #region Manager
 
@@ -233,6 +241,15 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllDeletedStores/{storeAdminId}")]
+        public IHttpActionResult GetAllDeletedStores(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<StoreREST> list = storeService.GetAllDeleted(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(list);
+        }
+
+        [HttpGet]
         [Route("GetStore/{storeAdminId}")]
         public IHttpActionResult GetStore(string storeAdminId, string storeId)
         {
@@ -314,14 +331,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             return image;
         }
 
-        [HttpGet]
-        [Route("SelectStore{storeAdminId}")]
-        public IHttpActionResult SelectStore(string storeAdminId, string storeId)
-        {
-            SelectedStore store = storeService.Select(storeAdminId, storeId);
+        //[HttpGet]
+        //[Route("SelectStore{storeAdminId}")]
+        //public IHttpActionResult SelectStore(string storeAdminId, string storeId)
+        //{
+        //    SelectedStore store = storeService.Select(storeAdminId, storeId);
 
-            return Ok(store);
-        }
+        //    return Ok(store);
+        //}
 
         #endregion
 

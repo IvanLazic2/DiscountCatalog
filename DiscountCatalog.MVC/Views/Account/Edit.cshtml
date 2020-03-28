@@ -1,4 +1,4 @@
-﻿@model DiscountCatalog.Common.Models.User
+﻿@model DiscountCatalog.MVC.REST.Account.AccountREST
 
 @{
     ViewBag.Title = "Edit";
@@ -14,7 +14,6 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.Id)
-    @Html.HiddenFor(model => model.Role)
     @Html.HiddenFor(model => model.Approved)
     @Html.HiddenFor(model => model.Deleted)
 

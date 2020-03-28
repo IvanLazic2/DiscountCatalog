@@ -1,4 +1,4 @@
-﻿@model DiscountCatalog.Common.WebApiModels.WebApiStore
+﻿@model DiscountCatalog.MVC.REST.Store.StoreREST
 
 @{
     ViewBag.Title = "EditStore";
@@ -36,7 +36,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekBegin, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -52,7 +51,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -68,7 +66,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -84,7 +81,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -100,7 +96,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -116,7 +111,6 @@
                         </span>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace DiscountCatalog.Common.Models
+//namespace DiscountCatalog.MVC.Models
 //{
 //    public class SelectedStore
 //    {

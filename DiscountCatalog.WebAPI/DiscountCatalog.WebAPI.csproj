@@ -248,6 +248,14 @@
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Mapping\AutoMapping.cs" />
+    <Compile Include="Migrations\202003281026346_product.cs" />
+    <Compile Include="Migrations\202003281026346_product.Designer.cs">
+      <DependentUpon>202003281026346_product.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003281136183_prod.cs" />
+    <Compile Include="Migrations\202003281136183_prod.Designer.cs">
+      <DependentUpon>202003281136183_prod.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelState\EntityModelState.cs" />
     <Compile Include="Models\BindingModels\AuthenticationBindingModel.cs" />
     <Compile Include="Models\BindingModels\ManagerBindingModel.cs" />
@@ -322,14 +330,17 @@
     <Compile Include="REST\Store\StoreRESTPost.cs" />
     <Compile Include="REST\Store\StoreRESTPut.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
+    <Compile Include="Service\Contractor\IAccountService.cs" />
     <Compile Include="Service\Contractor\IManagerService.cs" />
     <Compile Include="Service\Contractor\IService.cs" />
     <Compile Include="Service\Contractor\IStoreService.cs" />
+    <Compile Include="Service\Implementation\AccountService.cs" />
     <Compile Include="Service\Implementation\ManagerService.cs" />
     <Compile Include="Service\Implementation\StoreService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation\Validators\ManagerStoreValidator.cs" />
     <Compile Include="Validation\Validators\ManagerValidator.cs" />
+    <Compile Include="Validation\Validators\ProductValidator.cs" />
     <Compile Include="Validation\Validators\StoreAdminValidator.cs" />
     <Compile Include="Validation\Validators\StoreValidator.cs" />
     <Compile Include="Validation\Validators\UserValidator.cs" />
@@ -432,6 +443,14 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202003281026346_product.resx">
+      <DependentUpon>202003281026346_product.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003281136183_prod.resx">
+      <DependentUpon>202003281136183_prod.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

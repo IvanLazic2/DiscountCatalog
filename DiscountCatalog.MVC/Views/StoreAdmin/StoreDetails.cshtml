@@ -1,13 +1,32 @@
 ﻿@model DiscountCatalog.MVC.REST.Store.StoreREST
 
 @{
-    ViewBag.Title = "DeleteStore";
+    ViewBag.Title = "DetailsStore";
 }
 
-<h3>Are you sure you want to delete @Model.StoreName?</h3>
+
+
+<h2>@Model.StoreName - Details</h2>
+
+
+@using (Html.BeginForm("PostStoreImage", "StoreAdmin", FormMethod.Post,
+                        new { enctype = "multipart/form-data" }))
+{
+    <label for="file">Upload Image:</label>
+    <input type="hidden" name="id" id="id" value="@Model.Id">
+    <input type="file" name="file" id="file" style="width: 100%;" />
+    <input type="submit" value="Upload" class="submit" />
+}
+
 <div>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+
+        </dt>
+        <dd>
+            <div style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); width: 100px; height: 100px;"></div>
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.StoreName)
         </dt>
@@ -15,6 +34,7 @@
         <dd>
             @Html.DisplayFor(model => model.StoreName)
         </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Country)
         </dt>
@@ -46,18 +66,11 @@
         <dd>
             @Html.DisplayFor(model => model.Street)
         </dd>
-
     </dl>
-
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "GetAllStores")
-        </div>
-    }
 </div>
+<p>
+    @Html.ActionLink("Edit", "EditStore", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "GetAllStores")
+</p>
 
 

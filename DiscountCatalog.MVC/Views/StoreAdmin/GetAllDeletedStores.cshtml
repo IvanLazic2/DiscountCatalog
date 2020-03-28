@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<DiscountCatalog.Common.Models.Store>
+﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Store.StoreREST>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
@@ -22,15 +22,6 @@
             @Html.ActionLink("StoreName", "GetAllDeletedStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
-            WorkingHoursWeek
-        </th>
-        <th>
-            WorkingHoursWeekends
-        </th>
-        <th>
-            WorkingHoursHolidays
-        </th>
-        <th>
             Country
         </th>
         <th>
@@ -48,34 +39,29 @@
 
     @foreach (var item in Model)
     {
-        if (item.Deleted)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StoreName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.City)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PostalCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Street)
-                </td>
-                <td>
-                    @Html.ActionLink("Restore", "RestoreStore", new { id = item.Id })
-                </td>
-            </tr>
-        }
-
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Street)
+            </td>
+            <td>
+                @Html.ActionLink("Restore", "RestoreStore", new { id = item.Id })
+            </td>
+        </tr>
     }
 
 </table>
-}
 
 @Html.ActionLink("All stores", "GetAllStores")
 

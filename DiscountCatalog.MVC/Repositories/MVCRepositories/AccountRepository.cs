@@ -2,6 +2,7 @@
 using DiscountCatalog.Common.Models.Extended;
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.MVC.Models;
+using DiscountCatalog.MVC.REST.Account;
 using DiscountCatalog.MVC.ViewModels;
 using Hanssens.Net;
 using Newtonsoft.Json;
@@ -47,7 +48,7 @@ namespace DiscountCatalog.MVC.Repositories
             return result;
         }
 
-        public async Task<User> Details()
+        public async Task<AccountREST> Details()
         {
             AddTokenToHeader();
 
@@ -55,12 +56,12 @@ namespace DiscountCatalog.MVC.Repositories
 
             HttpResponseMessage request = await apiClient.GetAsync("api/Account/Details/" + id);
 
-            User result = await request.Content.ReadAsAsync<User>();
+            AccountREST result = await request.Content.ReadAsAsync<AccountREST>();
 
             return result;
         }
 
-        public async Task<Result> Edit(User user)
+        public async Task<Result> Edit(AccountRESTPut user)
         {
             AddTokenToHeader();
 

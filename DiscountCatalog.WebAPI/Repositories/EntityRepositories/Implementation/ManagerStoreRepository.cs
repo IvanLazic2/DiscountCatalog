@@ -66,7 +66,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 List<ManagerStore> managerStores = new List<ManagerStore>();
 
                 ManagerEntity manager = uow.Managers.GetApproved(id);
-                List<StoreEntity> stores = uow.Stores.GetAllApproved(sortOrder, searchString).ToList();
+                List<StoreEntity> stores = uow.Stores.GetAllApproved().ToList();
 
                 foreach (var store in stores)
                 {

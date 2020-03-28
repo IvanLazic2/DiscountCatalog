@@ -15,6 +15,7 @@ using System.Drawing;
 using DiscountCatalog.MVC.Processors;
 using DiscountCatalog.MVC.ViewModels;
 using DiscountCatalog.Common.Models.Extended;
+using DiscountCatalog.MVC.REST.Account;
 
 namespace DiscountCatalog.MVC.Controllers
 {
@@ -140,7 +141,7 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Details")]
         public async Task<ActionResult> Details()
         {
-            User user = await accountRepository.Details();
+            AccountREST user = await accountRepository.Details();
 
             return View(user);
         }
@@ -149,14 +150,14 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Edit")]
         public async Task<ActionResult> Edit()
         {
-            User user = await accountRepository.Details();
+            AccountREST user = await accountRepository.Details();
 
             return View(user);
         }
 
         [HttpPost]
         [Route("Edit")]
-        public async Task<ActionResult> Edit(User user)
+        public async Task<ActionResult> Edit(AccountRESTPut user)
         {
             Result result = await accountRepository.Edit(user);
 
@@ -177,7 +178,7 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Delete")]
         public async Task<ActionResult> Delete()
         {
-            User user = await accountRepository.Details();
+            AccountREST user = await accountRepository.Details();
             
             return View(user);
         }

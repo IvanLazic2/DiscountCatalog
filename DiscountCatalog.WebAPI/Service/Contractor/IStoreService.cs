@@ -11,6 +11,10 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 {
     public interface IStoreService
     {
+        IList<StoreREST> FilterManagers(IList<StoreREST> stores);
+
+        StoreREST FilterManagers(StoreREST store);
+
         Task<Result> CreateAsync(StoreRESTPost store);
 
         StoreREST Get(string storeAdminId, string storeId);
@@ -29,6 +33,6 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         byte[] GetImage(string storeId);
 
-        SelectedStore Select(string storeAdminId, string storeId);
+        //SelectedStore Select(string storeAdminId, string storeId);
     }
 }

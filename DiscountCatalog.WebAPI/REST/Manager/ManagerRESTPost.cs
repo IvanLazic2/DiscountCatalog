@@ -10,6 +10,5 @@ namespace DiscountCatalog.WebAPI.REST.Manager
     {
         public AccountRESTPost Identity { get; set; }
         public string StoreAdminId { get; set; }
-        public string Password { get; set; }
     }
 }

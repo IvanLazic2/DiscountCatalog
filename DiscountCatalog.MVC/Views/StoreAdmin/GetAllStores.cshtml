@@ -23,6 +23,9 @@
 <table class="table">
     <tr>
         <th>
+
+        </th>
+        <th>
             @Html.ActionLink("StoreName", "GetAllStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
         <th>
@@ -38,9 +41,6 @@
             Street
         </th>
         <th>
-            Approved
-        </th>
-        <th>
             Managers
         </th>
         <th></th>
@@ -49,6 +49,9 @@
     @foreach (var item in Model)
     {
         <tr>
+            <td>
+                <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Id })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StoreName)
             </td>
@@ -65,13 +68,12 @@
                 @Html.DisplayFor(modelItem => item.Street)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Approved)
-            </td>
-            <td>
                 @{
                     foreach (var manager in item.Managers)
                     {
+                        <div class="avatar" style="display: inline-block; background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = manager.Id })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
                         @Html.ActionLink(manager.Identity.UserName + " ", "ManagerDetails", new { id = manager.Id });
+                        <br>
                     }
                 }
             </td>

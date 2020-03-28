@@ -20,6 +20,7 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         public decimal? ProductOldPrice { get; set; }
         [Required]
         public decimal? ProductNewPrice { get; set; }
+        public string Currency { get; set; }
         [Required]
         public decimal? DiscountPercentage { get; set; }
         [Required]
@@ -27,6 +28,7 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         [Required]
         public string DiscountDateEnd { get; set; }
         public string Quantity { get; set; }
+        public string MeasuringUnit { get; set; }
         public string Description { get; set; }
         public string Note { get; set; }
         public bool Expired { get; set; }
@@ -34,6 +36,7 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         public bool Deleted { get; set; }
         [Required]
         public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
         public byte[] ProductImage { get; set; }
     }
 }

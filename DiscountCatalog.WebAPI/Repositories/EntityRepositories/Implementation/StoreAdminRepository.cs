@@ -226,7 +226,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        
-        
+
+
     }
 }

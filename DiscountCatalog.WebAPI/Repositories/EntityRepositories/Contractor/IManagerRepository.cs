@@ -1,6 +1,7 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
+using DiscountCatalog.WebAPI.REST.Manager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,26 +14,24 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
     {
         Task<Result> CreateAsync(string storeAdminId, ManagerEntity manager, string password);
 
-        IEnumerable<ManagerEntity> GetAllApproved(string sortOrder, string searchString);
-        IEnumerable<ManagerEntity> GetAllDeleted(string sortOrder, string searchString);
-        IEnumerable<ManagerEntity> GetAllLoaded(string sortOrder, string searchString);
+        IEnumerable<ManagerEntity> GetAllApproved();
+        IEnumerable<ManagerEntity> GetAllDeleted();
+        IEnumerable<ManagerEntity> GetAllLoaded();
+        IEnumerable<ManagerEntity> GetAllApproved(string storeAdminIdentityId);
+        IEnumerable<ManagerEntity> GetAllDeleted(string storeAdminIdentityId);
+        IEnumerable<ManagerEntity> GetAllLoaded(string storeAdminIdentityId);
 
-        //IEnumerable<ManagerEntity> GetAllByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
-        //IEnumerable<ManagerEntity> GetAllDeletedByStoreAdminId(string storeAdminId, string sortOrder, string searchString);
+        ManagerEntity GetApproved(string managerId);
+        ManagerEntity GetLoaded(string managerId);
+        ManagerEntity GetApproved(string storeAdminIdentityId, string managerId);
+        ManagerEntity GetLoaded(string storeAdminIdentityId, string managerId);
 
-        ManagerEntity GetApproved(string id);
-        ManagerEntity GetLoaded(string id);
+        Task<Result> UpdateAsync(ManagerRESTPut manager);
+        Task<Result> UpdateAsync(string storeAdminIdentityId, ManagerRESTPut manager);
 
-        //ManagerEntity GetByIdentityId(string identityId);
-        //ManagerEntity GetLoadedByIdentityId(string identityId);
-        //ManagerEntity GetApprovedByIdentityId(string identityId);
-
-        //ManagerEntity GetByStoreAdminId(string storeAdminId, string managerId);
-
-
-        Task<Result> UpdateAsync(ManagerEntity manager);
-
-        Result MarkAsDeleted(string id);
-        Result MarkAsRestored(string id);
+        Result MarkAsDeleted(string managerId);
+        Result MarkAsRestored(string managerId);
+        Result MarkAsDeleted(string storeAdminIdentityId, string managerId);
+        Result MarkAsRestored(string storeAdminIdentityId, string managerId);
     }
 }
