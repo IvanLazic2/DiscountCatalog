@@ -12,7 +12,6 @@ using DiscountCatalog.WebAPI.ModelState;
 using DiscountCatalog.WebAPI.Validation.Validators;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.REST.Product;
-using DiscountCatalog.WebAPI.Validators;
 
 namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
@@ -247,7 +246,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbProduct.MeasuringUnit = product.MeasuringUnit;
                 dbProduct.Description = product.Description;
                 dbProduct.Note = product.Note;
+
                 dbProduct.DateUpdated = DateTime.Now;
+
+                dbProduct = DiscountProcessor.CalculateDiscount(dbProduct);
 
                 var validator = new ProductValidator();
                 var validationResult = await validator.ValidateAsync(dbProduct);
@@ -279,7 +281,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbProduct.MeasuringUnit = product.MeasuringUnit;
                 dbProduct.Description = product.Description;
                 dbProduct.Note = product.Note;
+
                 dbProduct.DateUpdated = DateTime.Now;
+
+                dbProduct = DiscountProcessor.CalculateDiscount(dbProduct);
 
                 var validator = new ProductValidator();
                 var validationResult = await validator.ValidateAsync(dbProduct);

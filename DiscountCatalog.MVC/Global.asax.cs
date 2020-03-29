@@ -26,15 +26,15 @@ namespace DiscountCatalog.MVC
             //System.Web.Mvc.ModelBinders.Binders.Add(typeof(DateTime), new CustomDateModelBinder());
         }
 
-        //protected void Application_BeginRequest()
-        //{
-        //    var currentCulture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
-        //    currentCulture.NumberFormat.NumberDecimalSeparator = ".";
-        //    currentCulture.NumberFormat.NumberGroupSeparator = " ";
-        //    currentCulture.NumberFormat.CurrencyDecimalSeparator = ".";
+        protected void Application_BeginRequest()
+        {
+            var currentCulture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+            currentCulture.NumberFormat.NumberDecimalSeparator = ".";
+            currentCulture.NumberFormat.NumberGroupSeparator = " ";
+            currentCulture.NumberFormat.CurrencyDecimalSeparator = ".";
 
-        //    Thread.CurrentThread.CurrentCulture = currentCulture;
-        //    //Thread.CurrentThread.CurrentUICulture = currentCulture;
-        //}
+            Thread.CurrentThread.CurrentCulture = currentCulture;
+            Thread.CurrentThread.CurrentUICulture = currentCulture;
+        }
     }
 }

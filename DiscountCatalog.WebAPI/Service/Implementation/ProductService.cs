@@ -204,12 +204,26 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         public Result Delete(string storeId, string productId)
         {
-            throw new NotImplementedException();
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                Result result = uow.Products.MarkAsDeleted(storeId, productId);
+
+                uow.Complete();
+
+                return result;
+            }
         }
 
         public Result Restore(string storeId, string productId)
         {
-            throw new NotImplementedException();
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                Result result = uow.Products.MarkAsRestored(storeId, productId);
+
+                uow.Complete();
+
+                return result;
+            }
         }
 
         #endregion

@@ -25,7 +25,7 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
                 .WithMessage("Store admin does not exist.")
                 .OverridePropertyName(string.Empty);
 
-            /////////////////////////////////////
+            //WORKING HOURS
 
             RuleFor(s => s.WorkingHoursWeekBegin)
                 .NotNull()

@@ -2,7 +2,6 @@
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories;
-using DiscountCatalog.WebAPI.Validators;
 using System;
 using System.Collections.Generic;
 using FluentValidation;

@@ -76,7 +76,7 @@ namespace DiscountCatalog.MVC.Repositories
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            var request = await apiClient.GetAsync($"api/Store/GetProduct/{storeId}?storeId={id}");
+            var request = await apiClient.GetAsync($"api/Store/GetProduct/{storeId}?productId={id}");
 
             var result = await request.Content.ReadAsAsync<ProductREST>();
 

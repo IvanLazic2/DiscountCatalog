@@ -563,6 +563,7 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
     <Content Include="Views\Shared\_Avatar.cshtml" />
+    <Content Include="Views\Store\GetAllDeletedProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

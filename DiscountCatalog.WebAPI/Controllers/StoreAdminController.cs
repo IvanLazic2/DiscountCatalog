@@ -14,7 +14,6 @@ using DiscountCatalog.WebAPI.REST.Manager;
 using DiscountCatalog.WebAPI.REST.Store;
 using DiscountCatalog.WebAPI.Service.Contractor;
 using DiscountCatalog.WebAPI.Service.Implementation;
-using DiscountCatalog.WebAPI.Validators;
 using FluentValidation.Results;
 using PagedList;
 using System;

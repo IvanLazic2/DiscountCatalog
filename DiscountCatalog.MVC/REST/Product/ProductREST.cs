@@ -1,6 +1,8 @@
 ﻿using DiscountCatalog.MVC.REST.Store;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -12,9 +14,12 @@ namespace DiscountCatalog.MVC.REST.Product
         public StoreREST Store { get; set; }
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
+
         public decimal? OldPrice { get; set; }
+        
         public decimal? NewPrice { get; set; }
         public string Currency { get; set; }
+        
         public decimal? DiscountPercentage { get; set; }
         public string DiscountDateBegin { get; set; }
         public string DiscountDateEnd { get; set; }

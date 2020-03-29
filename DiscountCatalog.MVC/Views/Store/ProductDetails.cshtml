@@ -1,4 +1,4 @@
-﻿@model DiscountCatalog.Common.WebApiModels.WebApiProduct
+﻿@model DiscountCatalog.MVC.REST.Product.ProductREST
 
 @{
     ViewBag.Title = "ProductDetails";
@@ -44,19 +44,19 @@
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.ProductOldPrice)
+                @Html.DisplayNameFor(model => model.OldPrice)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.ProductOldPrice)
+                @Html.DisplayFor(model => model.OldPrice)
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.ProductNewPrice)
+                @Html.DisplayNameFor(model => model.NewPrice)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.ProductNewPrice)
+                @Html.DisplayFor(model => model.NewPrice)
             </dd>
 
             <dt>

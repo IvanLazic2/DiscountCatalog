@@ -218,7 +218,7 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("GetAllDeletedProducts")]
-        public async Task<ActionResult> GetAllDeletedProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> GetAllDeletedProducts(string sortOrder, string currentFilter, string searchString, int? page) //TU SAM STAO sredit
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
