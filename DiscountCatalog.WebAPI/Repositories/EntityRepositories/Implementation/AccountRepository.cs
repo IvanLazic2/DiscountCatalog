@@ -10,6 +10,7 @@ using DiscountCatalog.WebAPI.Paging;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories;
 using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
+using DiscountCatalog.WebAPI.REST.Account;
 using DiscountCatalog.WebAPI.Validation.Validators;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -140,7 +141,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        public async Task<Result> UpdateAsync(ApplicationUser user, string role)
+        public async Task<Result> UpdateAsync(AccountRESTPut user, string role)
         {
             var modelState = new EntityModelState()
             {
@@ -158,8 +159,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbUser.City = user.City;
                 dbUser.PostalCode = user.PostalCode;
                 dbUser.Street = user.Street;
-                dbUser.TwoFactorEnabled = user.TwoFactorEnabled;
-                dbUser.Approved = user.Approved;
 
                 dbUser.Roles.Clear();
                 var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();

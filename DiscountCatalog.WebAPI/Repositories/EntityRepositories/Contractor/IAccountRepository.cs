@@ -2,6 +2,7 @@
 using DiscountCatalog.Common.Models.Extended;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Repositories;
+using DiscountCatalog.WebAPI.REST.Account;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using PagedList;
@@ -16,7 +17,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
     public interface IAccountRepository : IRepository<ApplicationUser> 
     {
         Task<Result> CreateAsync(ApplicationUser user, string role, string password);
-        Task<Result> UpdateAsync(ApplicationUser user, string role);
+        Task<Result> UpdateAsync(AccountRESTPut user, string role);
         Task<Result> DeleteAsync(ApplicationUser user);
         Task<ApplicationUser> FindByIdAsync(string id);
         Task<ApplicationUser> FindByEmailAsync(string email);

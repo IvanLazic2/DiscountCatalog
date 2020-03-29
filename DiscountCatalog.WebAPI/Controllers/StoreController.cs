@@ -14,42 +14,161 @@ using FluentValidation.Results;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Service.Contractor;
+using DiscountCatalog.WebAPI.Service.Implementation;
+using DiscountCatalog.WebAPI.REST.Product;
+using System.Net;
+using DiscountCatalog.WebAPI.Paging.Contractor;
 
 namespace DiscountCatalog.WebAPI.Controllers
 {
     [RoutePrefix("api/Store")]
     public class StoreController : ApiController
     {
-        private void SimulateValidation(object model)
+        #region Fields
+
+        IProductService productService;
+
+        #endregion
+
+        #region Constructors
+
+        public StoreController()
         {
-            var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(model, null, null);
-            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
-            Validator.TryValidateObject(model, validationContext, validationResults, true);
-            foreach (var validationResult in validationResults)
+            productService = new ProductService();
+        }
+
+        #endregion
+
+        #region Methods
+
+        [HttpPost]
+        [Route("CreateProduct")]
+        public IHttpActionResult CreateProduct(ProductRESTPost model)
+        {
+            Result result = productService.Create(model);
+
+            if (result.Success)
             {
-                ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
 
         [HttpGet]
-        [Route("GetAllProducts/{id}")]
-        public IHttpActionResult GetAllProducts(string id)
+        [Route("GetAllProducts/{storeId}")]
+        public IHttpActionResult GetAllProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            try
-            {
-                using (var unitOfWork = new UnitOfWork(new ApplicationUserDbContext()))
-                {
-                    var store = unitOfWork.Stores.Get(id);
+            IPagingList<ProductREST> list = productService.GetAll(storeId, sortOrder, searchString, pageIndex, pageSize);
 
-                    return Ok(store.Products);
-                }
+            return Ok(list);
+        }
+
+        [HttpGet]
+        [Route("GetAllDeletedProducts/{storeId}")]
+        public IHttpActionResult GetAllDeletedProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<ProductREST> list = productService.GetAllDeleted(storeId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(list);
+        }
+
+        [HttpGet]
+        [Route("GetAllExpiredProducts/{storeId}")]
+        public IHttpActionResult GetAllExpiredProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<ProductREST> list = productService.GetAllExpired(storeId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(list);
+        }
+
+        [HttpGet]
+        [Route("GetProduct/{storeId}")]
+        public IHttpActionResult GetProduct(string storeId, string productId)
+        {
+            ProductREST product = productService.Get(storeId, productId);
+
+            return Ok(product);
+        }
+
+        [HttpPut]
+        [Route("EditProduct/{storeId}")]
+        public async Task<IHttpActionResult> EditProduct(string storeId, ProductRESTPut model)
+        {
+            Result result = await productService.UpdateAsync(storeId, model);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
             }
-            catch (Exception exception)
+            else
             {
-
-                throw;
+                return Content(HttpStatusCode.BadRequest, result);
             }
         }
+
+        [HttpGet]
+        [Route("DeleteProduct/{storeId}")]
+        public IHttpActionResult DeleteProduct(string storeId, string productId)
+        {
+            Result result = productService.Delete(storeId, productId);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
+
+        [HttpGet]
+        [Route("RestoreProduct/{storeId}")]
+        public IHttpActionResult RestoreProduct(string storeId, string productId)
+        {
+            Result result = productService.Restore(storeId, productId);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
+
+        [HttpPut]
+        [Route("PostProductImage/{storeId}")]
+        public IHttpActionResult PostProductImage(string storeId, string productId, byte[] image)
+        {
+            Result result = productService.PostProductImage(storeId, productId, image);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProductImage/{storeId}")]
+        public byte[] GeStoreImage(string storeId, string productId)
+        {
+            byte[] image = productService.GetImage(productId);
+
+            return image;
+        }
+
+        #endregion
+
 
         //[HttpGet]
         //[Route("GetAllActiveProductsAsync/{id}")]
@@ -111,7 +230,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         //    //SimulateValidation(product);
 
         //    var result = new WebApiResult();
-            
+
         //    var priceValidator = new PriceValidator();
         //    var discountValidator = new DiscountValidator();
 

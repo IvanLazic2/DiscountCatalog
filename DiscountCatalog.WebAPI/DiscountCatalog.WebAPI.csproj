@@ -256,6 +256,10 @@
     <Compile Include="Migrations\202003281136183_prod.Designer.cs">
       <DependentUpon>202003281136183_prod.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202003282352171_price.cs" />
+    <Compile Include="Migrations\202003282352171_price.Designer.cs">
+      <DependentUpon>202003282352171_price.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelState\EntityModelState.cs" />
     <Compile Include="Models\BindingModels\AuthenticationBindingModel.cs" />
     <Compile Include="Models\BindingModels\ManagerBindingModel.cs" />
@@ -323,6 +327,9 @@
     <Compile Include="REST\Manager\ManagerREST.cs" />
     <Compile Include="REST\Manager\ManagerRESTPost.cs" />
     <Compile Include="REST\Manager\ManagerRESTPut.cs" />
+    <Compile Include="REST\Product\ProductREST.cs" />
+    <Compile Include="REST\Product\ProductRESTPost.cs" />
+    <Compile Include="REST\Product\ProductRESTPut.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminREST.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminRESTPost.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminRESTPut.cs" />
@@ -332,10 +339,12 @@
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Service\Contractor\IAccountService.cs" />
     <Compile Include="Service\Contractor\IManagerService.cs" />
+    <Compile Include="Service\Contractor\IProductService.cs" />
     <Compile Include="Service\Contractor\IService.cs" />
     <Compile Include="Service\Contractor\IStoreService.cs" />
     <Compile Include="Service\Implementation\AccountService.cs" />
     <Compile Include="Service\Implementation\ManagerService.cs" />
+    <Compile Include="Service\Implementation\ProductService.cs" />
     <Compile Include="Service\Implementation\StoreService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation\Validators\ManagerStoreValidator.cs" />
@@ -450,6 +459,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003281136183_prod.resx">
       <DependentUpon>202003281136183_prod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003282352171_price.resx">
+      <DependentUpon>202003282352171_price.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

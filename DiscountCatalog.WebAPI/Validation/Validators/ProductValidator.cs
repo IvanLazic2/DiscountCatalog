@@ -24,6 +24,62 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
             RuleFor(p => p.Store)
                 .NotNull()
                 .WithMessage("Store does not exist.");
+
+            //DATE
+
+            RuleFor(p => p.DiscountDateBegin)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Discount date begin should not be empty.");
+
+            RuleFor(p => p.DiscountDateEnd)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Discount date end should not be empty.");
+
+            RuleFor(p => p.DiscountDateEnd)
+                .GreaterThan(p => p.DiscountDateBegin);
+
+            RuleFor(p => p.DiscountDateEnd)
+                .GreaterThan(p => p.DateCreated.ToShortDateString())
+                .WithMessage("Discount date end should be later than todays date.");
+
+            //PRICE
+
+            RuleFor(p => p.NewPrice)
+                .LessThan(p => p.OldPrice).WithMessage("New price has to be a discount.")
+                .Unless(p => !p.OldPrice.HasValue);
+
+            RuleFor(p => p.OldPrice)
+                .NotNull()
+                .When(p => p.NewPrice.HasValue && !p.DiscountPercentage.HasValue || !p.NewPrice.HasValue && p.DiscountPercentage.HasValue)
+                .WithMessage("Fill in at least two values.");
+
+            RuleFor(p => p.NewPrice)
+                .NotNull()
+                .When(p => p.OldPrice.HasValue && !p.DiscountPercentage.HasValue || !p.OldPrice.HasValue && p.DiscountPercentage.HasValue)
+                .WithMessage("Fill in at least two values.");
+
+            RuleFor(p => p.DiscountPercentage)
+                .NotNull()
+                .When(p => p.NewPrice.HasValue && !p.OldPrice.HasValue || !p.NewPrice.HasValue && p.OldPrice.HasValue)
+                .WithMessage("Fill in at least two values.");
+
+            RuleFor(p => p.OldPrice)
+                .NotNull()
+                .When(p => !p.NewPrice.HasValue && !p.OldPrice.HasValue && !p.DiscountPercentage.HasValue)
+                .WithMessage("Fill in at least two values.");
+
+            RuleFor(p => p.NewPrice)
+                .NotNull()
+                .When(p => !p.NewPrice.HasValue && !p.OldPrice.HasValue && !p.DiscountPercentage.HasValue)
+                .WithMessage("Fill in at least two values.");
+
+            RuleFor(p => p.DiscountPercentage)
+                .NotNull()
+                .When(p => !p.NewPrice.HasValue && !p.OldPrice.HasValue && !p.DiscountPercentage.HasValue)
+                .WithMessage("Fill in at least two values.");
+
         }
     }
 }

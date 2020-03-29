@@ -1,279 +1,292 @@
-﻿//using DiscountCatalog.Common.Models;
-//using DiscountCatalog.Common.WebApiModels;
-//using DiscountCatalog.MVC.Repositories;
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Linq;
-//using System.Web;
-//using System.Web.Mvc;
-//using DiscountCatalog.MVC.Processors;
-//using DiscountCatalog.MVC.Models;
-//using System.Threading.Tasks;
-//using FluentValidation.Results;
-//using DiscountCatalog.MVC.Extensions;
-//using PagedList;
-//using DiscountCatalog.MVC.ViewModels;
-//using System.Globalization;
+﻿using DiscountCatalog.Common.Models;
+using DiscountCatalog.Common.WebApiModels;
+using DiscountCatalog.MVC.Repositories;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using DiscountCatalog.MVC.Processors;
+using DiscountCatalog.MVC.Models;
+using System.Threading.Tasks;
+using FluentValidation.Results;
+using DiscountCatalog.MVC.Extensions;
+using PagedList;
+using DiscountCatalog.MVC.ViewModels;
+using System.Globalization;
+using DiscountCatalog.MVC.REST.Product;
+using DiscountCatalog.MVC.Models.Paging;
+using AutoMapper;
+using AbatementHelper.MVC.Mapping;
 
-//namespace DiscountCatalog.MVC.Controllers
-//{
-//    public class StoreController : Controller
-//    {
-//        private StoreRepository store = new StoreRepository();
+namespace DiscountCatalog.MVC.Controllers
+{
+    public class StoreController : Controller //!!!dodat redirectprocessor il tak nest koji ce primat result i vracat string path
+    {
+        private readonly IMapper mapper;
+        private readonly StoreRepository storeRepository;
 
-//        public ActionResult Index()
-//        {
-//            return View();
-//        }
+        public StoreController()
+        {
+            storeRepository = new StoreRepository();
+            mapper = AutoMapping.Initialise();
+        }
 
-//        //SORT BY DATE
-//        //by newest/oldest
-//        //by 
+        public ActionResult Index() 
+        {
+            return View();
+        }
 
-//        [Route("GetAllProducts")]
-//        public async Task<ActionResult> GetAllProducts(string sortOrder, string CurrentFilter, string searchString, int? page)
-//        {
-//            ViewBag.CurrentSort = sortOrder;
+        //SORT BY DATE
+        //by newest/oldest
 
-//            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-//            ViewBag.PriceSortParm = sortOrder == "price" ? "price_desc" : "price";
+        //by storename...
 
-//            if (searchString != null)
-//            {
-//                page = 1;
-//            }
-//            else
-//            {
-//                searchString = CurrentFilter;
-//            }
+        [Route("GetAllProducts")]
+        public async Task<ActionResult> GetAllProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
-//            ViewBag.CurrentFilter = searchString;
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
-//            WebApiListOfProductsResult result = await store.GetAllProductsAsync();
+            ViewBag.CurrentFilter = searchString;
 
-//            if (!result.Success)
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
-//            }
+            int pageIndex = (page ?? 1);
+            int pageSize = 14;
 
-//            List<WebApiProduct> products = result.Products;
+            PagingEntity<ProductREST> products = await storeRepository.GetAllProducts(sortOrder, searchString, pageIndex, pageSize);
 
-//            if (!string.IsNullOrEmpty(searchString))
-//            {
-//                products = products.Where(u => u.ProductName.Contains(searchString, StringComparer.OrdinalIgnoreCase) ||
-//                                               u.CompanyName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
-//            }
+            StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 
-//            switch (sortOrder)
-//            {
-//                case "name_desc":
-//                    products = products.OrderByDescending(p => p.ProductName).ToList();
-//                    break;
-//                case "price":
-//                    products = products.OrderBy(p => p.ProductNewPrice).ToList();
-//                    break;
-//                case "price_desc":
-//                    products = products.OrderByDescending(p => p.ProductNewPrice).ToList();
-//                    break;
-//                case "percentage":
-//                    products = products.OrderBy(p => p.DiscountPercentage).ToList();
-//                    break;
-//                case "percentage_desc":
-//                    products = products.OrderByDescending(p => p.DiscountPercentage).ToList();
-//                    break;
-//                default:
-//                    products = products.OrderBy(p => p.ProductName).ToList();
-//                    break;
-//            }
+            return View(list);
+        }
 
-//            int pageSize = 15;
-//            int pageNumber = (page ?? 1);
+        [HttpGet]
+        [Route("CreateProduct")]
+        public ActionResult CreateProduct()
+        {
+            return View();
+        }
 
-//            return View(products.ToPagedList(pageNumber, pageSize));
-//        }
+        [HttpPost]
+        [Route("CreateProduct")]
+        public async Task<ActionResult> CreateProduct(ProductRESTPost product)
+        {
+            Result result = await storeRepository.CreateProduct(product);
 
-//        [HttpGet]
-//        [Route("CreateProduct")]
-//        public ActionResult CreateProduct()
-//        {
-//            return View();
-//        }
+            if (result == null)
+            {
+                return RedirectToAction("GetAllProducts");
+            }
 
-//        [HttpPost]
-//        [Route("CreateProduct")]
-//        public async Task<ActionResult> CreateProduct(WebApiProduct product)
-//        {
-//            WebApiResult result = await store.CreateProductAsync(product);
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
 
-//            if (result == null)
-//            {
-//                return RedirectToAction("GetAllProducts");
-//            }
+                return View(mapper.Map<ProductREST>(product));
+            }
 
-//            if (!result.Success)
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
+            return RedirectToAction("GetAllProducts");
+        }
 
-//                return View(product);
-//            }
+        [HttpGet]
+        [Route("EditProduct/{id}")]
+        public async Task<ActionResult> EditProduct(string id)
+        {
+            ProductREST product = await storeRepository.GetProduct(id);
 
-//            return RedirectToAction("GetAllProducts");
-//        }
+            //Response.Cookies.Add(new HttpCookie("ProductID")
+            //{
+            //    Value = result.Product.Id,
+            //    HttpOnly = true
+            //});
 
-//        [HttpGet]
-//        [Route("EditProduct/{id}")]
-//        public async Task<ActionResult> EditProduct(string id)
-//        {
-//            WebApiProductResult result = await store.ProductDetailsAsync(id);
+            return View(product);
+        }
 
-//            Response.Cookies.Add(new HttpCookie("ProductID")
-//            {
-//                Value = result.Product.Id,
-//                HttpOnly = true
-//            });
+        [HttpPost]
+        [Route("EditProduct")]
+        public async Task<ActionResult> EditProduct(ProductRESTPut product)
+        {
+            Result result = await storeRepository.EditProduct(product);
 
-//            return View(result.Product);
-//        }
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
 
-//        [HttpPost]
-//        [Route("EditProduct")]
-//        public async Task<ActionResult> EditProduct(WebApiProduct product)
-//        {
-//            WebApiProductResult result = await store.EditProductAsync(product);
+                return View(mapper.Map<ProductREST>(product));
+            }
 
-//            if (!result.Success)
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
+            return RedirectToAction("GetAllProducts");
+        }
 
-//                return View(product);
-//            }
+        [HttpGet]
+        [Route("ProductDetails/{id}")]
+        public async Task<ActionResult> ProductDetails(string id)
+        {
+            ProductREST product = await storeRepository.GetProduct(id);
 
-//            return RedirectToAction("GetAllProducts");
-//        }
+            //Response.Cookies.Add(new HttpCookie("ProductID")
+            //{
+            //    Value = result.Product.Id,
+            //    HttpOnly = true
+            //});
 
-//        [HttpGet]
-//        [Route("ProductDetails/{id}")]
-//        public async Task<ActionResult> ProductDetails(string id)
-//        {
-//            WebApiProductResult result = await store.ProductDetailsAsync(id);
+            return View(product);
+        }
 
-//            Response.Cookies.Add(new HttpCookie("ProductID")
-//            {
-//                Value = result.Product.Id,
-//                HttpOnly = true
-//            });
+        [Route("PostProductImage/{id}")]
+        public async Task<ActionResult> PostProductImage(string id, PostImage image)
+        {
+            byte[] array = ImageProcessor.GetBuffer(image.File);
 
-//            return View(result.Product);
-//        }
+            byte[] imageArray = array;
 
-//        [Route("UploadProductImage")]
-//        public async Task<ActionResult> PostProductImage(PostImage image)
-//        {
-//            if (image.File != null)
-//            {
-//                using (MemoryStream ms = new MemoryStream())
-//                {
-//                    image.File.InputStream.CopyTo(ms);
-//                    byte[] array = ms.GetBuffer();
+            float mb = (array.Length / 1024f) / 1024f;
 
-//                    float mb = (array.Length / 1024f) / 1024f;
+            if (mb > 1)
+            {
+                byte[] arrayScaled = ImageProcessor.To1MB(array);
 
-//                    if (mb < 1)
-//                    {
-//                        WebApiPostImage webApiImage = new WebApiPostImage
-//                        {
-//                            Id = image.Id,
-//                            Image = array
+                imageArray = arrayScaled;
+            }
 
-//                        };
+            Result result = await storeRepository.PostProductImage(id, imageArray);
 
-//                        WebApiResult result = await store.PostProductImageAsync(webApiImage);
-//                    }
-//                    else
-//                    {
-//                        byte[] arrayScaled = ImageProcessor.To1MB(array);
-//                        float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
-//                        if (arrayScaled != null)
-//                        {
-//                            WebApiPostImage webApiImage = new WebApiPostImage
-//                            {
-//                                Id = image.Id,
-//                                Image = arrayScaled
+            return RedirectToAction("ProductDetails", new { id });
+        }
 
-//                            };
+        [HttpGet]
+        [Route("GetProductImage/{id}")]
+        public async Task<ActionResult> GetProductImage(string id)
+        {
+            byte[] byteArray = await storeRepository.GetProductImage(id);
 
-//                            WebApiResult result =  await store.PostProductImageAsync(webApiImage);
-//                        }
-//                    }
-//                }
-//            }
+            return File(byteArray, "image/png");
+        }
 
-//            return RedirectToAction("Index", "Home");
-//        }
+        [HttpGet]
+        [Route("DeleteProduct/{id}")]
+        public async Task<ActionResult> DeleteProduct(string id)
+        {
+            ProductREST product = await storeRepository.GetProduct(id);
 
-//        [HttpGet]
-//        [Route("GetProductImage/{id}")]
-//        public async Task<ActionResult> GetProductImage(string id)
-//        {
-//            byte[] byteArray = await store.GetProductImageAsync(id);
+            return View(product);
+        }
 
-//            return File(byteArray, "image/png");
-//        }
+        [HttpPost]
+        [Route("DeleteProduct")]
+        public async Task<ActionResult> DeleteProduct(ProductRESTPut product)
+        {
+            Result result = await storeRepository.DeleteProduct(product.Id);
 
-//        [HttpGet]
-//        [Route("DeleteProduct/{id}")]
-//        public async Task<ActionResult> DeleteProduct(string id)
-//        {
-//            WebApiProductResult result = await store.ProductDetailsAsync(id);
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
 
-//            return View(result.Product);
-//        }
+                return View(mapper.Map<ProductREST>(product));
+            }
 
-//        [HttpPost]
-//        [Route("DeleteProduct")]
-//        public async Task<ActionResult> DeleteProduct(WebApiProduct product)
-//        {
-//            await store.DeleteProductAsync(product.Id);
+            return RedirectToAction("GetAllProducts");
+        }
 
-//            return RedirectToAction("GetAllProducts");
-//        }
+        [HttpGet]
+        [Route("GetAllDeletedProducts")]
+        public async Task<ActionResult> GetAllDeletedProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
-//        [HttpGet]
-//        [Route("GetAllDeletedProducts")]
-//        public async Task<ActionResult> GetAllDeletedProducts()
-//        {
-//            WebApiListOfProductsResult result = await store.GetAllDeletedProductsAsync();
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
-//            return View(result.Products);
-//        }
+            ViewBag.CurrentFilter = searchString;
 
-//        [HttpGet]
-//        [Route("RestoreProduct/{id}")]
-//        public async Task<ActionResult> RestoreProduct(string id)
-//        {
-//            await store.DeleteProductAsync(id);
+            int pageIndex = (page ?? 1);
+            int pageSize = 14;
 
-//            return RedirectToAction("GetAllProducts");
-//        }
+            PagingEntity<ProductREST> products = await storeRepository.GetAllDeletedProducts(sortOrder, searchString, pageIndex, pageSize);
 
-//        [HttpGet]
-//        [Route("GetAllExpiredProducts")]
-//        public async Task<ActionResult> GetAllExpiredProducts()
-//        {
-//            WebApiListOfProductsResult result = await store.GetAllExpiredProductsAsync();
+            StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 
-//            return View(result.Products);
-//        }
-//    }
-//}
+            return View(list);
+        }
+
+        [HttpGet]
+        [Route("RestoreProduct/{id}")]
+        public async Task<ActionResult> RestoreProduct(string id)
+        {
+            Result result = await storeRepository.RestoreProduct(id);
+
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
+
+            return RedirectToAction("GetAllDeletedProducts");
+        }
+
+        [HttpGet]
+        [Route("GetAllExpiredProducts")]
+        public async Task<ActionResult> GetAllExpiredProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            int pageIndex = (page ?? 1);
+            int pageSize = 14;
+
+            PagingEntity<ProductREST> products = await storeRepository.GetAllExpiredProducts(sortOrder, searchString, pageIndex, pageSize);
+
+            StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
+
+            return View(list);
+        }
+    }
+}

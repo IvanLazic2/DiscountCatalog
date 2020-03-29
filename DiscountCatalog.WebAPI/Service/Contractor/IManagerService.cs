@@ -14,26 +14,26 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
     {
         Task<Result> CreateAsync(ManagerRESTPost manager);
 
-        ManagerREST Get(string storeAdminId, string managerId);
+        ManagerREST Get(string storeAdminIdentityId, string managerId);
 
-        IPagingList<ManagerREST> GetAll(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ManagerREST> GetAll(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
 
-        Task<Result> UpdateAsync(string storeAdminId, ManagerRESTPut manager);
+        Task<Result> UpdateAsync(string storeAdminIdentityId, ManagerRESTPut manager);
 
-        IPagingList<ManagerStore> GetManagerStores(string storeAdminId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ManagerStore> GetManagerStores(string storeAdminIdentityId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize);
 
-        IPagingList<ManagerREST> GetAllDeleted(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ManagerREST> GetAllDeleted(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
 
-        Result Delete(string storeAdminId, string managerId);
+        Result Delete(string storeAdminIdentityId, string managerId);
 
-        Result Restore(string storeAdminId, string managerId);
+        Result Restore(string storeAdminIdentityId, string managerId);
 
-        Task<Result> PostImageAsync(string storeAdminId, string managerId, byte[] image);
+        Task<Result> PostImageAsync(string storeAdminIdentityId, string managerId, byte[] image);
 
         Task<byte[]> GetImageAsync(string managerId);
 
-        Result Assign(string storeAdminId, string managerId, string storeId);
+        Result Assign(string storeAdminIdentityId, string managerId, string storeId);
 
-        Result Unassign(string storeAdminId, string managerId, string storeId);
+        Result Unassign(string storeAdminIdentityId, string managerId, string storeId);
     }
 }

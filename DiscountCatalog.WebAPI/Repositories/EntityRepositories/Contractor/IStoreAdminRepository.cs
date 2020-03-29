@@ -1,6 +1,7 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
+using DiscountCatalog.WebAPI.REST.StoreAdmin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         IEnumerable<StoreAdminEntity> GetAllApproved(string sortOrder, string searchString);
         IEnumerable<StoreAdminEntity> GetAllDeleted(string sortOrder, string searchString);
 
-        Task<Result> UpdateAsync(StoreAdminEntity storeAdmin);
+        Task<Result> UpdateAsync(StoreAdminRESTPut storeAdmin);
 
         Result MarkAsDeleted(string id);
         Result MarkAsRestored(string id);

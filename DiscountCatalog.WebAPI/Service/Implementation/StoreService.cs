@@ -196,7 +196,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 {
                     uow.Complete();
                 }
-
                 else
                 {
                     uow.Dispose();

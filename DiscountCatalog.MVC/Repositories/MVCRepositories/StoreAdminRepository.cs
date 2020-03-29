@@ -41,9 +41,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllManagers/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllManagers/{storeAdminIdentityId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ManagerREST>>();
 
@@ -54,9 +54,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeletedManagers/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeletedManagers/{storeAdminIdentityId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ManagerREST>>();
 
@@ -67,9 +67,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManager/{storeAdminId}?managerId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManager/{storeAdminIdentityId}?managerId={id}");
 
             var result = await request.Content.ReadAsAsync<ManagerREST>();
 
@@ -80,7 +80,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditManager/{manager.Id}", manager);
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditManager/{storeAdminIdentityId}", manager);
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -91,9 +93,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/DeleteManager/{storeAdminId}?managerId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/DeleteManager/{storeAdminIdentityId}?managerId={id}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -104,9 +106,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/RestoreManager/{storeAdminId}?managerId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/RestoreManager/{storeAdminIdentityId}?managerId={id}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -117,9 +119,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/PostManagerImage/{storeAdminId}?managerId={id}", image);
+            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/PostManagerImage/{storeAdminIdentityId}?managerId={id}", image);
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -130,9 +132,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManagerImage/{storeAdminId}?managerId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManagerImage/{storeAdminIdentityId}?managerId={id}");
 
             var result = await request.Content.ReadAsAsync<byte[]>();
 
@@ -143,9 +145,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManagerStores/{storeAdminId}?managerId={id}&sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetManagerStores/{storeAdminIdentityId}?managerId={id}&sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ManagerStore>>();
 
@@ -156,9 +158,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/Assign/{storeAdminId}?managerId={managerId}&storeId={storeId}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/Assign/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -169,9 +171,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/Unassign/{storeAdminId}?managerId={managerId}&storeId={storeId}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/Unassign/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -199,9 +201,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllStores/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllStores/{storeAdminIdentityId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<StoreREST>>();
 
@@ -212,9 +214,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeletedStores/{storeAdminId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetAllDeletedStores/{storeAdminIdentityId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<StoreREST>>();
 
@@ -225,9 +227,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetStore/{storeAdminId}?storeId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetStore/{storeAdminIdentityId}?storeId={id}");
 
             var result = await request.Content.ReadAsAsync<StoreREST>();
 
@@ -238,9 +240,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditStore/{storeAdminId}", store);
+            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/EditStore/{storeAdminIdentityId}", store);
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -251,9 +253,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/DeleteStore/{storeAdminId}?storeId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/DeleteStore/{storeAdminIdentityId}?storeId={id}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -264,9 +266,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/RestoreStore/{storeAdminId}?storeId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/RestoreStore/{storeAdminIdentityId}?storeId={id}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -277,9 +279,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/PostStoreImage/{storeAdminId}?storeId={id}", image);
+            var request = await apiClient.PutAsJsonAsync($"api/StoreAdmin/PostStoreImage/{storeAdminIdentityId}?storeId={id}", image);
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -290,9 +292,9 @@ namespace DiscountCatalog.MVC.Repositories
         {
             AddTokenToHeader();
 
-            string storeAdminId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/GetStoreImage/{storeAdminId}?storeId={id}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetStoreImage/{storeAdminIdentityId}?storeId={id}");
 
             var result = await request.Content.ReadAsAsync<byte[]>();
 

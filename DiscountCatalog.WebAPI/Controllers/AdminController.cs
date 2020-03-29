@@ -514,80 +514,80 @@ namespace DiscountCatalog.WebAPI.Controllers
         
         //UPDATE
 
-        [HttpPut]
-        [Route("EditUser/{id}")]
-        public async Task<IHttpActionResult> EditUser(string id, UserBindingModel model)
-        {
-            try
-            {
-                using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-                {
-                    var user = mapper.Map<ApplicationUser>(model);
+        //[HttpPut]
+        //[Route("EditUser/{id}")]
+        //public async Task<IHttpActionResult> EditUser(string id, UserBindingModel model)
+        //{
+        //    try
+        //    {
+        //        using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //        {
+        //            var user = mapper.Map<ApplicationUser>(model);
 
-                    user.Id = id;
+        //            user.Id = id;
 
-                    Result result = await uow.Accounts.UpdateAsync(user, model.Role);
+        //            Result result = await uow.Accounts.UpdateAsync(user, model.Role);
 
-                    if (result.Success)
-                    {
-                        uow.Complete();
-                        return Content(HttpStatusCode.OK, result);
-                    }
-                    else
-                    {
-                        uow.Dispose();
-                        return Content(HttpStatusCode.BadRequest, result);
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
+        //            if (result.Success)
+        //            {
+        //                uow.Complete();
+        //                return Content(HttpStatusCode.OK, result);
+        //            }
+        //            else
+        //            {
+        //                uow.Dispose();
+        //                return Content(HttpStatusCode.BadRequest, result);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exc)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
 
-        [HttpPut]
-        [Route("EditStoreAdmin/{id}")]
-        public async Task<IHttpActionResult> EditStoreAdmin(string id, StoreAdminBindingModel model)
-        {
-            try
-            {
-                using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-                {
-                    var identity = mapper.Map<ApplicationUser>(model.Identity);
-                    identity.Id = id;
+        //[HttpPut]
+        //[Route("EditStoreAdmin/{id}")]
+        //public async Task<IHttpActionResult> EditStoreAdmin(string id, StoreAdminBindingModel model)
+        //{
+        //    try
+        //    {
+        //        using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //        {
+        //            var identity = mapper.Map<ApplicationUser>(model.Identity);
+        //            identity.Id = id;
 
-                    var storeAdmin = new StoreAdminEntity { Identity = identity };
-                    Result result = await uow.StoreAdmins.UpdateAsync(storeAdmin);
+        //            var storeAdmin = new StoreAdminEntity { Identity = identity };
+        //            Result result = await uow.StoreAdmins.UpdateAsync(storeAdmin);
 
-                    if (result.Success)
-                    {
-                        uow.Complete();
-                    }
-                    else
-                    {
-                        uow.Dispose();
-                    }
+        //            if (result.Success)
+        //            {
+        //                uow.Complete();
+        //            }
+        //            else
+        //            {
+        //                uow.Dispose();
+        //            }
 
-                    if (result.Success)
-                    {
-                        return Content(HttpStatusCode.OK, result);
-                    }
-                    else
-                    {
-                        return Content(HttpStatusCode.BadRequest, result);
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
+        //            if (result.Success)
+        //            {
+        //                return Content(HttpStatusCode.OK, result);
+        //            }
+        //            else
+        //            {
+        //                return Content(HttpStatusCode.BadRequest, result);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exc)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
 
         //[HttpPut]
         //[Route("EditManager")]

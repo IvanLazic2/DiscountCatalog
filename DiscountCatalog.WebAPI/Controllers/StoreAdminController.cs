@@ -28,15 +28,15 @@ using System.Web.Http;
 
 namespace DiscountCatalog.WebAPI.Controllers
 {
-    //[Authorize(Roles = "StoreAdmin")]
+    [Authorize(Roles = "StoreAdmin")]
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {
-        #region Properties
+        #region Fields
 
         private readonly IMapper mapper;
         private readonly IManagerService managerService;
-        public readonly IStoreService storeService;
+        private readonly IStoreService storeService;
 
         #endregion
 
@@ -70,37 +70,37 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllManagers/{storeAdminId}")]
-        public IHttpActionResult GetAllManagers(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetAllManagers/{storeAdminIdentityId}")]
+        public IHttpActionResult GetAllManagers(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<ManagerREST> list = managerService.GetAll(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ManagerREST> list = managerService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(list);
         }
 
         [HttpGet]
-        [Route("GetAllDeletedManagers/{storeAdminId}")]
-        public IHttpActionResult GetAllDeletedManagers(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetAllDeletedManagers/{storeAdminIdentityId}")]
+        public IHttpActionResult GetAllDeletedManagers(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<ManagerREST> list = managerService.GetAllDeleted(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ManagerREST> list = managerService.GetAllDeleted(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(list);
         }
 
         [HttpGet]
-        [Route("GetManager/{storeAdminId}")]
-        public IHttpActionResult GetManager(string storeAdminId, string managerId)
+        [Route("GetManager/{storeAdminIdentityId}")]
+        public IHttpActionResult GetManager(string storeAdminIdentityId, string managerId)
         {
-            ManagerREST manager = managerService.Get(storeAdminId, managerId);
+            ManagerREST manager = managerService.Get(storeAdminIdentityId, managerId);
 
             return Ok(manager);
         }
 
         [HttpPut]
-        [Route("EditManager/{storeAdminId}")]
-        public async Task<IHttpActionResult> EditManager(string storeAdminId, ManagerRESTPut model)
+        [Route("EditManager/{storeAdminIdentityId}")]
+        public async Task<IHttpActionResult> EditManager(string storeAdminIdentityId, ManagerRESTPut model)
         {
-            Result result = await managerService.UpdateAsync(storeAdminId, model);
+            Result result = await managerService.UpdateAsync(storeAdminIdentityId, model);
 
             if (result.Success)
             {
@@ -113,10 +113,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("DeleteManager/{storeAdminId}")]
-        public IHttpActionResult DeleteManager(string storeAdminId, string managerId)
+        [Route("DeleteManager/{storeAdminIdentityId}")]
+        public IHttpActionResult DeleteManager(string storeAdminIdentityId, string managerId)
         {
-            Result result = managerService.Delete(storeAdminId, managerId);
+            Result result = managerService.Delete(storeAdminIdentityId, managerId);
 
             if (result.Success)
             {
@@ -129,10 +129,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("RestoreManager/{storeAdminId}")]
-        public IHttpActionResult RestoreManager(string storeAdminId, string managerId)
+        [Route("RestoreManager/{storeAdminIdentityId}")]
+        public IHttpActionResult RestoreManager(string storeAdminIdentityId, string managerId)
         {
-            Result result = managerService.Restore(storeAdminId, managerId);
+            Result result = managerService.Restore(storeAdminIdentityId, managerId);
 
             if (result.Success)
             {
@@ -145,10 +145,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("PostManagerImage/{storeAdminId}")]
-        public async Task<IHttpActionResult> PostManagerImage(string storeAdminId, string managerId, byte[] image)
+        [Route("PostManagerImage/{storeAdminIdentityId}")]
+        public async Task<IHttpActionResult> PostManagerImage(string storeAdminIdentityId, string managerId, byte[] image)
         {
-            Result result = await managerService.PostImageAsync(storeAdminId, managerId, image);
+            Result result = await managerService.PostImageAsync(storeAdminIdentityId, managerId, image);
 
             if (result.Success)
             {
@@ -161,8 +161,8 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetManagerImage/{storeAdminId}")]
-        public async Task<byte[]> GetManagerImage(string storeAdminId, string managerId)
+        [Route("GetManagerImage/{storeAdminIdentityId}")]
+        public async Task<byte[]> GetManagerImage(string storeAdminIdentityId, string managerId)
         {
             byte[] image = await managerService.GetImageAsync(managerId);
 
@@ -170,19 +170,19 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetManagerStores/{storeAdminId}")]
-        public IHttpActionResult GetManagerStores(string storeAdminId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetManagerStores/{storeAdminIdentityId}")]
+        public IHttpActionResult GetManagerStores(string storeAdminIdentityId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<ManagerStore> managerStores = managerService.GetManagerStores(storeAdminId, managerId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ManagerStore> managerStores = managerService.GetManagerStores(storeAdminIdentityId, managerId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(managerStores);
         }
 
         [HttpGet]
-        [Route("Assign/{storeAdminId}")]
-        public IHttpActionResult Assign(string storeAdminId, string managerId, string storeId)
+        [Route("Assign/{storeAdminIdentityId}")]
+        public IHttpActionResult Assign(string storeAdminIdentityId, string managerId, string storeId)
         {
-            Result result = managerService.Assign(storeAdminId, managerId, storeId);
+            Result result = managerService.Assign(storeAdminIdentityId, managerId, storeId);
 
             if (result.Success)
             {
@@ -195,10 +195,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("Unassign/{storeAdminId}")]
-        public IHttpActionResult Unassign(string storeAdminId, string managerId, string storeId)
+        [Route("Unassign/{storeAdminIdentityId}")]
+        public IHttpActionResult Unassign(string storeAdminIdentityId, string managerId, string storeId)
         {
-            Result result = managerService.Unassign(storeAdminId, managerId, storeId);
+            Result result = managerService.Unassign(storeAdminIdentityId, managerId, storeId);
 
             if (result.Success)
             {
@@ -213,7 +213,6 @@ namespace DiscountCatalog.WebAPI.Controllers
         #endregion
 
         #region Store
-
 
         [HttpPost]
         [Route("CreateStore")]
@@ -232,37 +231,37 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllStores/{storeAdminId}")]
-        public IHttpActionResult GetAllStores(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetAllStores/{storeAdminIdentityId}")]
+        public IHttpActionResult GetAllStores(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<StoreREST> list = storeService.GetAll(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<StoreREST> list = storeService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(list);
         }
 
         [HttpGet]
-        [Route("GetAllDeletedStores/{storeAdminId}")]
-        public IHttpActionResult GetAllDeletedStores(string storeAdminId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        [Route("GetAllDeletedStores/{storeAdminIdentityId}")]
+        public IHttpActionResult GetAllDeletedStores(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<StoreREST> list = storeService.GetAllDeleted(storeAdminId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<StoreREST> list = storeService.GetAllDeleted(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(list);
         }
 
         [HttpGet]
-        [Route("GetStore/{storeAdminId}")]
-        public IHttpActionResult GetStore(string storeAdminId, string storeId)
+        [Route("GetStore/{storeAdminIdentityId}")]
+        public IHttpActionResult GetStore(string storeAdminIdentityId, string storeId)
         {
-            StoreREST store = storeService.Get(storeAdminId, storeId);
+            StoreREST store = storeService.Get(storeAdminIdentityId, storeId);
 
             return Ok(store);
         }
 
         [HttpPut]
-        [Route("EditStore/{storeAdminId}")]
-        public async Task<IHttpActionResult> EditStore(string storeAdminId, StoreRESTPut model)
+        [Route("EditStore/{storeAdminIdentityId}")]
+        public async Task<IHttpActionResult> EditStore(string storeAdminIdentityId, StoreRESTPut model)
         {
-            Result result = await storeService.UpdateAsync(storeAdminId, model);
+            Result result = await storeService.UpdateAsync(storeAdminIdentityId, model);
 
             if (result.Success)
             {
@@ -275,10 +274,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("DeleteStore/{storeAdminId}")]
-        public IHttpActionResult DeleteStore(string storeAdminId, string storeId)
+        [Route("DeleteStore/{storeAdminIdentityId}")]
+        public IHttpActionResult DeleteStore(string storeAdminIdentityId, string storeId)
         {
-            Result result = storeService.Delete(storeAdminId, storeId);
+            Result result = storeService.Delete(storeAdminIdentityId, storeId);
 
             if (result.Success)
             {
@@ -291,10 +290,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("RestoreStore/{storeAdminId}")]
-        public IHttpActionResult RestoreStore(string storeAdminId, string storeId)
+        [Route("RestoreStore/{storeAdminIdentityId}")]
+        public IHttpActionResult RestoreStore(string storeAdminIdentityId, string storeId)
         {
-            Result result = storeService.Restore(storeAdminId, storeId);
+            Result result = storeService.Restore(storeAdminIdentityId, storeId);
 
             if (result.Success)
             {
@@ -307,10 +306,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("PostStoreImage/{storeAdminId}")]
-        public IHttpActionResult PostStoreImage(string storeAdminId, string storeId, byte[] image)
+        [Route("PostStoreImage/{storeAdminIdentityId}")]
+        public IHttpActionResult PostStoreImage(string storeAdminIdentityId, string storeId, byte[] image)
         {
-            Result result = storeService.PostImage(storeAdminId, storeId, image);
+            Result result = storeService.PostImage(storeAdminIdentityId, storeId, image);
 
             if (result.Success)
             {
@@ -323,8 +322,8 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetStoreImage/{storeAdminId}")]
-        public byte[] GeStoreImage(string storeAdminId, string storeId)
+        [Route("GetStoreImage/{storeAdminIdentityId}")]
+        public byte[] GeStoreImage(string storeAdminIdentityId, string storeId)
         {
             byte[] image = storeService.GetImage(storeId);
 

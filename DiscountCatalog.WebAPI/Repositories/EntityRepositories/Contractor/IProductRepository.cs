@@ -1,5 +1,6 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
+using DiscountCatalog.WebAPI.REST.Product;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
 {
     public interface IProductRepository : IRepository<ProductEntity>
     {
-        Result Create(ProductEntity product, string storeId);
+        Result Create(string storeId, ProductEntity product);
 
         IEnumerable<ProductEntity> GetAllApproved();
         IEnumerable<ProductEntity> GetAllDeleted();
@@ -26,11 +27,11 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         ProductEntity GetLoaded(string storeId, string productId);
         ProductEntity GetApproved(string storeId, string productId);
 
-        Result PostProductImage(string id, byte[] image);
-        byte[] GetProductImage(string id);
+        Result PostProductImage(string productId, byte[] image);
+        byte[] GetProductImage(string productId);
 
-        Task<Result> UpdateAsync(ProductEntity product);
-        Task<Result> UpdateAsync(string storeId, ProductEntity product);
+        Task<Result> UpdateAsync(ProductRESTPut product);
+        Task<Result> UpdateAsync(string storeId, ProductRESTPut product);
 
         Result MarkAsDeleted(string productId);
         Result MarkAsRestored(string productId);
@@ -38,6 +39,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         Result MarkAsDeleted(string storeId, string productId);
         Result MarkAsRestored(string storeId, string productId);
         Result MarkAsExpired(string storeId, string productId);
+
+        bool IsExpired(ProductEntity product);
 
         //refresh
     }

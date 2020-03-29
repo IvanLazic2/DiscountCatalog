@@ -1,6 +1,8 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.MVC.Models;
+using DiscountCatalog.MVC.Models.Paging;
+using DiscountCatalog.MVC.REST.Product;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,138 @@ namespace DiscountCatalog.MVC.Repositories
 {
     public class StoreRepository : MVCRepository
     {
+        public async Task<Result> CreateProduct(ProductRESTPost product)
+        {
+            AddTokenToHeader();
+
+            product.StoreId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.PostAsJsonAsync("api/Store/CreateProduct", product);
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<PagingEntity<ProductREST>> GetAllProducts(string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetAllProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+
+            var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
+
+            return result;
+        }
+
+        public async Task<PagingEntity<ProductREST>> GetAllDeletedProducts(string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetAllDeletedProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+
+            var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
+
+            return result;
+        }
+
+        public async Task<PagingEntity<ProductREST>> GetAllExpiredProducts(string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetAllExpiredProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+
+            var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
+
+            return result;
+        }
+
+        public async Task<ProductREST> GetProduct(string id)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetProduct/{storeId}?storeId={id}");
+
+            var result = await request.Content.ReadAsAsync<ProductREST>();
+
+            return result;
+        }
+
+        public async Task<Result> EditProduct(ProductRESTPut product)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.PutAsJsonAsync($"api/Store/EditProduct/{storeId}", product);
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<Result> DeleteProduct(string id)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/DeleteProduct/{storeId}?productId={id}");
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<Result> RestoreProduct(string id)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/RestoreProduct/{storeId}?productId={id}");
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<Result> PostProductImage(string id, byte[] image)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.PutAsJsonAsync($"api/Store/PostProductImage/{storeId}?productId={id}", image);
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<byte[]> GetProductImage(string id)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetProductImage/{storeId}?productId={id}");
+
+            var result = await request.Content.ReadAsAsync<byte[]>();
+
+            return result;
+        }
+
+
+
 
 
         //private async Task<WebApiResult> ReadResponseAsync(HttpResponseMessage request)

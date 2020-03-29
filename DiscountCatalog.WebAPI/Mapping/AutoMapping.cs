@@ -6,6 +6,7 @@ using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
 using DiscountCatalog.WebAPI.REST.Account;
 using DiscountCatalog.WebAPI.REST.Manager;
+using DiscountCatalog.WebAPI.REST.Product;
 using DiscountCatalog.WebAPI.REST.Store;
 using DiscountCatalog.WebAPI.REST.StoreAdmin;
 using System;
@@ -65,6 +66,7 @@ namespace AbatementHelper.WebAPI.Mapping
                 c.CreateMap<ManagerEntity, ManagerREST>();
                 c.CreateMap<StoreEntity, StoreREST>();
                 c.CreateMap<StoreAdminEntity, StoreAdminREST>();
+                c.CreateMap<ProductEntity, ProductREST>();
 
                 //REST POST
 
@@ -72,6 +74,7 @@ namespace AbatementHelper.WebAPI.Mapping
                 c.CreateMap<ManagerRESTPost, ManagerEntity>();
                 c.CreateMap<StoreRESTPost, StoreEntity>();
                 c.CreateMap<StoreAdminRESTPost, StoreAdminEntity>();
+                c.CreateMap<ProductRESTPost, ProductEntity>();
 
                 //REST PUT
 
@@ -79,6 +82,8 @@ namespace AbatementHelper.WebAPI.Mapping
                 c.CreateMap<ManagerRESTPut, ManagerEntity>();
                 c.CreateMap<StoreRESTPut, StoreEntity>();
                 c.CreateMap<StoreAdminRESTPut, StoreAdminEntity>();
+                c.CreateMap<ProductRESTPut, ProductEntity>();
+
             });
 
             return config.CreateMapper();

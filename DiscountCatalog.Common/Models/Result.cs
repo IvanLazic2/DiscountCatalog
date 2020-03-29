@@ -6,13 +6,25 @@ using System.Web;
 
 namespace DiscountCatalog.Common.Models
 {
-    public class Result
+    public class Result //dodat responsecode i dodat redirectprocessor il tak nest koji ce primat result i vracat string path
     {
-        public List<KeyValuePair<string, string>> ModelState { get; set; } = new List<KeyValuePair<string, string>>();
-        public string SuccessMessage {
-            get;
-            set;
+        public Result()
+        {
+
         }
+
+        public Result(string key, string value)
+        {
+            AddModelError(key, value);
+        }
+
+        public Result(string value)
+        {
+            Add(value);
+        }
+
+        public List<KeyValuePair<string, string>> ModelState { get; set; } = new List<KeyValuePair<string, string>>();
+        public string SuccessMessage { get; set; }
         public bool Success
         {
             get
@@ -36,6 +48,16 @@ namespace DiscountCatalog.Common.Models
             private set { }
         }
         public Exception Exception { get; set; }
+
+        public static Result GetQuickResult(string key, string value)
+        {
+            return new Result(key, value);
+        }
+
+        public static Result GetQuickResult(string value)
+        {
+            return new Result(value);
+        }
 
         public void AddModelError(string key, string value)
         {

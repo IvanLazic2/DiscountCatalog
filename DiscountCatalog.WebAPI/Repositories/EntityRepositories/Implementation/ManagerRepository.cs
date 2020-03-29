@@ -12,6 +12,7 @@ using System.Data.Entity;
 using DiscountCatalog.WebAPI.Extensions;
 using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
 using DiscountCatalog.WebAPI.REST.Manager;
+using AutoMapper;
 
 namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
@@ -202,18 +203,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             ManagerEntity managerEntity = GetApproved(manager.Id);
 
             if (managerEntity != null)
-            {
-                managerEntity.Identity.FirstName = manager.Identity.FirstName;
-                managerEntity.Identity.LastName = manager.Identity.LastName;
-                managerEntity.Identity.UserName = manager.Identity.UserName;
-                managerEntity.Identity.Email = manager.Identity.Email;
-                managerEntity.Identity.PhoneNumber = manager.Identity.PhoneNumber;
-                managerEntity.Identity.Country = manager.Identity.Country;
-                managerEntity.Identity.City = manager.Identity.City;
-                managerEntity.Identity.PostalCode = manager.Identity.PostalCode;
-                managerEntity.Identity.Street = manager.Identity.Street;
-
-                Result result = await uow.Accounts.UpdateAsync(managerEntity.Identity, "Manager");
+            {   
+                Result result = await uow.Accounts.UpdateAsync(manager.Identity, "Manager");
                 modelState.Add(result);
             }
             else
@@ -237,17 +228,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
             if (managerEntity != null)
             {
-                managerEntity.Identity.FirstName = manager.Identity.FirstName;
-                managerEntity.Identity.LastName = manager.Identity.LastName;
-                managerEntity.Identity.UserName = manager.Identity.UserName;
-                managerEntity.Identity.Email = manager.Identity.Email;
-                managerEntity.Identity.PhoneNumber = manager.Identity.PhoneNumber;
-                managerEntity.Identity.Country = manager.Identity.Country;
-                managerEntity.Identity.City = manager.Identity.City;
-                managerEntity.Identity.PostalCode = manager.Identity.PostalCode;
-                managerEntity.Identity.Street = manager.Identity.Street;
-
-                Result result = await uow.Accounts.UpdateAsync(managerEntity.Identity, "Manager");
+                Result result = await uow.Accounts.UpdateAsync(manager.Identity, "Manager");
                 modelState.Add(result);
             }
             else

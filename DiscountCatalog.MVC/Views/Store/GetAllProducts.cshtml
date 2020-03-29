@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<DiscountCatalog.Common.WebApiModels.WebApiProduct>
+﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Product.ProductREST>
 @using PagedList.Mvc
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 <link href="~/Content/product-card.css" rel="stylesheet" />
@@ -49,8 +49,8 @@
                         <img class="img-fluid" src="@Url.Action("GetProductImage", "Store", new { id = item.Id })" alt="Alternate Text" />
                     </div>
                     <div class="card-image-overlay m-auto">
-                        <span class="card-detail-badge" style="text-decoration: line-through">@item.ProductOldPrice @item.Currency</span>
-                        <span class="card-detail-badge">@item.ProductNewPrice @item.Currency</span>
+                        <span class="card-detail-badge" style="text-decoration: line-through">@item.OldPrice @item.Currency</span>
+                        <span class="card-detail-badge">@item.NewPrice @item.Currency</span>
 
                     </div>
                     <div class="card-body text-center">

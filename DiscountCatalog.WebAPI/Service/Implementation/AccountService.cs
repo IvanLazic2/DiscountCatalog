@@ -126,18 +126,10 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 ApplicationUser user = uow.Accounts.GetApproved(model.Id);
+                
+                string roleName = uow.Accounts.GetRoleName(model.Id);
 
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.UserName = model.UserName;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Country = model.Country;
-                user.City = model.City;
-                user.PostalCode = model.PostalCode;
-                user.Street = model.Street;
-
-                Result result = await uow.Accounts.UpdateAsync(user, "User");
+                Result result = await uow.Accounts.UpdateAsync(model, roleName);
 
                 if (result.Success)
                 {

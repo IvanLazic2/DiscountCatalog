@@ -1,6 +1,7 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,78 +11,38 @@ namespace DiscountCatalog.WebAPI.Processors
 {
     public static class DiscountProcessor
     {
-        public static DiscountResponseModel DiscountCalculator(DiscountModel discount)
+        public static ProductEntity CalculateDiscount(ProductEntity product)
         {
-            var discountReturnModel = new DiscountResponseModel();
+            decimal?[] valueArray = new decimal?[]
+            {
+                product.OldPrice,
+                product.NewPrice,
+                product.DiscountPercentage
+            };
 
-            if (discount.OldPrice.HasValue)
+            IEnumerable<decimal?> emptyValues = valueArray.Where(p => !p.HasValue);
+
+            if (emptyValues.Count() < 2)
             {
-                if (discount.NewPrice.HasValue)
+                if (!product.OldPrice.HasValue)
                 {
-                    if (discount.Discount.HasValue)
-                    {
-                        //popunit novu cijenu
-                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice.Value - (discount.Discount.Value / 100 * discount.OldPrice.Value), 2);
-                        discountReturnModel.Discount.OldPrice = discount.OldPrice;
-                        discountReturnModel.Discount.Discount = discount.Discount;
-                        discountReturnModel.Message = "New price is changed";
-                        discountReturnModel.Success = true;
-                    }
-                    else
-                    {
-                        //popunit postotak
-                        discountReturnModel.Discount.Discount = Math.Round(100 - (discount.NewPrice.Value / discount.OldPrice.Value) * 100, 1);
-                        discountReturnModel.Discount.OldPrice = discount.OldPrice;
-                        discountReturnModel.Discount.NewPrice = discount.NewPrice;
-                        discountReturnModel.Message = "Success";
-                        discountReturnModel.Success = true;
-                    }
+                    product.OldPrice = Math.Round(product.NewPrice.Value / (1 - product.DiscountPercentage.Value / 100), 2);
                 }
-                else
+                if (!product.NewPrice.HasValue)
                 {
-                    if (discount.Discount.HasValue)
-                    {
-                        //popunit novu cijenu
-                        discountReturnModel.Discount.NewPrice = Math.Round(discount.OldPrice.Value - (discount.Discount.Value / 100 * discount.OldPrice.Value), 2);
-                        discountReturnModel.Discount.OldPrice = discount.OldPrice;
-                        discountReturnModel.Discount.Discount = discount.Discount;
-                        discountReturnModel.Message = "Success";
-                        discountReturnModel.Success = true;
-                    }
-                    else
-                    {
-                        //error
-                        discountReturnModel.Message = "Fill in at least two properties";
-                        discountReturnModel.Success = false;
-                    }
+                    product.NewPrice = Math.Round(product.OldPrice.Value - (product.DiscountPercentage.Value / 100 * product.OldPrice.Value), 2);
+                }
+                if (!product.DiscountPercentage.HasValue)
+                {
+                    product.DiscountPercentage = Math.Round(100 - (product.NewPrice.Value / product.OldPrice.Value) * 100, 0);
                 }
             }
-            else if (discount.NewPrice.HasValue)
+            if (emptyValues.Count() == 0)
             {
-                if (discount.Discount.HasValue)
-                {
-                    //popunit staru cijenu
-                    discountReturnModel.Discount.OldPrice = Math.Round(discount.NewPrice.Value / (1 - discount.Discount.Value / 100), 2);
-                    discountReturnModel.Discount.NewPrice = discount.NewPrice;
-                    discountReturnModel.Discount.Discount = discount.Discount;
-                    discountReturnModel.Message = "Success";
-                    discountReturnModel.Success = true;
-                }
-                else
-                {
-                    //error
-                    discountReturnModel.Message = "Fill in at least two properties";
-                    discountReturnModel.Success = false;
-                }
-            }
-            else if (discount.Discount.HasValue)
-            {
-                //error
-                discountReturnModel.Message = "Fill in at least two properties";
-                discountReturnModel.Success = false;
+                product.NewPrice = Math.Round(product.OldPrice.Value - (product.DiscountPercentage.Value / 100 * product.OldPrice.Value), 2);
             }
 
-            return discountReturnModel;
+            return product;
         }
     }
 }

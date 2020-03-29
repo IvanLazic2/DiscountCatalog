@@ -12,6 +12,7 @@ using System.Web;
 using System.Data.Entity;
 using DiscountCatalog.WebAPI.Extensions;
 using DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor;
+using DiscountCatalog.WebAPI.REST.StoreAdmin;
 
 namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 {
@@ -174,7 +175,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 .FirstOrDefault(s => s.Id == id && s.Identity.Approved && !s.Identity.Deleted);
         }
 
-        public Task<Result> UpdateAsync(StoreAdminEntity storeAdmin)
+        public Task<Result> UpdateAsync(StoreAdminRESTPut storeAdmin)
         {
             var uow = new UnitOfWork(DbContext);
             return uow.Accounts.UpdateAsync(storeAdmin.Identity, "StoreAdmin");

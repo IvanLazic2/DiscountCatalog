@@ -1,31 +1,22 @@
-﻿using System;
+﻿using DiscountCatalog.WebAPI.REST.Store;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
-namespace DiscountCatalog.WebAPI.Models.Entities
+namespace DiscountCatalog.WebAPI.REST.Product
 {
-    public class ProductEntity
+    public class ProductREST
     {
-        [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        [Required]
-        public StoreEntity Store { get; set; }
-        [Required]
+        public string Id { get; set; }
+        public StoreREST Store { get; set; }
         public string ProductName { get; set; }
         public string CompanyName { get; set; }
-        [Required]
         public decimal? OldPrice { get; set; }
-        [Required]
         public decimal? NewPrice { get; set; }
         public string Currency { get; set; }
-        [Required]
         public decimal? DiscountPercentage { get; set; }
-        [Required]
         public string DiscountDateBegin { get; set; }
-        [Required]
         public string DiscountDateEnd { get; set; }
         public string Quantity { get; set; }
         public string MeasuringUnit { get; set; }
@@ -34,9 +25,5 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         public bool Expired { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-        [Required]
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public byte[] ProductImage { get; set; }
     }
 }

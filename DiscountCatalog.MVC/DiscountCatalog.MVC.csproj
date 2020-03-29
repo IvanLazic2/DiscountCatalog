@@ -211,6 +211,9 @@
     <Compile Include="REST\Manager\ManagerREST.cs" />
     <Compile Include="REST\Manager\ManagerRESTPost.cs" />
     <Compile Include="REST\Manager\ManagerRESTPut.cs" />
+    <Compile Include="REST\Product\ProductREST.cs" />
+    <Compile Include="REST\Product\ProductRESTPost.cs" />
+    <Compile Include="REST\Product\ProductRESTPut.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminREST.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminRESTPost.cs" />
     <Compile Include="REST\StoreAdmin\StoreAdminRESTPut.cs" />
