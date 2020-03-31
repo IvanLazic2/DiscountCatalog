@@ -40,8 +40,8 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
             RuleFor(p => p.DiscountDateEnd)
                 .GreaterThan(p => p.DiscountDateBegin);
 
-            RuleFor(p => p.DiscountDateEnd)
-                .GreaterThan(p => p.DateCreated.ToShortDateString())
+            RuleFor(p => DateTime.Parse(p.DiscountDateEnd))
+                .GreaterThan(p => p.DateCreated)
                 .WithMessage("Discount date end should be later than todays date.");
 
             //PRICE

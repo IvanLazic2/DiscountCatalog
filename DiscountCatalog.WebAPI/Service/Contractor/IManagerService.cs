@@ -35,5 +35,13 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
         Result Assign(string storeAdminIdentityId, string managerId, string storeId);
 
         Result Unassign(string storeAdminIdentityId, string managerId, string storeId);
+
+        IList<ManagerREST> FilterStores(IList<ManagerREST> managers);
+
+        ManagerREST FilterStores(ManagerREST manager);
+
+        IList<ManagerREST> FilterStoreAdmin(IList<ManagerREST> managers);
+
+        ManagerREST FilterStoreAdmin(ManagerREST manager);
     }
 }

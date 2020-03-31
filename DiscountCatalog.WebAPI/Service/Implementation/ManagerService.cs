@@ -91,6 +91,27 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return manager;
         }
 
+        public IList<ManagerREST> FilterStoreAdmin(IList<ManagerREST> managers)
+        {
+            List<ManagerREST> managerList = managers.ToList();
+
+            foreach (var manager in managerList)
+            {
+                manager.Administrator.Managers = Enumerable.Empty<ManagerREST>();
+                manager.Administrator.Stores = Enumerable.Empty<StoreREST>();
+            }
+
+            return managerList;
+        }
+
+        public ManagerREST FilterStoreAdmin(ManagerREST manager)
+        {
+            manager.Administrator.Managers = Enumerable.Empty<ManagerREST>();
+            manager.Administrator.Stores = Enumerable.Empty<StoreREST>();
+
+            return manager;
+        }
+
         #endregion
 
         //CREATE
@@ -135,7 +156,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
-                mapped = FilterStores(mapped);
+                //mapped = FilterStores(mapped);
+                mapped = FilterStoreAdmin(mapped);
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
@@ -181,6 +203,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 var mapped = mapper.Map<ManagerREST>(manager);
 
+                mapped = FilterStoreAdmin(mapped);
                 mapped = FilterStores(mapped);
 
                 return mapped;
@@ -324,6 +347,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 return ImageProcessor.CreateThumbnail(image);
             }
         }
+
+        
 
         #endregion
 

@@ -22,6 +22,7 @@
 
 <table class="table">
     <tr>
+        <td></td>
         <th>
             @Html.ActionLink("UserName", "GetAllManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
         </th>
@@ -49,55 +50,58 @@
         <th>
             Street
         </th>
-        <th>
+        @*<th>
             Stores
-        </th>
+        </th>*@
         <th></th>
     </tr>
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.Country)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Identity.Street)
-            </td>
-            <td>
-                @{
-                    foreach (var store in item.Stores)
-                    {
-                        @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
-                    }
+    <tr>
+        <td>
+            <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = item.Id })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.PhoneNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Country)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.PostalCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Identity.Street)
+        </td>
+        @*<td>
+            @{
+                foreach (var store in item.Stores)
+                {
+                    @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
                 }
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "EditManager", new { id = item.Id })
-                @Html.ActionLink("Details", "ManagerDetails", new { id = item.Id })
-                @Html.ActionLink("Delete", "DeleteManager", new { id = item.Id })
-            </td>
-        </tr>
+            }
+        </td>*@
+        <td>
+            @Html.ActionLink("Edit", "EditManager", new { id = item.Id })
+            @Html.ActionLink("Details", "ManagerDetails", new { id = item.Id })
+            @Html.ActionLink("Delete", "DeleteManager", new { id = item.Id })
+        </td>
+    </tr>
     }
 
 

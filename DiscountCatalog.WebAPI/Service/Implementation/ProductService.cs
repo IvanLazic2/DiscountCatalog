@@ -238,7 +238,9 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 byte[] image = uow.Products.GetProductImage(productId);
 
-                return ImageProcessor.CreateThumbnail(image);
+                //return ImageProcessor.CreateThumbnail(image);
+
+                return image;
             }
         }
 

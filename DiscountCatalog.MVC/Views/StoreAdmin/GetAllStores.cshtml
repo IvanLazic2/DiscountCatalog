@@ -40,9 +40,9 @@
         <th>
             Street
         </th>
-        <th>
+        @*<th>
             Managers
-        </th>
+        </th>*@
         <th></th>
     </tr>
 
@@ -67,7 +67,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Street)
             </td>
-            <td>
+            @*<td>
                 @{
                     foreach (var manager in item.Managers)
                     {
@@ -76,7 +76,7 @@
                         <br>
                     }
                 }
-            </td>
+            </td>*@
             <td>
                 @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
                 @Html.ActionLink("Details", "StoreDetails", new { id = item.Id })

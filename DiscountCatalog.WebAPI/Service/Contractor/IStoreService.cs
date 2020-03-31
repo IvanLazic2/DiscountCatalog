@@ -15,6 +15,10 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         StoreREST FilterManagers(StoreREST store);
 
+        IList<StoreREST> FilterStoreAdmin(IList<StoreREST> stores);
+
+        StoreREST FilterStoreAdmin(StoreREST store);
+
         Task<Result> CreateAsync(StoreRESTPost store);
 
         StoreREST Get(string storeAdminIdentityId, string storeId);

@@ -39,10 +39,46 @@ namespace DiscountCatalog.MVC
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
+                      "~/Content/bootstrap.min.css",
                       "~/Content/site.css",
                       "~/Content/bootstrap-datetimepicker.min.css",
                       "~/Content/bootstrap-datepicker3.css"));
 
+            //INDIVIDUAL PAGE STYLES
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Common").Include(
+                    "~/Content/IndividualPageStyles/Common.css"));
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Details").Include(
+                    "~/Content/IndividualPageStyles/Details/Details_main.css"));
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Create").Include(
+                    "~/Content/IndividualPageStyles/Details/Create_main.css"));
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Edit").Include(
+                    "~/Content/IndividualPageStyles/Details/Edit.css"));
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/GetAll").Include(
+                    "~/Content/IndividualPageStyles/Details/GetAll_main.css"));
+
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Delete").Include(
+                    "~/Content/IndividualPageStyles/Delete/Delete_main.css"));
+
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Details").Include(
+                      "~/Scripts/IndividualPageStyles/Details/Details_main.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Create").Include(
+                      "~/Scripts/IndividualPageStyles/Details/Create_main.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Edit").Include(
+                      "~/Scripts/IndividualPageStyles/Details/Edit_main.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/GetAll").Include(
+                      "~/Scripts/IndividualPageStyles/Details/GetAll_main.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Delete").Include(
+                      "~/Scripts/IndividualPageStyles/Details/Delete_main.css"));
 
         }
     }

@@ -6,119 +6,130 @@
 
 <link href="~/Content/images.css" rel="stylesheet" />
 
-<h2>@Model.UserName - Details</h2>
+<div id="user-info">
+    <div class="avatar" style="background-image: url(@Url.Action("GetUserImage", "Account", new { id = Model.Id })); "></div>
+    <h2 style="display: inline">@Model.UserName - Details</h2>
+</div>
+
+
 
 <hr />
 
-@if (Model != null)
-{
-    using (Html.BeginForm("PostUserImage", "Account", FormMethod.Post,
+<div class="upload-image-form">
+
+    @using (Html.BeginForm("PostUserImage", "Account", FormMethod.Post,
                         new { enctype = "multipart/form-data" }))
     {
-        <label for="file">Upload Image:</label>
+        <p>Upload a new image:</p>
+        <label class="btn btn-primary" id="browse-button" for="default-file-browse">Browse...</label>
         <input type="hidden" name="id" id="id" value="@Model.Id">
-        <input type="file" name="file" id="file" style="width: 100%;" />
-        <input type="submit" value="Upload" class="submit" />
+        <input id="default-file-browse" type="file" name="file" id="file" style="width: 100%;" />
+        <input class="btn btn-secondary" type="submit" value="Upload" class="submit" />
     }
 
-    <div>
-        <dl class="dl-horizontal">
-            @*<dt>
+</div>
 
-                </dt>
-                @{
-                    var base64 = Convert.ToBase64String(Model.UserImage);
-                    var image = String.Format("data:image/gif;base64,{0}", base64);
-                }
-                <dd>
-                    <img class="avatar" src="@image" alt="Alternate Text" />
-                </dd>*@
 
-            <dt>
+
+<div class="user-info-container">
+    <dl class="dl-horizontal">
+        @*<dt>
 
             </dt>
+            @{
+                var base64 = Convert.ToBase64String(Model.UserImage);
+                var image = String.Format("data:image/gif;base64,{0}", base64);
+            }
             <dd>
-                <div style="background-image: url(@Url.Action("GetUserImage", "Account", new { id = Model.Id })); width: 100px; height: 100px;"></div>
-            </dd>
+                <img class="avatar" src="@image" alt="Alternate Text" />
+            </dd>*@
 
-            <dt>
-                @Html.DisplayNameFor(model => model.UserName)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.UserName)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.FirstName)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.LastName)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.LastName)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Email)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Email)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.PhoneNumber)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Country)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.Country)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Country)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.Country)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.City)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.City)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.City)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.City)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.PostalCode)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.PostalCode)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.PostalCode)
+        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Street)
-            </dt>
+        <dt>
+            @Html.DisplayNameFor(model => model.Street)
+        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Street)
-            </dd>
+        <dd>
+            @Html.DisplayFor(model => model.Street)
+        </dd>
 
-        </dl>
-    </div>
-    <p>
-        @Html.ActionLink("Edit", "Edit")
-        @Html.ActionLink("Delete", "Delete")
-    </p>
-}
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit")
+    @Html.ActionLink("Delete", "Delete")
+</p>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+
+
+
+
+
+
 
 

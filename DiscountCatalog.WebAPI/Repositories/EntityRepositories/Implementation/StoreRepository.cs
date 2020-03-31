@@ -73,7 +73,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         {
             return DbContext.Stores
                 .Include(s => s.Administrator.Identity)
-                .Include(s => s.Managers.Select(m => m.Identity))
+                //.Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .Where(s => s.Approved && !s.Deleted)
                 .ToList();
@@ -83,7 +83,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         {
             return DbContext.Stores
                 .Include(s => s.Administrator.Identity)
-                .Include(s => s.Managers.Select(m => m.Identity))
+                
+                //.Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted)
                 .ToList();

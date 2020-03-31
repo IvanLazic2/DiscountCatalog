@@ -27,7 +27,7 @@ using System.Web.Http;
 
 namespace DiscountCatalog.WebAPI.Controllers
 {
-    [Authorize(Roles = "StoreAdmin")]
+    //[Authorize(Roles = "StoreAdmin")]
     [RoutePrefix("api/StoreAdmin")]
     public class StoreAdminController : ApiController
     {

@@ -91,6 +91,27 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return store;
         }
 
+        public IList<StoreREST> FilterStoreAdmin(IList<StoreREST> stores)
+        {
+            List<StoreREST> storeList = stores.ToList();
+
+            foreach (var store in storeList)
+            {
+                store.Administrator.Managers = Enumerable.Empty<ManagerREST>();
+                store.Administrator.Stores = Enumerable.Empty<StoreREST>();
+            }
+
+            return storeList;
+        }
+
+        public StoreREST FilterStoreAdmin(StoreREST store)
+        {
+            store.Administrator.Managers = Enumerable.Empty<ManagerREST>();
+            store.Administrator.Stores = Enumerable.Empty<StoreREST>();
+
+            return store;
+        }
+
         #endregion
 
         //CREATE
@@ -128,7 +149,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 IList<StoreREST> mapped = mapper.Map<IList<StoreREST>>(stores);
 
-                mapped = FilterManagers(mapped);
+                //mapped = FilterManagers(mapped);
+                mapped = FilterStoreAdmin(mapped);
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
@@ -148,7 +170,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 IList<StoreREST> mapped = mapper.Map<IList<StoreREST>>(stores);
 
-                mapped = FilterManagers(mapped);
+                //mapped = FilterManagers(mapped);
+                mapped = FilterStoreAdmin(mapped);
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
@@ -174,6 +197,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 var mapped = mapper.Map<StoreREST>(store);
 
+                mapped = FilterStoreAdmin(mapped);
                 mapped = FilterManagers(mapped);
 
                 return mapped;
@@ -262,6 +286,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 return ImageProcessor.CreateThumbnail(image);
             }
         }
+
+        
 
         #endregion
 
