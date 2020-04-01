@@ -5,3 +5,14 @@
     border-radius: 50%;
 }
 
+#user-info {
+    margin: 30px 0 20px 0;
+}
+
+    #user-info div {
+        display: inline-block;
+    }
+
+    #user-info h2 {
+        vertical-align: middle;
+    }

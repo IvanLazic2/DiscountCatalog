@@ -16,13 +16,53 @@ using DiscountCatalog.MVC.Processors;
 using DiscountCatalog.MVC.ViewModels;
 using DiscountCatalog.Common.Models.Extended;
 using DiscountCatalog.MVC.REST.Account;
+using DiscountCatalog.MVC.Extensions;
+using AutoMapper;
+using AbatementHelper.MVC.Mapping;
+using DiscountCatalog.MVC.Cookies.Contractor;
+using DiscountCatalog.MVC.Cookies.Implementation;
 
 namespace DiscountCatalog.MVC.Controllers
 {
-    public class AccountController : Controller //promjenit u accountcontroller
+    public class AccountController : Controller
     {
+        #region Fields
 
+        private readonly IMapper mapper;
+        private readonly ICookieHandler cookieHandler;
+        private readonly UserCookieHandler userCookieHandler;
         private AccountRepository accountRepository = new AccountRepository();
+
+        #endregion
+
+        #region Constructors
+
+        public AccountController()
+        {
+            mapper = AutoMapping.Initialise();
+            cookieHandler = new CookieHandler();
+            userCookieHandler = new UserCookieHandler();
+
+        }
+
+        #endregion
+
+        #region PrivateMethods
+
+        private bool areUserCookiesValid()
+        {
+            return userCookieHandler.IsValid(userCookieHandler.Get(System.Web.HttpContext.Current));
+        }
+
+        private ActionResult RedirectToLogin()
+        {
+            cookieHandler.ClearAll(System.Web.HttpContext.Current);
+            return RedirectToAction("Login").Error("An error has occurred, please log in.");
+        }
+
+        #endregion
+
+        #region Methods
 
         [HttpGet]
         public ActionResult AccountTypeSelection()
@@ -86,33 +126,19 @@ namespace DiscountCatalog.MVC.Controllers
             {
                 Logout();
 
-                Response.Cookies.Add(new HttpCookie("Access_Token")
-                {
-                    Value = result.Access_Token,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("Role")
-                {
-                    Value = result.Role,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("UserName")
-                {
-                    Value = result.UserName,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("UserID")
-                {
-                    Value = result.Id,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("Email")
-                {
-                    Value = result.Email,
-                    HttpOnly = true
-                });
+                cookieHandler.Set("Access_Token", result.Access_Token, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("UserID", result.Id, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("UserName", result.Access_Token, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("Email", result.Email, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("Role", result.Role, true, System.Web.HttpContext.Current);
 
-                return RedirectToAction("Index", "Home");
+                if (!userCookieHandler.IsValid(userCookieHandler.Get(System.Web.HttpContext.Current)))
+                {
+                    cookieHandler.ClearAll(System.Web.HttpContext.Current);
+                    return View().Error("An error has occurred, please try again.");
+                }
+
+                return RedirectToAction("Index", "Home").Success(result.SuccessMessage);
             }
             else
             {
@@ -127,12 +153,7 @@ namespace DiscountCatalog.MVC.Controllers
 
         public ActionResult Logout()
         {
-            string[] myCookies = Request.Cookies.AllKeys;
-
-            foreach (string cookie in myCookies)
-            {
-                Response.Cookies[cookie].Expires = DateTime.Now.AddDays(-1);
-            }
+            cookieHandler.ClearAll(System.Web.HttpContext.Current);
 
             return RedirectToAction("Login");
         }
@@ -141,6 +162,11 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Details")]
         public async Task<ActionResult> Details()
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             AccountREST user = await accountRepository.Details();
 
             return View(user);
@@ -150,15 +176,33 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Edit")]
         public async Task<ActionResult> Edit()
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             AccountREST user = await accountRepository.Details();
 
-            return View(user);
+            if (user != null)
+            {
+                if (user.Id != null)
+                {
+                    return View(user);
+                }
+            }
+
+            return RedirectToAction("Login");
         }
 
         [HttpPost]
         [Route("Edit")]
         public async Task<ActionResult> Edit(AccountRESTPut user)
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             Result result = await accountRepository.Edit(user);
 
             if (!result.Success)
@@ -168,18 +212,23 @@ namespace DiscountCatalog.MVC.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return View(user);
+                return View(await accountRepository.Details());
             }
 
-            return RedirectToAction("Details");
+            return RedirectToAction("Details").Success(result.SuccessMessage);
         }
 
         [HttpGet]
         [Route("Delete")]
         public async Task<ActionResult> Delete()
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             AccountREST user = await accountRepository.Details();
-            
+
             return View(user);
         }
 
@@ -187,6 +236,11 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Delete")]
         public async Task<ActionResult> Delete(User user)
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             Result result = await accountRepository.Delete();
 
             if (!result.Success)
@@ -207,6 +261,11 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("PostUserImage")]
         public async Task<ActionResult> PostUserImage(PostImage image)
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             // ZA SPREMANJE NA SERVER
             //string image = System.IO.Path.GetFileName(file.FileName); // + Guid.NewGuid().ToString();  mozda
             //string path = System.IO.Path.Combine(Server.MapPath("sad tu napisem path npr. ~/images/user il tak nest"), image);
@@ -215,39 +274,59 @@ namespace DiscountCatalog.MVC.Controllers
 
             //ZA SPREMANJE NA BAZU
 
-            byte[] array = ImageProcessor.GetBuffer(image.File);
-
-            byte[] imageArray = array;
-
-            float mb = (array.Length / 1024f) / 1024f;
-
-            if (mb > 1)
+            try
             {
-                byte[] arrayScaled = ImageProcessor.To1MB(array);
-                //float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
+                byte[] array = ImageProcessor.GetBuffer(image.File);
 
-                imageArray = arrayScaled;
-            }
+                byte[] imageArray = array;
 
-            Result result = await accountRepository.PostUserImage(imageArray);
+                float mb = (array.Length / 1024f) / 1024f;
 
-            if (!result.Success)
-            {
-                foreach (var error in result.ModelState)
+                if (mb > 1)
                 {
-                    ModelState.AddModelError(error.Key, error.Value);
+                    byte[] arrayScaled = ImageProcessor.To1MB(array);
+                    //float mbScaled = (arrayScaled.Length / 1024f) / 1024f;
+
+                    imageArray = arrayScaled;
+                }
+
+                Result result = await accountRepository.PostUserImage(imageArray);
+
+                if (!result.Success)
+                {
+                    foreach (var error in result.ModelState)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return RedirectToAction("Details", ModelState);
+                }
+                else
+                {
+                    return RedirectToAction("Details").Success(result.SuccessMessage);
                 }
             }
-
-            return RedirectToAction("Details");
+            catch (Exception exc)
+            {
+                Type type = exc.GetType();
+                throw;
+            }
         }
 
         [Route("GetUserImage/{id}")]
         public async Task<ActionResult> GetUserImage(string id)
         {
+            if (!areUserCookiesValid())
+            {
+                return RedirectToLogin();
+            }
+
             byte[] byteArray = await accountRepository.GetUserImage();
 
             return File(byteArray, "image/png");
         }
+
+        #endregion
+        
     }
 }

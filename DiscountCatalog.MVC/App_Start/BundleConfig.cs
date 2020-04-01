@@ -64,21 +64,31 @@ namespace DiscountCatalog.MVC
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Delete").Include(
                     "~/Content/IndividualPageStyles/Delete/Delete_main.css"));
 
+            bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Register").Include(
+                    "~/Content/IndividualPageStyles/Register/AccountTypeSelecion_main.css"));
+
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Details").Include(
-                      "~/Scripts/IndividualPageStyles/Details/Details_main.css"));
+                      "~/Scripts/IndividualPageScripts/Details/Details_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Create").Include(
-                      "~/Scripts/IndividualPageStyles/Details/Create_main.css"));
+                      "~/Scripts/IndividualPageScripts/Details/Create_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Edit").Include(
-                      "~/Scripts/IndividualPageStyles/Details/Edit_main.css"));
+                      "~/Scripts/IndividualPageScripts/Details/Edit_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/GetAll").Include(
-                      "~/Scripts/IndividualPageStyles/Details/GetAll_main.css"));
+                      "~/Scripts/IndividualPageScripts/Details/GetAll_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Delete").Include(
-                      "~/Scripts/IndividualPageStyles/Details/Delete_main.css"));
+                      "~/Scripts/IndividualPageScripts/Details/Delete_main.js"));
+
+
+            //FLASH MESSAGES
+
+            bundles.Add(new ScriptBundle("~/Scripts/FlashMessage").Include(
+                "~/Scripts/jquery.cookie.js",
+                "~/Scripts/jquery.flashmessage.js"));
 
         }
     }

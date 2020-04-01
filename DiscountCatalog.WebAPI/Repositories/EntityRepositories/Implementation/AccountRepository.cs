@@ -407,20 +407,30 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
         public async Task<Result> PostUserImage(string id, byte[] image)
         {
-            var result = new Result();
+            var modelState = new EntityModelState()
+            {
+                SuccessMessage = "Image uploaded."
+            };
 
             if (ImageProcessor.IsValid(image))
             {
                 ApplicationUser user = await FindByIdAsync(id);
 
-                user.UserImage = image;
+                if (user != null)
+                {
+                    user.UserImage = image;
+                }
+                else
+                {
+                    modelState.Add("User does not exist.");
+                }
             }
             else
             {
-                result.AddModelError(string.Empty, "Image is not valid.");
+                modelState.Add("Image is not valid.");
             }
 
-            return result;
+            return modelState.GetResult();
         }
 
         public async Task<byte[]> GetUserImage(string id)

@@ -87,10 +87,12 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back", "Details")
-        </div>
+    <div class="form-actions no-color">
+        @*<input type="submit" value="Delete" class="btn btn-default" />*@
+
+        <a href="@Url.Action("Details", "Account")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+        <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+    </div>
     }
 </div>
 

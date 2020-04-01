@@ -24,6 +24,16 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
             RuleFor(u => u.Id)
                 .NotNull()
                 .WithMessage("Id not assigned.");
+
+            RuleFor(u => u.UserName)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Username should not be empty.");
+
+            RuleFor(u => u.Email)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Email should not be empty.");
         }
     }
 }

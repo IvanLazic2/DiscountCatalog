@@ -7,10 +7,13 @@
 dt, dd {
     height: 20px;
 }
+#main-details-window{
+    overflow: hidden;
+}
 
 /*FORM*/
 
-.upload-image-form {
+.image-form-container {
     width: 50%;
     float: right;
 }
@@ -21,17 +24,23 @@ dt, dd {
     z-index: -1;
 }
 
+#browse-button span{
+    margin-right: 10px;
+}
+
+#uploadedPreview{
+    width: 100px;
+    margin: 20px 0;
+}
+
+#form-actions{
+    display: none;
+}
+
 /*USER INFO*/
 
 .user-info-container {
     width: 50%;
 }
 
-#user-info {
-    border: 1px green solid;
-    margin: 30px 0 20px 0;
-}
 
-    #user-info div {
-        display: inline-block;
-    }

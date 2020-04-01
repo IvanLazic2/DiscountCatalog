@@ -1,0 +1,37 @@
+﻿#submit-image-user {
+    cursor: pointer;
+    text-indent: -99999px;
+    border: none;
+    width: 128px;
+    height: 128px;
+    background: #ffffff Url("https://icon-library.net/images/icon-for-user/icon-for-user-6.jpg");
+    background-size: 128px;
+}
+
+#submit-image-store {
+    cursor: pointer;
+    text-indent: -99999px;
+    border: none;
+    width: 128px;
+    height: 128px;
+    background: #ffffff Url("https://icon-library.net/images/shop-icon-free/shop-icon-free-1.jpg");
+    background-size: 128px;
+}
+
+#user-section {
+    float: left;
+    text-align: center;
+}
+
+#store-section {
+    text-align: center;
+}
+
+main {
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.bold {
+    font-weight: bold;
+}

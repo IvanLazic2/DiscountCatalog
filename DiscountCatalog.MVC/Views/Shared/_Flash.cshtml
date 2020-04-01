@@ -1,0 +1,14 @@
+﻿<div id="flash-messages" class="alert" style="display:none;">
+    <a class="close" href="#">&times;</a>
+    <p></p>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#flash-messages").flashMessage();
+    });
+    
+    $(document).ajaxComplete(function () {
+        $("#flash-messages").flashMessage();
+    });
+</script>
