@@ -216,6 +216,7 @@
     <Compile Include="ModelBinders\DecimalModelBinder.cs" />
     <Compile Include="Models\Cookies\StoreCookie.cs" />
     <Compile Include="Models\Redirect\RedirectModel.cs" />
+    <Compile Include="Models\Redirect\Route.cs" />
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
     <Compile Include="REST\Account\AccountREST.cs" />
@@ -596,6 +597,7 @@
     <Content Include="Views\Store\GetAllDeletedProducts.cshtml" />
     <Content Include="Views\Error\FileTooBig.cshtml" />
     <Content Include="Views\Shared\_Flash.cshtml" />
+    <Content Include="Views\StoreAdmin\_StoreList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

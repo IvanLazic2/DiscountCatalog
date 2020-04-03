@@ -1,13 +1,9 @@
-﻿/*div {
-    border: 1px red solid;
-}*/
-
-/*GENERAL*/
+﻿/*GENERAL*/
 
 dt, dd {
     height: 20px;
 }
-#main-details-window{
+.main-details-window{
     overflow: hidden;
 }
 
@@ -19,6 +15,7 @@ dt, dd {
 }
 
 #default-file-browse {
+    display: none;
     opacity: 0;
     position: absolute;
     z-index: -1;

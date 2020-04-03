@@ -18,13 +18,14 @@ namespace DiscountCatalog.MVC.Cookies.Implementation
             context.Response.Cookies.Add(new HttpCookie(key)
             {
                 Value = value,
-                HttpOnly = httpOnly
+                HttpOnly = httpOnly,
+                Expires = DateTime.Now.AddYears(1) //
             });
         }
 
         public void Clear(string key, HttpContext context)
         {
-            context.Request.Cookies[key].Expires = DateTime.Now.AddDays(-1);
+            context.Response.Cookies[key].Expires = DateTime.Now.AddDays(-1);
         }
 
         public void ClearAll(HttpContext context)

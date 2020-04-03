@@ -1,2 +1,40 @@
-﻿body {
+﻿/*SEARCH*/
+
+.search-container{
+    margin: 20px 0;
+}
+
+.search-container p {
+    display: inline-block;
+}
+
+#search-box {
+    display: inline-block;
+}
+
+/*CREATE*/
+
+#create-button{
+    border-bottom: none;
+}
+
+/*WORKING HOURS*/
+
+.working-hours-table{
+    min-width: 200px;
+}
+
+.working-hours-table tr td{
+    padding-right: 10px;
+}
+
+/*TABLE ROWS*/
+
+td{
+    vertical-align: middle!important;
+}
+
+.main-table-data-row:hover {
+    cursor: pointer;
+    background-color: #f9f9f9;
 }

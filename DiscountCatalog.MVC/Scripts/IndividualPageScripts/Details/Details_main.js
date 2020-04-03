@@ -9,6 +9,7 @@
     }
     else {
         showClientError("Image is not valid.");
+        location.reload();
     }
 }
 
@@ -33,13 +34,5 @@ function Clear() {
 }
 
 function showClientError(message) {
-    var $div = $('.validation-summary-errors');
-    if ($div.length === 0) {
-        console.log("hita ovo");
-        $div = $('<div class="validation-summary-errors">');
-        $div.html('<ul id="flash-messages" class="alert"></ul>');
-        // Put the $div somewhere
-        $div.appendTo($('#image-form'));
-        $div.find('ul').append($('<li>').text(message));
-    }
+    document.cookie = "Flash.Error=" + message + "; Path=/";
 }

@@ -23,6 +23,7 @@ using AutoMapper;
 using AbatementHelper.MVC.Mapping;
 using DiscountCatalog.MVC.Cookies.Contractor;
 using DiscountCatalog.MVC.Cookies.Implementation;
+using DiscountCatalog.MVC.Validators;
 
 namespace DiscountCatalog.MVC.Controllers
 {
@@ -33,7 +34,7 @@ namespace DiscountCatalog.MVC.Controllers
 
         private readonly IMapper mapper;
         private readonly ICookieHandler cookieHandler;
-        private readonly AccountCookieHandler accountCookieHandler;
+        //private readonly AccountCookieHandler accountCookieHandler;
         private readonly StoreCookieHandler storeCookieHandler;
         private readonly StoreAdminRepository storeAdminRepository;
 
@@ -45,7 +46,7 @@ namespace DiscountCatalog.MVC.Controllers
         {
             mapper = AutoMapping.Initialise();
             cookieHandler = new CookieHandler();
-            accountCookieHandler = new AccountCookieHandler();
+            //accountCookieHandler = new AccountCookieHandler();
             storeCookieHandler = new StoreCookieHandler();
             storeAdminRepository = new StoreAdminRepository();
         }
@@ -153,7 +154,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             ManagerREST manager = await storeAdminRepository.GetManager(id);
 
-            return View(manager);
+            if (GlobalValidator.IsManagerValid(manager))
+            {
+                return View(manager);
+            }
+
+            return RedirectToAction("GetAllManagers").Error("Something went wrong, please try again.");
         }
 
         [HttpGet]

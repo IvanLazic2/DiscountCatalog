@@ -60,7 +60,7 @@ namespace DiscountCatalog.MVC.Factory
                 if (!AreStoreCookiesValid())
                 {
                     RedirectMessageExtensions.SetError("Something went wrong, please select the store again.");
-                    ContextBase.Response.Redirect($"/{cookieHandler.Get("Role", CurrentContext)}/GetAllStores"); //zasad
+                    ContextBase.Response.Redirect($"/{cookieHandler.Get("Role", CurrentContext)}/GetAllStores");
                 }
             }
         }

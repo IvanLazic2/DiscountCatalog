@@ -53,13 +53,13 @@ namespace DiscountCatalog.MVC
                     "~/Content/IndividualPageStyles/Details/Details_main.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Create").Include(
-                    "~/Content/IndividualPageStyles/Details/Create_main.css"));
+                    "~/Content/IndividualPageStyles/Create/Create_main.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Edit").Include(
-                    "~/Content/IndividualPageStyles/Details/Edit.css"));
+                    "~/Content/IndividualPageStyles/Edit/Edit.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/GetAll").Include(
-                    "~/Content/IndividualPageStyles/Details/GetAll_main.css"));
+                    "~/Content/IndividualPageStyles/GetAll/GetAll_main.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Delete").Include(
                     "~/Content/IndividualPageStyles/Delete/Delete_main.css"));
@@ -72,16 +72,16 @@ namespace DiscountCatalog.MVC
                       "~/Scripts/IndividualPageScripts/Details/Details_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Create").Include(
-                      "~/Scripts/IndividualPageScripts/Details/Create_main.js"));
+                      "~/Scripts/IndividualPageScripts/Create/Create_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Edit").Include(
-                      "~/Scripts/IndividualPageScripts/Details/Edit_main.js"));
+                      "~/Scripts/IndividualPageScripts/Edit/Edit_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/GetAll").Include(
-                      "~/Scripts/IndividualPageScripts/Details/GetAll_main.js"));
+                      "~/Scripts/IndividualPageScripts/GetAll/GetAll_main.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Delete").Include(
-                      "~/Scripts/IndividualPageScripts/Details/Delete_main.js"));
+                      "~/Scripts/IndividualPageScripts/Delete/Delete_main.js"));
 
 
             //FLASH MESSAGES

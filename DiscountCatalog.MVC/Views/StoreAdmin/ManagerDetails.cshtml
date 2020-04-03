@@ -4,130 +4,145 @@
     ViewBag.Title = "ManagerDetails";
 }
 
-<h2>@Model.Identity.UserName - Details</h2>
+<div id="user-info">
+    <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id })); "></div>
+    <h2>@Model.Identity.UserName</h2>
+</div>
 
-@if (Model != null)
-{
-    using (Html.BeginForm("PostManagerImage", "StoreAdmin", FormMethod.Post,
-                            new { enctype = "multipart/form-data" }))
-    {
-        <label for="file">Upload Image:</label>
-        <input type="hidden" name="id" id="id" value="@Model.Id">
-        <input type="file" name="file" id="file" style="width: 100%;" />
-        <input type="submit" value="Upload" class="submit" />
-    }
+<hr />
 
-        <div>
-            <hr />
-            <dl class="dl-horizontal">
-                <dt>
+<div class="main-details-window">
 
-                </dt>
-                <dd>
-                    <div style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id })); width: 100px; height: 100px;"></div>
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.UserName)
-                </dt>
+    <div class="image-form-container">
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.UserName)
-                </dd>
+        @using (Html.BeginForm("PostManagerImage", "StoreAdmin", FormMethod.Post,
+                                new { enctype = "multipart/form-data", id = "image-form" }))
+        {
+            <p>Upload a new image:</p>
+            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+            <input type="hidden" name="id" id="id" value="@Model.Id">
+            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+            <br>
+            <img id="uploadedPreview" alt="">
+            <br>
+            <div id="form-actions">
+                <button class="btn btn-secondary" type="submit"><span class="glyphicon glyphicon-upload"></span> Upload</button>
+                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
+            </div>
+        }
+    </div>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.FirstName)
-                </dt>
+    <div class="user-info-container">
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.FirstName)
-                </dd>
+        <h4><span class="glyphicon glyphicon-user"></span> Manager info</h4>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.LastName)
-                </dt>
+        <dl class="dl-horizontal">
+            <dt>
+                Username
+            </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.LastName)
-                </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.UserName)
+            </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.Email)
-                </dt>
+            <dt>
+                First name
+            </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.Email)
-                </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.FirstName)
+            </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.PhoneNumber)
-                </dt>
+            <dt>
+                Last name
+            </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.PhoneNumber)
-                </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.LastName)
+            </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.Country)
-                </dt>
+            <dt>
+                Email
+            </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.Country)
-                </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Email)
+            </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.City)
-                </dt>
+            <dt>
+                Phone number
+            </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.City)
-                </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.PhoneNumber)
+            </dd>
+        </dl>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.PostalCode)
-                </dt>
+        <h4><span class="glyphicon glyphicon-map-marker"></span> Address</h4>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.PostalCode)
-                </dd>
+        <dl class="dl-horizontal">
+            <dt>
+                Country
+            </dt>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.Street)
-                </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Country)
+            </dd>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.Street)
-                </dd>
+            <dt>
+                City
+            </dt>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Identity.Approved)
-                </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.City)
+            </dd>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Identity.Approved)
-                </dd>
+            <dt>
+                Postal code
+            </dt>
 
-                <dt>
-                    Stores
-                </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.PostalCode)
+            </dd>
 
-                <dd>
-                    @{
-                        foreach (var store in Model.Stores)
-                        {
-                            @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
-                        }
-                    }
-                </dd>
+            <dt>
+                Street
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Street)
+            </dd>
+        </dl>
 
 
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Stores</h4>
 
-            </dl>
-            <p>@Html.ActionLink("Assign stores", "GetManagerStores", new { id = Model.Id })</p>
-        </div>
+        @{ 
+            Html.RenderPartial("_StoreList", Model.Stores);
+        }
+
+        @*<p>
+            @{
+                foreach (var store in Model.Stores)
+                {
+                    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = store.Id })); "></div>
+                    @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
+                }
+            }
+        </p>*@
+
+
+        <p>@Html.ActionLink("Assign stores", "GetManagerStores", new { id = Model.Id })</p>
+    </div>
     <p>
-        @Html.ActionLink("Edit", "EditManager", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "GetAllManagers")
+        <a href="@Url.Action("EditManager", "StoreAdmin")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+        <a href="@Url.Action("DeleteManager", "StoreAdmin")" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a> |
+        <a href="@Url.Action("Back to list", "GetAllManagers")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
     </p>
-}
+</div>
 
+@Styles.Render("~/Content/IndividualPageStyles/Common")
 
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")

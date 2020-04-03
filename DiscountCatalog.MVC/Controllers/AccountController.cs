@@ -228,7 +228,7 @@ namespace DiscountCatalog.MVC.Controllers
 
             Logout();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home").Warning("Account deleted.");
         }
 
         [Route("PostUserImage")]
@@ -267,7 +267,7 @@ namespace DiscountCatalog.MVC.Controllers
                         ModelState.AddModelError(error.Key, error.Value);
                     }
 
-                    return RedirectToAction("Details", ModelState);
+                    return RedirectToAction("Details", ModelState); //hmm
                 }
                 else
                 {
