@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DiscountCatalog.MVC.Cookies
+namespace DiscountCatalog.MVC.Models.Cookies
 {
-    public class UserCookie
+    public class AccountCookie
     {
         public string Id { get; set; }
         public string Access_Token { get; set; }
@@ -13,12 +13,12 @@ namespace DiscountCatalog.MVC.Cookies
         public string Email { get; set; }
         public string Role { get; set; }
 
-        public UserCookie()
+        public AccountCookie()
         {
 
         }
 
-        public UserCookie(string id, string access_token, string userName, string email, string role)
+        public AccountCookie(string id, string access_token, string userName, string email, string role)
         {
             Id = id;
             Access_Token = access_token;

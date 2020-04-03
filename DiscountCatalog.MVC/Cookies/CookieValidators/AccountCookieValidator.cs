@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using DiscountCatalog.MVC.Models.Cookies;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +7,9 @@ using System.Web;
 
 namespace DiscountCatalog.MVC.Cookies.CookieValidators
 {
-    public class UserCookieValidator : AbstractValidator<UserCookie>
+    public class AccountCookieValidator : AbstractValidator<AccountCookie>
     {
-        public UserCookieValidator()
+        public AccountCookieValidator()
         {
             RuleFor(c => c.Access_Token)
                 .NotEmpty()

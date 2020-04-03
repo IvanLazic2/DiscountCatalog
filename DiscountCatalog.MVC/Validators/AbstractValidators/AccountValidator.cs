@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DiscountCatalog.MVC.Validators
+namespace DiscountCatalog.MVC.Validators.AbstractValidators
 {
     public class AccountValidator : AbstractValidator<AccountREST>
     {

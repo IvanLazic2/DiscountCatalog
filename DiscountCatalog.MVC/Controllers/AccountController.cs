@@ -21,17 +21,21 @@ using AutoMapper;
 using AbatementHelper.MVC.Mapping;
 using DiscountCatalog.MVC.Cookies.Contractor;
 using DiscountCatalog.MVC.Cookies.Implementation;
+using DiscountCatalog.MVC.Validators;
+using FluentValidation.Results;
 
 namespace DiscountCatalog.MVC.Controllers
 {
     public class AccountController : Controller
     {
+        //u global asax napravit listu glavnih endpointa (details, getall, edit, delete...) i pogledat nalazi li se sadasnji request u listi od tih endpointa i ako da onda je zapise u listu posjecenih endpointa, ako ne ne zapise ju i kada user ode narag odvest ce ga na zadnji glavni endpoint
+
         #region Fields
 
         private readonly IMapper mapper;
         private readonly ICookieHandler cookieHandler;
-        private readonly UserCookieHandler userCookieHandler;
-        private AccountRepository accountRepository = new AccountRepository();
+        private readonly AccountCookieHandler accountCookieHandler;
+        private readonly AccountRepository accountRepository;
 
         #endregion
 
@@ -41,23 +45,8 @@ namespace DiscountCatalog.MVC.Controllers
         {
             mapper = AutoMapping.Initialise();
             cookieHandler = new CookieHandler();
-            userCookieHandler = new UserCookieHandler();
-
-        }
-
-        #endregion
-
-        #region PrivateMethods
-
-        private bool areUserCookiesValid()
-        {
-            return userCookieHandler.IsValid(userCookieHandler.Get(System.Web.HttpContext.Current));
-        }
-
-        private ActionResult RedirectToLogin()
-        {
-            cookieHandler.ClearAll(System.Web.HttpContext.Current);
-            return RedirectToAction("Login").Error("An error has occurred, please log in.");
+            accountCookieHandler = new AccountCookieHandler();
+            accountRepository = new AccountRepository();
         }
 
         #endregion
@@ -128,11 +117,11 @@ namespace DiscountCatalog.MVC.Controllers
 
                 cookieHandler.Set("Access_Token", result.Access_Token, true, System.Web.HttpContext.Current);
                 cookieHandler.Set("UserID", result.Id, true, System.Web.HttpContext.Current);
-                cookieHandler.Set("UserName", result.Access_Token, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("UserName", result.UserName, true, System.Web.HttpContext.Current);
                 cookieHandler.Set("Email", result.Email, true, System.Web.HttpContext.Current);
                 cookieHandler.Set("Role", result.Role, true, System.Web.HttpContext.Current);
 
-                if (!userCookieHandler.IsValid(userCookieHandler.Get(System.Web.HttpContext.Current)))
+                if (!accountCookieHandler.IsValid(accountCookieHandler.Get(System.Web.HttpContext.Current)))
                 {
                     cookieHandler.ClearAll(System.Web.HttpContext.Current);
                     return View().Error("An error has occurred, please try again.");
@@ -162,47 +151,36 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Details")]
         public async Task<ActionResult> Details()
         {
-            if (!areUserCookiesValid())
+            AccountREST account = await accountRepository.Details();
+
+            if (GlobalValidator.IsAccountValid(account))
             {
-                return RedirectToLogin();
+                return View(account);
             }
 
-            AccountREST user = await accountRepository.Details();
-
-            return View(user);
+            return RedirectToAction("Index", "Home").Error("Something went wrong, please try again.");
         }
 
         [HttpGet]
         [Route("Edit")]
         public async Task<ActionResult> Edit()
         {
-            if (!areUserCookiesValid())
+            AccountREST account = await accountRepository.Details();
+
+            if (GlobalValidator.IsAccountValid(account))
             {
-                return RedirectToLogin();
+                return View(account);
             }
 
-            AccountREST user = await accountRepository.Details();
+            return RedirectToAction("Index", "Home").Error("Something went wrong, please try again.");
 
-            if (user != null)
-            {
-                if (user.Id != null)
-                {
-                    return View(user);
-                }
-            }
-
-            return RedirectToAction("Login");
+            //return RedirectToAction("Login");
         }
 
         [HttpPost]
         [Route("Edit")]
         public async Task<ActionResult> Edit(AccountRESTPut user)
         {
-            if (!areUserCookiesValid())
-            {
-                return RedirectToLogin();
-            }
-
             Result result = await accountRepository.Edit(user);
 
             if (!result.Success)
@@ -222,25 +200,20 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Delete")]
         public async Task<ActionResult> Delete()
         {
-            if (!areUserCookiesValid())
+            AccountREST account = await accountRepository.Details();
+
+            if (GlobalValidator.IsAccountValid(account))
             {
-                return RedirectToLogin();
+                return View(account);
             }
 
-            AccountREST user = await accountRepository.Details();
-
-            return View(user);
+            return RedirectToAction("Index", "Home").Error("Something went wrong, please try again.");
         }
 
         [HttpPost]
         [Route("Delete")]
         public async Task<ActionResult> Delete(User user)
         {
-            if (!areUserCookiesValid())
-            {
-                return RedirectToLogin();
-            }
-
             Result result = await accountRepository.Delete();
 
             if (!result.Success)
@@ -261,11 +234,6 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("PostUserImage")]
         public async Task<ActionResult> PostUserImage(PostImage image)
         {
-            if (!areUserCookiesValid())
-            {
-                return RedirectToLogin();
-            }
-
             // ZA SPREMANJE NA SERVER
             //string image = System.IO.Path.GetFileName(file.FileName); // + Guid.NewGuid().ToString();  mozda
             //string path = System.IO.Path.Combine(Server.MapPath("sad tu napisem path npr. ~/images/user il tak nest"), image);
@@ -316,17 +284,12 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("GetUserImage/{id}")]
         public async Task<ActionResult> GetUserImage(string id)
         {
-            if (!areUserCookiesValid())
-            {
-                return RedirectToLogin();
-            }
-
             byte[] byteArray = await accountRepository.GetUserImage();
 
             return File(byteArray, "image/png");
         }
 
         #endregion
-        
+
     }
 }

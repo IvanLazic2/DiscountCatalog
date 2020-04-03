@@ -1,4 +1,8 @@
-﻿using DiscountCatalog.MVC.ModelBinders;
+﻿using DiscountCatalog.MVC.Cookies.Contractor;
+using DiscountCatalog.MVC.Cookies.Implementation;
+using DiscountCatalog.MVC.Factory;
+using DiscountCatalog.MVC.ModelBinders;
+using DiscountCatalog.MVC.Models.Redirect;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,6 +19,20 @@ namespace DiscountCatalog.MVC
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        private readonly List<string> _allowedControllers = new List<string>
+        {
+            "Home",
+            "Error"
+        };
+        private readonly List<string> _allowedActions = new List<string>
+        {
+            "Login",
+            "Logout",
+            "AccountTypeSelection",
+            "Register"
+        };
+        private RedirectFactory _redirectFactory;
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -39,50 +57,22 @@ namespace DiscountCatalog.MVC
             Thread.CurrentThread.CurrentUICulture = currentCulture;
         }
 
-        //protected void Application_BeginRequest(Object sender, EventArgs e)
-        //{
-        //    HttpRuntimeSection runTime = (HttpRuntimeSection)WebConfigurationManager.GetSection("system.web/httpRuntime");
-        //    //Approx 100 Kb(for page content) size has been deducted because the maxRequestLength proprty is the page size, not only the file upload size
-        //    int maxRequestLength = (runTime.MaxRequestLength - 100) * 1024;
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            HttpContextBase context = new HttpContextWrapper(HttpContext.Current);
+            HttpContext currentContext = HttpContext.Current;
 
-        //    //This code is used to check the request length of the page and if the request length is greater than 
-        //    //MaxRequestLength then retrun to the same page with extra query string value action=exception
+            RouteData routeData = RouteTable.Routes.GetRouteData(context);
 
-        //    HttpContext context = ((HttpApplication)sender).Context;
-        //    if (context.Request.ContentLength > maxRequestLength)
-        //    {
-        //        IServiceProvider provider = (IServiceProvider)context;
-        //        HttpWorkerRequest workerRequest = (HttpWorkerRequest)provider.GetService(typeof(HttpWorkerRequest));
-        //        // Check if body contains data
-        //        if (workerRequest.HasEntityBody())
-        //        {
-        //            // get the total body length
-        //            int requestLength = workerRequest.GetTotalEntityBodyLength();
-        //            // Get the initial bytes loaded
-        //            int initialBytes = 0;
-        //            if (workerRequest.GetPreloadedEntityBody() != null)
-        //                initialBytes = workerRequest.GetPreloadedEntityBody().Length;
-        //            if (!workerRequest.IsEntireEntityBodyIsPreloaded())
-        //            {
-        //                byte[] buffer = new byte[512000];
-        //                // Set the received bytes to initial bytes before start reading
-        //                int receivedBytes = initialBytes;
-        //                while (requestLength - receivedBytes >= initialBytes)
-        //                {
-        //                    // Read another set of bytes
-        //                    initialBytes = workerRequest.ReadEntityBody(buffer, buffer.Length);
-        //                    // Update the received bytes
-        //                    receivedBytes += initialBytes;
-        //                }
-        //                initialBytes = workerRequest.ReadEntityBody(buffer, requestLength - receivedBytes);
-        //            }
-        //        }
-        //        HttpContext.Current.ClearError();
-        //        // Redirect the user to the same page with querystring action=exception. 
-        //        //context.Response.Redirect("~/Erros/FicheiroGrande.aspx");
-        //        context.Response.Redirect("~/Views/Shared/Errors/FileTooBig.cshtml");
-        //    }
-        //}
+            if (routeData != null)
+            {
+                string controllerName = routeData.GetRequiredString("controller");
+                string actionName = routeData.GetRequiredString("action");
+
+                _redirectFactory = new RedirectFactory(currentContext, context, _allowedControllers, _allowedActions);
+                _redirectFactory.GenerateRedirect(new RedirectModel(controllerName, actionName));
+            }
+        }
 
         private void Application_Error(object sender, EventArgs e)
         {
@@ -94,10 +84,9 @@ namespace DiscountCatalog.MVC
 
             if (httpException.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
             {
-                //handle the error
                 HttpContext.Current.ClearError();
                 HttpContext.Current.Response.Redirect("~/Error/FileTooBig");
-                //Response.Write("Too big a file, dude"); //for example
+                //Response.Write("Too big a file, dude");
             }
         }
     }

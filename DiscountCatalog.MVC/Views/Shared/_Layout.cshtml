@@ -10,11 +10,13 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/moment")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/FlashMessage")
 
 </head>
 <body>
+
     @{
         Html.RenderPartial("_Flash");
         Html.RenderPartial("_HeaderNavBar");
@@ -28,9 +30,12 @@
         </footer>
     </div>
 
-
-    
-
     @RenderSection("scripts", required: false)
+
+    @*<script>
+            $(window).on('load', function () {
+                $('#loading').remove();
+            });
+        </script>*@
 </body>
 </html>

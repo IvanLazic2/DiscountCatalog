@@ -21,19 +21,38 @@ using DiscountCatalog.Common.Models;
 using DiscountCatalog.MVC.REST.Store;
 using AutoMapper;
 using AbatementHelper.MVC.Mapping;
+using DiscountCatalog.MVC.Cookies.Contractor;
+using DiscountCatalog.MVC.Cookies.Implementation;
 
 namespace DiscountCatalog.MVC.Controllers
 {
     [RoutePrefix("StoreAdmin")]
-    public class StoreAdminController : Controller
+    public class StoreAdminController : Controller // TU SAM STAO - napravit cookiehandler za store i dizajnirat viewove
     {
-        private IMapper mapper;
-        private StoreAdminRepository storeAdminRepository = new StoreAdminRepository();
+        #region Fields
+
+        private readonly IMapper mapper;
+        private readonly ICookieHandler cookieHandler;
+        private readonly AccountCookieHandler accountCookieHandler;
+        private readonly StoreCookieHandler storeCookieHandler;
+        private readonly StoreAdminRepository storeAdminRepository;
+
+        #endregion
+
+        #region Constructors
 
         public StoreAdminController()
         {
             mapper = AutoMapping.Initialise();
+            cookieHandler = new CookieHandler();
+            accountCookieHandler = new AccountCookieHandler();
+            storeCookieHandler = new StoreCookieHandler();
+            storeAdminRepository = new StoreAdminRepository();
         }
+
+        #endregion
+
+        #region Methods
 
         [HttpGet]
         [Route("Index")]
@@ -519,18 +538,10 @@ namespace DiscountCatalog.MVC.Controllers
 
             if (store != null)
             {
-                Response.Cookies.Add(new HttpCookie("StoreID")
-                {
-                    Value = store.Id,
-                    HttpOnly = true
-                });
-                Response.Cookies.Add(new HttpCookie("StoreName")
-                {
-                    Value = store.StoreName,
-                    HttpOnly = true
-                });
+                cookieHandler.Set("StoreID", store.Id, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("StoreName", store.StoreName, true, System.Web.HttpContext.Current);
 
-                return RedirectToAction("Index", "Store");
+                return RedirectToAction("Index", "Store").Success($"{store.StoreName} selected.");
             }
 
             return RedirectToAction("GetAllStores");
@@ -538,6 +549,10 @@ namespace DiscountCatalog.MVC.Controllers
         }
 
         #endregion
+
+
+        #endregion
+
 
     }
 }

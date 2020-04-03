@@ -4,7 +4,6 @@
     ViewBag.Title = "Details";
 }
 
-
 <div id="user-info">
     <div class="avatar" style="background-image: url(@Url.Action("GetUserImage", "Account", new { id = Model.Id })); "></div>
     <h2 style="display: inline">@Model.UserName</h2>

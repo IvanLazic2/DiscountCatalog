@@ -198,18 +198,24 @@
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Cookies\Contractor\ICookieHandler.cs" />
+    <Compile Include="Cookies\CookieValidators\StoreCookieValidator.cs" />
     <Compile Include="Cookies\Implementation\CookieHandler.cs" />
-    <Compile Include="Cookies\Implementation\UserCookieHandler.cs" />
-    <Compile Include="Cookies\CookieValidators\UserCookieValidator.cs" />
-    <Compile Include="Cookies\UserCookie.cs" />
+    <Compile Include="Cookies\Implementation\AccountCookieHandler.cs" />
+    <Compile Include="Cookies\CookieValidators\AccountCookieValidator.cs" />
+    <Compile Include="Cookies\Implementation\StoreCookieHandler.cs" />
+    <Compile Include="Models\Cookies\AccountCookie.cs" />
+    <Compile Include="Extensions\RedirectMessageExtensions .cs" />
     <Compile Include="Extensions\FlashMessageExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Factory\RedirectFactory.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mapping\AutoMapping.cs" />
     <Compile Include="ModelBinders\CustomDateModelBinder.cs" />
     <Compile Include="ModelBinders\DecimalModelBinder.cs" />
+    <Compile Include="Models\Cookies\StoreCookie.cs" />
+    <Compile Include="Models\Redirect\RedirectModel.cs" />
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
     <Compile Include="REST\Account\AccountREST.cs" />
@@ -227,7 +233,10 @@
     <Compile Include="REST\Store\StoreREST.cs" />
     <Compile Include="REST\Store\StoreRESTPost.cs" />
     <Compile Include="REST\Store\StoreRESTPut.cs" />
-    <Compile Include="Validators\AccountValidator.cs" />
+    <Compile Include="Validators\AbstractValidators\AccountValidator.cs" />
+    <Compile Include="Validators\AbstractValidators\ProductValidator.cs" />
+    <Compile Include="Validators\AbstractValidators\StoreValidator.cs" />
+    <Compile Include="Validators\GlobalValidator.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="Models\Extended\Address.cs" />
     <Compile Include="Models\Extended\Store.cs" />
@@ -591,6 +600,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Files\" />
+    <Folder Include="Validators\Contractor\" />
     <Folder Include="Views\Authentication\" />
   </ItemGroup>
   <ItemGroup>

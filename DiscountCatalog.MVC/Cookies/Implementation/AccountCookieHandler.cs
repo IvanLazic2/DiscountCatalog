@@ -1,5 +1,6 @@
 ﻿using DiscountCatalog.MVC.Cookies.Contractor;
 using DiscountCatalog.MVC.Cookies.CookieValidators;
+using DiscountCatalog.MVC.Models.Cookies;
 using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
@@ -8,15 +9,15 @@ using System.Web;
 
 namespace DiscountCatalog.MVC.Cookies.Implementation
 {
-    public class UserCookieHandler : ICookieHandler<UserCookie>
+    public class AccountCookieHandler : ICookieHandler<AccountCookie>
     {
-        public UserCookie Get(HttpContext context)
+        public AccountCookie Get(HttpContext context)
         {
             try
             {
                 HttpCookieCollection cookies = context.Request.Cookies;
 
-                return new UserCookie
+                return new AccountCookie
                     (
                         cookies["UserID"].Value,
                         cookies["Access_Token"].Value,
@@ -27,14 +28,14 @@ namespace DiscountCatalog.MVC.Cookies.Implementation
             }
             catch (Exception)
             {
-                return new UserCookie();
+                return new AccountCookie();
             }
             
         }
 
-        public bool IsValid(UserCookie cookie)
+        public bool IsValid(AccountCookie cookie)
         {
-            UserCookieValidator validator = new UserCookieValidator();
+            AccountCookieValidator validator = new AccountCookieValidator();
 
             ValidationResult result = validator.Validate(cookie);
 
