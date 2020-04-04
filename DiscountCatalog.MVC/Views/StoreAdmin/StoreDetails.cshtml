@@ -4,73 +4,126 @@
     ViewBag.Title = "DetailsStore";
 }
 
-
-
-<h2>@Model.StoreName - Details</h2>
-
-
-@using (Html.BeginForm("PostStoreImage", "StoreAdmin", FormMethod.Post,
-                        new { enctype = "multipart/form-data" }))
-{
-    <label for="file">Upload Image:</label>
-    <input type="hidden" name="id" id="id" value="@Model.Id">
-    <input type="file" name="file" id="file" style="width: 100%;" />
-    <input type="submit" value="Upload" class="submit" />
-}
-
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-
-        </dt>
-        <dd>
-            <div style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); width: 100px; height: 100px;"></div>
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.StoreName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.StoreName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Country)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Country)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.City)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.City)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.PostalCode)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PostalCode)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Street)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Street)
-        </dd>
-    </dl>
+<div id="store-info">
+    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>
+    <h2 style="display: inline">@Model.StoreName</h2>
 </div>
-<p>
-    @Html.ActionLink("Edit", "EditStore", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "GetAllStores")
-</p>
+
+<div class="main-details-window">
+
+    <div class="image-form-container">
+
+        @using (Html.BeginForm("PostStoreImage", "StoreAdmin", FormMethod.Post,
+                            new { enctype = "multipart/form-data", id = "image-form" }))
+        {
+            <p>Upload a new image:</p>
+            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+            <input type="hidden" name="id" id="id" value="@Model.Id">
+            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+            <br>
+            <img id="uploadedPreview" alt="">
+            <br>
+            <div id="form-actions">
+                <button class="btn btn-secondary" type="submit"><span class="glyphicon glyphicon-upload"></span> Upload</button>
+                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
+            </div>
+        }
+
+    </div>
+
+    <div class="store-info-container">
+
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Store info</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Store name
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.StoreName)
+            </dd>
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-time"></span> Working hours</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Week
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekEnd))
+                {
+                    <p>@Model.WorkingHoursWeekBegin - @Model.WorkingHoursWeekEnd</p>
+                }
+            </dd>
+            <dt>
+                Weekends
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekendsEnd))
+                {
+                    <p>@Model.WorkingHoursWeekendsBegin - @Model.WorkingHoursWeekendsEnd</p>
+                }
+            </dd>
+            <dt>
+                Holidays
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(Model.WorkingHoursHolidaysEnd))
+                {
+                    <p>@Model.WorkingHoursHolidaysBegin - @Model.WorkingHoursHolidaysEnd</p>
+                }
+            </dd>
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-map-marker"></span> Address</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Country
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Country)
+            </dd>
+
+            <dt>
+                City
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.City)
+            </dd>
+
+            <dt>
+                Postal code
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.PostalCode)
+            </dd>
+
+            <dt>
+                Street
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Street)
+            </dd>
+        </dl>
+    </div>
+    <p>
+        <a href="@Url.Action("EditStore", "StoreAdmin")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+        <a href="@Url.Action("DeleteStore", "StoreAdmin")" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a> |
+        @Html.ActionLink("Back to List", "GetAllStores")
+    </p>
+</div>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")
 
 

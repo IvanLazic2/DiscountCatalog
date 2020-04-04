@@ -87,9 +87,9 @@
                     }
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "EditStore", new { id = item.Id })
+                    @*@Html.ActionLink("Edit", "EditStore", new { id = item.Id })
                     @Html.ActionLink("Details", "StoreDetails", new { id = item.Id })
-                    @Html.ActionLink("Delete", "DeleteStore", new { id = item.Id })
+                    @Html.ActionLink("Delete", "DeleteStore", new { id = item.Id })*@
 
                     <a href="@Url.Action("Select", "StoreAdmin", new { id = item.Id })" class="btn btn-primary">Select <span class="glyphicon glyphicon-chevron-right"></span></a>
                 </td>

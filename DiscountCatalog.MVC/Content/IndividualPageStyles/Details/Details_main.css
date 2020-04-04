@@ -34,9 +34,9 @@ dt, dd {
     display: none;
 }
 
-/*USER INFO*/
+/*USER INFO / STORE INFO */
 
-.user-info-container {
+.user-info-container, .store-info-container {
     width: 50%;
 }
 
