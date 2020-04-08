@@ -1,24 +1,14 @@
 ﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Manager.ManagerREST>
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
-
-@{
-    ViewBag.Title = "GetAllManagers";
-}
-
-<h2><span class="glyphicon glyphicon-briefcase"></span> All managers</h2>
-
 <div class="search-container">
 
-    @using (Html.BeginForm("GetAllManagers", "StoreAdmin", FormMethod.Get))
+    @using (Html.BeginForm("StoreDetails", "StoreAdmin", FormMethod.Get))
     {
         <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
     }
 </div>
-
-<a href="@Url.Action("CreateManager", "StoreAdmin")" class="btn btn-default" id="create-button"><span class="glyphicon glyphicon-plus"></span></a>
-
 
 <div class="table-container">
 
@@ -26,7 +16,7 @@
         <tr>
             <th></th>
             <th>
-                @Html.ActionLink("UserName", "GetAllManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
+                @Html.ActionLink("UserName", "StoreDetails", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
             </th>
             <th>
                 FirstName
@@ -49,7 +39,7 @@
             <tr class="main-table-data-row">
                 <td>
                     <a href="@Url.Action("ManagerDetails", "StoreAdmin", new { id = item.Id })">
-                        <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = item.Id }));"></div>
+                        <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = item.Id })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
                     </a>
                 </td>
                 <td>
@@ -76,8 +66,6 @@
                         <p>@item.Identity.Street, @item.Identity.PostalCode @item.Identity.City, @item.Identity.Country</p>
                     }
                 </td>
-                <td></td>
-
             </tr>
         }
 
@@ -86,14 +74,18 @@
 
 </div>
 
-<a href="@Url.Action("GetAllDeletedManagers", "StoreAdmin")" class="btn btn-warning pull-right"><span class="glyphicon glyphicon-trash"></span></a>
-
 <br />
 
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("GetAllManagers",
+@Html.PagedListPager(Model, page => Url.Action("StoreDetails",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+
 @Styles.Render("~/Content/IndividualPageStyles/GetAll")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Common")
+
 @Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+

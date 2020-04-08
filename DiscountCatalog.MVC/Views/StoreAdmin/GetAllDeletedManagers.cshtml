@@ -3,55 +3,52 @@
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
-    ViewBag.Title = "GetAllDeletedManagers";
+    ViewBag.Title = "AllDeletedManagers";
 }
 
-<h2>All Deleted Managers</h2>
+<h2><span class="glyphicon glyphicon-trash"></span> All deleted managers</h2>
 
-@using (Html.BeginForm("GetAllDeletedManagers", "StoreAdmin", FormMethod.Get))
-{
-    <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
+<div class="search-container">
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink("UserName", "GetAllDeletedManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
-        </th>
-        <th>
-            FirstName
-        </th>
-        <th>
-            LastName
-        </th>
-        <th>
-            Email
-        </th>
-        <th>
-            PhoneNumber
-        </th>
-        <th>
-            Country
-        </th>
-        <th>
-            City
-        </th>
-        <th>
-            PostalCode
-        </th>
-        <th>
-            Street
-        </th>
-        <th></th>
-    </tr>
-    @if (Model != null)
+    @using (Html.BeginForm("GetAllDeletedManagers", "StoreAdmin", FormMethod.Get))
     {
-        foreach (var item in Model)
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+    }
+</div>
+
+<div class="table-container">
+
+    <table class="table" id="main-table">
+        <tr>
+            <th></th>
+            <th>
+                @Html.ActionLink("UserName", "GetAllDeletedManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
+            </th>
+            <th>
+                FirstName
+            </th>
+            <th>
+                LastName
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                PhoneNumber
+            </th>
+            <th>
+                Address
+            <th>
+        </tr>
+        @foreach (var item in Model)
         {
-            <tr>
+            <tr class="main-table-data-row">
+                <td>
+
+                    <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = item.Id })); width: 50px; height: 50px; vertical-align: middle; border-radius: 50%;"></div>
+
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Identity.UserName)
                 </td>
@@ -68,32 +65,39 @@
                     @Html.DisplayFor(modelItem => item.Identity.PhoneNumber)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Identity.Country)
+                    @if (!string.IsNullOrEmpty(item.Identity.Country) &&
+                         !string.IsNullOrEmpty(item.Identity.City) &&
+                         !string.IsNullOrEmpty(item.Identity.PostalCode) &&
+                         !string.IsNullOrEmpty(item.Identity.Street))
+                    {
+                        <p>@item.Identity.Street, @item.Identity.PostalCode @item.Identity.City, @item.Identity.Country</p>
+                    }
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Identity.City)
+                    <a href="@Url.Action("RestoreManager", "StoreAdmin", new { id = item.Id })" class="btn btn-primary"><span class="glyphicon glyphicon-repeat"></span> Restore</a>
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Identity.PostalCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Identity.Street)
-                </td>
-                <td>
 
-                    @Html.ActionLink("Restore", "RestoreManager", new { id = item.Id });
-
-                </td>
             </tr>
         }
-    }
 
-</table>
 
-@Html.ActionLink("All managers", "GetAllManagers")
+    </table>
+
+</div>
 
 <br />
+
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("GetAllDeletedManagers",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<a href="@Url.Action("GetAllManagers", "StoreAdmin")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Common")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")

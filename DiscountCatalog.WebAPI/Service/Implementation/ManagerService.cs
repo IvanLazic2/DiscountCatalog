@@ -133,10 +133,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 {
                     uow.Complete();
                 }
-                else
-                {
-                    uow.Dispose();
-                }
 
                 return result;
             }
@@ -225,10 +221,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 if (result.Success)
                 {
                     uow.Complete();
-                }
-                else
-                {
-                    uow.Dispose();
                 }
 
                 return result;
@@ -340,7 +332,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                ManagerEntity manager = uow.Managers.GetApproved(managerId);
+                ManagerEntity manager = uow.Managers.GetLoaded(managerId);
 
                 byte[] image = await uow.Accounts.GetUserImage(manager.Identity.Id);
 

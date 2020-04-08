@@ -129,7 +129,10 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 Result result = await uow.Stores.CreateAsync(storeEntity, store.StoreAdminId);
 
-                uow.Complete();
+                if (result.Success)
+                {
+                    uow.Complete();
+                }
 
                 return result;
             }
@@ -220,10 +223,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 {
                     uow.Complete();
                 }
-                else
-                {
-                    uow.Dispose();
-                }
 
                 return result;
             }
@@ -287,7 +286,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        
+
 
         #endregion
 

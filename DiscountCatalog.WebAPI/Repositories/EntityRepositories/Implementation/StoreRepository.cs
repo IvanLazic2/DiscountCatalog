@@ -51,15 +51,26 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 SuccessMessage = "Store created."
             };
+
+            if (store.StoreImage == null || !(store.StoreImage.Length > 0))
+            {
+                store.StoreImage = ImageProcessor.SetDefault("Store");
+            }
+
             UnitOfWork uow = new UnitOfWork(DbContext);
+
             store.Administrator = uow.StoreAdmins.GetByIdentityId(storeAdminId);
+
             var validator = new StoreValidator();
             var validationResult = await validator.ValidateAsync(store);
+
             modelState.Add(validationResult);
+
             if (validationResult.IsValid)
             {
                 Add(store);
             }
+
             return modelState.GetResult();
         }
 
@@ -239,6 +250,17 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbStore.City = store.City;
                 dbStore.PostalCode = store.PostalCode;
                 dbStore.Street = store.Street;
+                if (store.StoreImage.Length > 0)
+                {
+                    if (ImageProcessor.IsValid(store.StoreImage))
+                    {
+                        dbStore.StoreImage = store.StoreImage;
+                    }
+                    else
+                    {
+                        modelState.Add("Image is not valid.");
+                    }
+                }
 
                 var validator = new StoreValidator();
                 var validationResult = await validator.ValidateAsync(dbStore);
@@ -378,7 +400,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
         public byte[] GetStoreImage(string id)
         {
-            StoreEntity store = GetApproved(id);
+            StoreEntity store = GetLoaded(id);
 
             return store.StoreImage;
         }

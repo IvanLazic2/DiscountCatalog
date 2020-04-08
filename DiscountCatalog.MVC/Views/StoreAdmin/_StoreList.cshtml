@@ -1,1 +1,109 @@
-﻿
+﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Store.StoreREST>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetAllStores";
+}
+
+<div class="search-container">
+    @using (Html.BeginForm("ManagerDetails", "StoreAdmin", FormMethod.Get))
+    {
+
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+
+    }
+</div>
+
+<div class="table-container">
+
+    <table class="table" id="main-table">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                <a class="stay" href="@Url.Action("ManagerDetails", "StoreAdmin", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })">Store name</a>
+            </th>
+            <th>
+                <span class="glyphicon glyphicon-time"></span> Working hours
+            </th>
+            <th>
+                <span class="glyphicon glyphicon-map-marker"></span> Address
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr class="main-table-data-row">
+                <td>
+                    <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = item.Id })">
+                        <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Id }));"></div>
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreName)
+                </td>
+                <td>
+                    <table class="working-hours-table">
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(item.WorkingHoursWeekEnd))
+                            {
+                                <td>Week: </td>
+                                <td>@item.WorkingHoursWeekBegin - @item.WorkingHoursWeekEnd</td>
+                            }
+                        </tr>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(item.WorkingHoursWeekendsEnd))
+                            {
+                                <td>Weekends: </td>
+                                <td>@item.WorkingHoursWeekendsBegin - @item.WorkingHoursWeekendsEnd</td>
+                            }
+                        </tr>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(item.WorkingHoursHolidaysEnd))
+                            {
+                                <td>Holidays: </td>
+                                <td>@item.WorkingHoursHolidaysBegin - @item.WorkingHoursHolidaysEnd</td>
+                            }
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Country) &&
+                         !string.IsNullOrEmpty(item.City) &&
+                         !string.IsNullOrEmpty(item.PostalCode) &&
+                         !string.IsNullOrEmpty(item.Street))
+                    {
+                        <p>@item.Street, @item.PostalCode @item.City, @item.Country</p>
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+
+<br />
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("ManagerDetails",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Common")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+
+@*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("ManagerDetails",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }),
+    new PagedListRenderOptions { LiElementClasses = new List<string> { "stay-bottom" } })*@

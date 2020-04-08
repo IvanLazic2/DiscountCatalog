@@ -218,6 +218,8 @@
     <Compile Include="Models\Redirect\RedirectModel.cs" />
     <Compile Include="Models\Redirect\Route.cs" />
     <Compile Include="Models\SelectedStore.cs" />
+    <Compile Include="Processors\ManagerProcessor.cs" />
+    <Compile Include="Processors\StoreProcessor.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
     <Compile Include="REST\Account\AccountREST.cs" />
     <Compile Include="REST\Account\AccountRESTPost.cs" />
@@ -325,6 +327,7 @@
     <Content Include="Content\bootstrap-datepicker.css.map" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Content\IndividualPageStyles\Register\AccountTypeSelecion_main.css" />
+    <Content Include="Scripts\IndividualPageScripts\Common.js" />
     <Content Include="Scripts\IndividualPageScripts\Create\Create_main.js" />
     <Content Include="Scripts\IndividualPageScripts\Delete\Delete_main.js" />
     <Content Include="Scripts\IndividualPageScripts\Details\Details_main.js" />
@@ -598,6 +601,7 @@
     <Content Include="Views\Error\FileTooBig.cshtml" />
     <Content Include="Views\Shared\_Flash.cshtml" />
     <Content Include="Views\StoreAdmin\_StoreList.cshtml" />
+    <Content Include="Views\StoreAdmin\_ManagerList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

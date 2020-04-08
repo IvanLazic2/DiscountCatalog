@@ -17,5 +17,6 @@ namespace DiscountCatalog.WebAPI.REST.Account
         public string PostalCode { get; set; }
         public string Street { get; set; }
         public string Password { get; set; }
+        public byte[] UserImage { get; set; }
     }
 }

@@ -56,7 +56,7 @@ namespace DiscountCatalog.MVC
                     "~/Content/IndividualPageStyles/Create/Create_main.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Edit").Include(
-                    "~/Content/IndividualPageStyles/Edit/Edit.css"));
+                    "~/Content/IndividualPageStyles/Edit/Edit_main.css"));
 
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/GetAll").Include(
                     "~/Content/IndividualPageStyles/GetAll/GetAll_main.css"));
@@ -67,6 +67,10 @@ namespace DiscountCatalog.MVC
             bundles.Add(new StyleBundle("~/Content/IndividualPageStyles/Register").Include(
                     "~/Content/IndividualPageStyles/Register/AccountTypeSelecion_main.css"));
 
+            //INDIVIDUAL PAGE SCRIPTS
+
+            bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Common").Include(
+                    "~/Scripts/IndividualPageScripts/Common.js"));
 
             bundles.Add(new ScriptBundle("~/Scripts/IndividualPageScripts/Details").Include(
                       "~/Scripts/IndividualPageScripts/Details/Details_main.js"));

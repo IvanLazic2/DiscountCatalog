@@ -86,11 +86,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
         {
             var result = new Result();
 
-            ApplicationUser user = new ApplicationUser
-            {
-                Email = model.Email,
-                UserName = model.Email.Split('@')[0]
-            };
+            ApplicationUser user = mapper.Map<ApplicationUser>(model);
 
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
@@ -103,7 +99,10 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                     result = await uow.StoreAdmins.CreateAsync(user, model.Password, new StoreAdminEntity());
                 }
 
-                uow.Complete();
+                if (result.Success)
+                {
+                    uow.Complete();
+                }
             }
 
             return result;
@@ -126,7 +125,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 ApplicationUser user = uow.Accounts.GetApproved(model.Id);
-                
+
                 string roleName = uow.Accounts.GetRoleName(model.Id);
 
                 Result result = await uow.Accounts.UpdateAsync(model, roleName);
@@ -134,10 +133,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 if (result.Success)
                 {
                     uow.Complete();
-                }
-                else
-                {
-                    uow.Dispose();
                 }
 
                 return result;

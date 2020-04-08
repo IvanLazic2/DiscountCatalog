@@ -264,6 +264,10 @@
     <Compile Include="Migrations\202003311905521_test.Designer.cs">
       <DependentUpon>202003311905521_test.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202004071601465_stoename.cs" />
+    <Compile Include="Migrations\202004071601465_stoename.Designer.cs">
+      <DependentUpon>202004071601465_stoename.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelState\EntityModelState.cs" />
     <Compile Include="Models\BindingModels\AuthenticationBindingModel.cs" />
     <Compile Include="Models\BindingModels\ManagerBindingModel.cs" />
@@ -368,6 +372,14 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\DefaultImages\Manager-Dark.png" />
+    <Content Include="Content\DefaultImages\Manager-Light.png" />
+    <Content Include="Content\DefaultImages\Store-Dark.png" />
+    <Content Include="Content\DefaultImages\Store-Light.png" />
+    <Content Include="Content\DefaultImages\StoreAdmin-Dark.png" />
+    <Content Include="Content\DefaultImages\StoreAdmin-Light.png" />
+    <Content Include="Content\DefaultImages\User-Dark.png" />
+    <Content Include="Content\DefaultImages\User-Light.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -469,6 +481,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003311905521_test.resx">
       <DependentUpon>202003311905521_test.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004071601465_stoename.resx">
+      <DependentUpon>202004071601465_stoename.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -181,6 +181,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("Edit")]
         public async Task<ActionResult> Edit(AccountRESTPut user)
         {
+            user.UserImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await accountRepository.Edit(user);
 
             if (!result.Success)

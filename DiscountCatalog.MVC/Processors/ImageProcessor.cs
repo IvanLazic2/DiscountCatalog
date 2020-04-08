@@ -42,6 +42,13 @@ namespace DiscountCatalog.MVC.Processors
             
         }
 
+        public static float GetInMegaBytes(byte[] array)
+        {
+            float mb = (array.Length / 1024f) / 1024f;
+
+            return mb;
+        }
+
         public static byte[] GetBuffer(HttpPostedFileBase file)
         {
             using (MemoryStream ms = new MemoryStream())
@@ -66,6 +73,22 @@ namespace DiscountCatalog.MVC.Processors
             }
 
             return true;
+        }
+
+        public static byte[] ToValidByteArray(HttpPostedFileBase file)
+        {
+            byte[] array = GetBuffer(file);
+
+            byte[] imageArray = array;
+
+            if (GetInMegaBytes(imageArray) > 1)
+            {
+                byte[] arrayScaled = To1MB(array);
+
+                imageArray = arrayScaled;
+            }
+
+            return imageArray;
         }
     }
 }

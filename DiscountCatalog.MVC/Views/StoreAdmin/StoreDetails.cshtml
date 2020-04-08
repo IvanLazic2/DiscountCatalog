@@ -9,6 +9,8 @@
     <h2 style="display: inline">@Model.StoreName</h2>
 </div>
 
+<hr />
+
 <div class="main-details-window">
 
     <div class="image-form-container">
@@ -112,13 +114,29 @@
                 @Html.DisplayFor(model => model.Street)
             </dd>
         </dl>
+
+        <br />
+
+        <h4><span class="glyphicon glyphicon-briefcase"></span> Managers</h4>
+
     </div>
-    <p>
-        <a href="@Url.Action("EditStore", "StoreAdmin")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-        <a href="@Url.Action("DeleteStore", "StoreAdmin")" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a> |
-        @Html.ActionLink("Back to List", "GetAllStores")
-    </p>
 </div>
+
+<br />
+
+@{
+    Html.RenderPartial("_ManagerList", Model.Managers);
+}
+
+<hr />
+
+<p>
+    <a href="@Url.Action("GetAllStores", "StoreAdmin")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+    <a href="@Url.Action("EditStore", "StoreAdmin", new { id = Model.Id })" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+    <a href="@Url.Action("DeleteStore", "StoreAdmin", new { id = Model.Id })" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+</p>
+
+
 
 @Styles.Render("~/Content/IndividualPageStyles/Common")
 

@@ -6,14 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="@Url.Content("~/Content/button-style.css")" rel="stylesheet" />
 
+
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/IndividualPageStyles/Common")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/moment")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/FlashMessage")
-
+    @Scripts.Render("~/Scripts/IndividualPageScripts/Common")
+    @*<script src="@Url.Content("~/Scripts/IndividualPageScripts/Common.js")"></script>*@
 </head>
 <body>
 
@@ -31,11 +34,6 @@
     </div>
 
     @RenderSection("scripts", required: false)
-
-    @*<script>
-            $(window).on('load', function () {
-                $('#loading').remove();
-            });
-        </script>*@
+    
 </body>
 </html>

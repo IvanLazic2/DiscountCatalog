@@ -7,32 +7,8 @@ dt, dd {
     overflow: hidden;
 }
 
-/*FORM*/
 
-.image-form-container {
-    width: 50%;
-    float: right;
-}
 
-#default-file-browse {
-    display: none;
-    opacity: 0;
-    position: absolute;
-    z-index: -1;
-}
-
-#browse-button span{
-    margin-right: 10px;
-}
-
-#uploadedPreview{
-    width: 100px;
-    margin: 20px 0;
-}
-
-#form-actions{
-    display: none;
-}
 
 /*USER INFO / STORE INFO */
 

@@ -24,6 +24,9 @@ namespace AbatementHelper.WebAPI.Mapping
             {
                 //BINDING MODELS
 
+                c.CreateMap<RegisterBindingModel, ApplicationUser>()
+                    .ForMember(dst => dst.UserName, act => act.Ignore());
+
                 //c.CreateMap<UserBindingModel, ApplicationUser>();
 
                 //c.CreateMap<StoreAdminBindingModel, ApplicationUser>();

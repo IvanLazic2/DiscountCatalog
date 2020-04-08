@@ -3,67 +3,94 @@
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
-    ViewBag.Title = "GetAllDeletedStores";
+    ViewBag.Title = "AllDeletedStores";
 }
 
-<h2>Deleted stores</h2>
+<h2><span class="glyphicon glyphicon-trash"></span> All deleted stores</h2>
 
-@using (Html.BeginForm("GetAllDeletedStores", "StoreAdmin", FormMethod.Get))
-{
-    <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
+<hr />
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink("StoreName", "GetAllDeletedStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
-        </th>
-        <th>
-            Country
-        </th>
-        <th>
-            City
-        </th>
-        <th>
-            PostalCode
-        </th>
-        <th>
-            Street
-        </th>
-
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
+<div class="search-container">
+    @using (Html.BeginForm("GetAllDeletedStores", "StoreAdmin", FormMethod.Get))
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StoreName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Country)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Street)
-            </td>
-            <td>
-                @Html.ActionLink("Restore", "RestoreStore", new { id = item.Id })
-            </td>
-        </tr>
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
     }
+</div>
 
-</table>
+<div class="table-container">
 
-@Html.ActionLink("All stores", "GetAllStores")
+    <table class="table" id="main-table">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                @Html.ActionLink("Store name", "GetAllDeletedStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
+            </th>
+            <th>
+                <span class="glyphicon glyphicon-time"></span> Working hours
+            </th>
+            <th>
+                <span class="glyphicon glyphicon-map-marker"></span> Address
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr class="main-table-data-row">
+                <td>
+                    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Id }));"></div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreName)
+                </td>
+                <td>
+                    <table class="working-hours-table">
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(item.WorkingHoursWeekEnd))
+                            {
+                                <td>Week: </td>
+                                <td>@item.WorkingHoursWeekBegin - @item.WorkingHoursWeekEnd</td>
+                            }
+                        </tr>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(item.WorkingHoursWeekendsEnd))
+                            {
+                                <td>Weekends: </td>
+                                <td>@item.WorkingHoursWeekendsBegin - @item.WorkingHoursWeekendsEnd</td>
+                            }
+                        </tr>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(item.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(item.WorkingHoursHolidaysEnd))
+                            {
+                                <td>Holidays: </td>
+                                <td>@item.WorkingHoursHolidaysBegin - @item.WorkingHoursHolidaysEnd</td>
+                            }
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Country) &&
+                         !string.IsNullOrEmpty(item.City) &&
+                         !string.IsNullOrEmpty(item.PostalCode) &&
+                         !string.IsNullOrEmpty(item.Street))
+                    {
+                        <p>@item.Street, @item.PostalCode @item.City, @item.Country</p>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("RestoreStore", "StoreAdmin", new { id = item.Id })" class="btn btn-primary"><span class="glyphicon glyphicon-repeat"></span> Restore</a>
+                </td>
+            </tr>
+
+
+        }
+
+    </table>
+
+</div>
 
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
@@ -71,3 +98,12 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 @Html.PagedListPager(Model, page => Url.Action("GetAllDeletedStores",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
+<a href="@Url.Action("GetAllStores", "StoreAdmin")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/Common")
+
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")

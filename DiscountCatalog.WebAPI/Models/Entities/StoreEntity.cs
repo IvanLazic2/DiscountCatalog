@@ -12,7 +12,7 @@ namespace DiscountCatalog.WebAPI.Models.Entities
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        [Index(IsUnique = true), Required, StringLength(200)]
+        [Index(IsUnique = false), Required, StringLength(200)]
         public string StoreName { get; set; }
 
         public ICollection<ManagerEntity> Managers { get; set; }

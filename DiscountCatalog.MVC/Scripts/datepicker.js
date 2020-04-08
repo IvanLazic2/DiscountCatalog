@@ -18,7 +18,7 @@ $(document).ready(function () {
     $(function () {
         $('.timepicker').datetimepicker({
             useCurrent: false, //Important! See issue #1075
-            format: "hh:mm"
+            format: "HH:mm"
         });
     });
 });

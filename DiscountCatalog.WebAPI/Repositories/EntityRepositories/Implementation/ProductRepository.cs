@@ -473,7 +473,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
         public byte[] GetProductImage(string productId)
         {
-            ProductEntity product = GetApproved(productId);
+            ProductEntity product = GetLoaded(productId);
 
             return product.ProductImage;
         }

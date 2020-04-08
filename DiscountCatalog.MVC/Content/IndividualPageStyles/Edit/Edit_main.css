@@ -1,2 +1,26 @@
-﻿body {
+﻿.left {
+    float: left;
 }
+
+.form-padding {
+    padding-left: 70px;
+}
+
+    .form-padding .container {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+
+/*USER INFO*/
+
+.user-info-container{
+    width: 100%;
+}
+
+/*IMAGE FORM*/
+
+.image-form-container{
+    position: absolute;
+    left: 50%;
+}
+

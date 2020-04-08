@@ -23,5 +23,6 @@ namespace DiscountCatalog.MVC.REST.Product
         public bool Expired { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
+
     }
 }

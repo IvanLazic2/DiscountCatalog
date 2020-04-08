@@ -120,22 +120,39 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 SuccessMessage = "User created."
             };
-            user.UserName = user.Email.Split('@')[0];
+
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                user.UserName = user.Email.Split('@')[0];
+            }
+
             user.Approved = true;
             user.Deleted = false;
+
+            if (user.UserImage == null || !(user.UserImage.Length > 0))
+            {
+                user.UserImage = ImageProcessor.SetDefault(role);
+            }
+
             var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();
+
             user.Roles.Add(GetIdentityUserRole(identityRole, user));
+
             var validator = new UserValidator();
             var validationResult = await validator.ValidateAsync(user);
+
             modelState.Add(validationResult);
+
             if (validationResult.IsValid)
             {
                 var userResult = await _userManager.UserValidator.ValidateAsync(user);
 
                 var passResult = await _userManager.PasswordValidator.ValidateAsync(password);
+
                 IdentityResult identityResult = await _userManager.CreateAsync(user, password);
                 identityResult.Errors.Concat(userResult.Errors);
                 identityResult.Errors.Concat(passResult.Errors);
+
                 modelState.Add(identityResult);
             }
             return modelState.GetResult();
@@ -159,7 +176,18 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbUser.City = user.City;
                 dbUser.PostalCode = user.PostalCode;
                 dbUser.Street = user.Street;
-
+                if (user.UserImage.Length > 0)
+                {
+                    if (ImageProcessor.IsValid(user.UserImage))
+                    {
+                        dbUser.UserImage = user.UserImage;
+                    }
+                    else
+                    {
+                        modelState.Add("Image is not valid.");
+                    }
+                }
+                
                 dbUser.Roles.Clear();
                 var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();
                 dbUser.Roles.Add(GetIdentityUserRole(identityRole, dbUser));

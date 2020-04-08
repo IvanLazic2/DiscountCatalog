@@ -18,7 +18,7 @@ namespace DiscountCatalog.MVC.REST.Store
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
-
+        public byte[] StoreImage { get; set; }
         public string StoreAdminId { get; set; }
     }
 }

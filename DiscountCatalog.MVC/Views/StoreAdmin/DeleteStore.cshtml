@@ -4,9 +4,18 @@
     ViewBag.Title = "DeleteStore";
 }
 
+<div id="store-info">
+    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>
+    <h2 style="display: inline">@Model.StoreName</h2>
+</div>
+
+<hr />
+
 <h3>Are you sure you want to delete @Model.StoreName?</h3>
+
+<br />
+
 <div>
-    <hr />
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.StoreName)
@@ -15,6 +24,40 @@
         <dd>
             @Html.DisplayFor(model => model.StoreName)
         </dd>
+
+        <dt>
+            <br />
+            @Html.DisplayName("Working hours")
+        </dt>
+
+        <dd>
+            <br />
+            <table class="working-hours-table">
+                <tr>
+                    @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekEnd))
+                    {
+                        <td>Week: </td>
+                        <td>@Model.WorkingHoursWeekBegin - @Model.WorkingHoursWeekEnd</td>
+                    }
+                </tr>
+                <tr>
+                    @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekendsEnd))
+                    {
+                        <td>Weekends: </td>
+                        <td>@Model.WorkingHoursWeekendsBegin - @Model.WorkingHoursWeekendsEnd</td>
+                    }
+                </tr>
+                <tr>
+                    @if (!string.IsNullOrEmpty(Model.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(Model.WorkingHoursHolidaysEnd))
+                    {
+                        <td>Holidays: </td>
+                        <td>@Model.WorkingHoursHolidaysBegin - @Model.WorkingHoursHolidaysEnd</td>
+                    }
+                </tr>
+            </table>
+            <br />
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Country)
         </dt>
@@ -53,11 +96,12 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "GetAllStores")
-        </div>
+    <div class="form-actions no-color">
+        <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = Model.Id })" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+        <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+    </div>
     }
 </div>
 
-
+@Styles.Render("~/Content/IndividualPageStyles/Delete")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Delete")

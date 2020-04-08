@@ -1,11 +1,12 @@
 ﻿@model DiscountCatalog.MVC.REST.Manager.ManagerREST
+@using PagedList;
 
 @{
     ViewBag.Title = "ManagerDetails";
 }
 
 <div id="user-info">
-    <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id })); "></div>
+    <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id }));"></div>
     <h2>@Model.Identity.UserName</h2>
 </div>
 
@@ -114,32 +115,31 @@
             </dd>
         </dl>
 
+        <br />  
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Stores</h4>
-
-        @{ 
-            Html.RenderPartial("_StoreList", Model.Stores);
-        }
-
-        @*<p>
-            @{
-                foreach (var store in Model.Stores)
-                {
-                    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = store.Id })); "></div>
-                    @Html.ActionLink(store.StoreName + " ", "StoreDetails", new { id = store.Id });
-                }
-            }
-        </p>*@
-
-
-        <p>@Html.ActionLink("Assign stores", "GetManagerStores", new { id = Model.Id })</p>
+        <h4>
+        <span class="glyphicon glyphicon-shopping-cart"></span> Stores 
+        <span>
+            <a href="@Url.Action("GetManagerStores", "StoreAdmin", new { id = Model.Id })" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></a>
+            </span>
+        </h4>
+        
     </div>
-    <p>
-        <a href="@Url.Action("EditManager", "StoreAdmin")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-        <a href="@Url.Action("DeleteManager", "StoreAdmin")" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a> |
-        <a href="@Url.Action("Back to list", "GetAllManagers")" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-    </p>
 </div>
+
+<br />
+
+@{
+    Html.RenderPartial("_StoreList", Model.Stores);
+}
+
+<hr />
+
+<p>
+    <a href="@Url.Action("GetAllManagers", "StoreAdmin")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+    <a href="@Url.Action("EditManager", "StoreAdmin", new { id = Model.Id })" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+    <a href="@Url.Action("DeleteManager", "StoreAdmin", new { id = Model.Id })" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+</p>
 
 @Styles.Render("~/Content/IndividualPageStyles/Common")
 

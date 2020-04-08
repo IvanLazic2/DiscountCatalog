@@ -55,6 +55,8 @@ namespace DiscountCatalog.MVC.Controllers
 
         #region Methods
 
+        
+
         [HttpGet]
         [Route("Index")]
         public ActionResult Index()
@@ -75,6 +77,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("CreateManager")]
         public async Task<ActionResult> CreateManager(ManagerRESTPost manager)
         {
+            manager.Identity.UserImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeAdminRepository.CreateManager(manager);
 
             if (!result.Success)
@@ -150,12 +154,34 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("ManagerDetails/{id}")]
-        public async Task<ActionResult> ManagerDetails(string id)
+        public async Task<ActionResult> ManagerDetails(string id, string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            int pageIndex = (page ?? 1);
+            int pageSize = 4;
+
             ManagerREST manager = await storeAdminRepository.GetManager(id);
 
             if (GlobalValidator.IsManagerValid(manager))
             {
+                manager.Stores = ManagerProcessor.SearchStores(manager, searchString);
+                manager.Stores = ManagerProcessor.OrderStores(manager, sortOrder);
+
+                manager.Stores = manager.Stores.ToPagedList(pageIndex, pageSize);
+
                 return View(manager);
             }
 
@@ -175,6 +201,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("EditManager")]
         public async Task<ActionResult> EditManager(ManagerRESTPut manager)
         {
+            manager.Identity.UserImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeAdminRepository.EditManager(manager);
 
             if (!result.Success)
@@ -292,22 +320,11 @@ namespace DiscountCatalog.MVC.Controllers
         }
 
         [Route("PostManagerImage/{id}")]
-        public async Task<ActionResult> PostManagerImage(string id, PostImage image)
+        public async Task<ActionResult> PostManagerImage(string id, HttpPostedFileBase file)
         {
-            byte[] array = ImageProcessor.GetBuffer(image.File);
+            byte[] image = ImageProcessor.ToValidByteArray(file);
 
-            byte[] imageArray = array;
-
-            float mb = (array.Length / 1024f) / 1024f;
-
-            if (mb > 1)
-            {
-                byte[] arrayScaled = ImageProcessor.To1MB(array);
-
-                imageArray = arrayScaled;
-            }
-
-            Result result = await storeAdminRepository.PostManagerImage(id, imageArray);
+            Result result = await storeAdminRepository.PostManagerImage(id, image);
 
             if (!result.Success)
             {
@@ -343,6 +360,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("CreateStore")]
         public async Task<ActionResult> CreateStore(StoreRESTPost store)
         {
+            store.StoreImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeAdminRepository.CreateStore(store);
 
             if (!result.Success)
@@ -419,11 +438,38 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("StoreDetails/{id}")]
-        public async Task<ActionResult> StoreDetails(string id)
+        public async Task<ActionResult> StoreDetails(string id, string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            int pageIndex = (page ?? 1);
+            int pageSize = 4;
+
             StoreREST store = await storeAdminRepository.GetStore(id);
 
-            return View(store);
+            if (GlobalValidator.IsStoreValid(store))
+            {
+                store.Managers = StoreProcessor.SearchManagers(store, searchString);
+                store.Managers = StoreProcessor.OrderStores(store, sortOrder);
+
+                store.Managers = store.Managers.ToPagedList(pageIndex, pageSize);
+
+                return View(store);
+            }
+
+            return RedirectToAction("GetAllStores").Error("Something went wrong, please try again.");
         }
 
         [HttpGet]
@@ -439,6 +485,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("EditStore")]
         public async Task<ActionResult> EditStore(StoreRESTPut store)
         {
+            store.StoreImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeAdminRepository.EditStore(store);
 
             if (!result.Success)
