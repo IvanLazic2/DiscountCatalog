@@ -6,6 +6,8 @@ using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
+using DiscountCatalog.WebAPI.Models.ManyToManyModels.Manager;
+using DiscountCatalog.WebAPI.Models.ManyToManyModels.Store;
 using DiscountCatalog.WebAPI.Models.Result;
 using DiscountCatalog.WebAPI.Paging.Contractor;
 using DiscountCatalog.WebAPI.Processors;
@@ -36,6 +38,8 @@ namespace DiscountCatalog.WebAPI.Controllers
         private readonly IMapper mapper;
         private readonly IManagerService managerService;
         private readonly IStoreService storeService;
+        private readonly IManagerStoreService managerStoreService;
+        private readonly IStoreManagerService storeManagerService;
 
         #endregion
 
@@ -46,6 +50,8 @@ namespace DiscountCatalog.WebAPI.Controllers
             mapper = AutoMapping.Initialise();
             managerService = new ManagerService();
             storeService = new StoreService();
+            managerStoreService = new ManagerStoreService();
+            storeManagerService = new StoreManagerService();
         }
 
         #endregion
@@ -172,16 +178,16 @@ namespace DiscountCatalog.WebAPI.Controllers
         [Route("GetManagerStores/{storeAdminIdentityId}")]
         public IHttpActionResult GetManagerStores(string storeAdminIdentityId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<ManagerStore> managerStores = managerService.GetManagerStores(storeAdminIdentityId, managerId, sortOrder, searchString, pageIndex, pageSize);
+            ManagerStores managerStores = managerStoreService.GetManagerStores(storeAdminIdentityId, managerId, sortOrder, searchString, pageIndex, pageSize);
 
             return Ok(managerStores);
         }
 
         [HttpGet]
-        [Route("Assign/{storeAdminIdentityId}")]
+        [Route("AssignStore/{storeAdminIdentityId}")]
         public IHttpActionResult Assign(string storeAdminIdentityId, string managerId, string storeId)
         {
-            Result result = managerService.Assign(storeAdminIdentityId, managerId, storeId);
+            Result result = managerStoreService.Assign(storeAdminIdentityId, managerId, storeId);
 
             if (result.Success)
             {
@@ -194,10 +200,10 @@ namespace DiscountCatalog.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("Unassign/{storeAdminIdentityId}")]
+        [Route("UnassignStore/{storeAdminIdentityId}")]
         public IHttpActionResult Unassign(string storeAdminIdentityId, string managerId, string storeId)
         {
-            Result result = managerService.Unassign(storeAdminIdentityId, managerId, storeId);
+            Result result = managerStoreService.Unassign(storeAdminIdentityId, managerId, storeId);
 
             if (result.Success)
             {
@@ -338,6 +344,47 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         //    return Ok(store);
         //}
+
+        [HttpGet]
+        [Route("GetStoreManagers/{storeAdminIdentityId}")]
+        public IHttpActionResult GetStoreManagers(string storeAdminIdentityId, string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            StoreManagers storeManagers = storeManagerService.GetStoreManagers(storeAdminIdentityId, storeId, sortOrder, searchString, pageIndex, pageSize);
+
+            return Ok(storeManagers);
+        }
+
+        [HttpGet]
+        [Route("AssignManager/{storeAdminIdentityId}")]
+        public IHttpActionResult AssignManager(string storeAdminIdentityId, string storeId, string managerId)
+        {
+            Result result = storeManagerService.Assign(storeAdminIdentityId, storeId, managerId);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
+
+        [HttpGet]
+        [Route("UnassignManager/{storeAdminIdentityId}")]
+        public IHttpActionResult UnassignManager(string storeAdminIdentityId, string storeId, string managerId)
+        {
+            Result result = storeManagerService.Unassign(storeAdminIdentityId, storeId, managerId);
+
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
 
         #endregion
 

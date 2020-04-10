@@ -25,5 +25,6 @@ namespace DiscountCatalog.WebAPI.REST.Store
         public string Street { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
+        public byte[] StoreImage { get; set; }
     }
 }

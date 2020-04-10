@@ -19,7 +19,6 @@ namespace DiscountCatalog.WebAPI.Repositories
         public IProductRepository Products { get; private set; }
         public IAccountRepository Accounts { get; private set; }
         public IRoleRepository Roles { get; private set; }
-        public IManagerStoreRepository ManagerStores { get; set; }
 
         public UnitOfWork(ApplicationUserDbContext context)
         {
@@ -31,7 +30,6 @@ namespace DiscountCatalog.WebAPI.Repositories
             Products = new ProductRepository(_context);
             Accounts = new AccountRepository(_context);
             Roles = new RoleRepository(_context);
-            ManagerStores = new ManagerStoreRepository(_context);
         }
 
         public int Complete()

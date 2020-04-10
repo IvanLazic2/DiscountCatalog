@@ -292,6 +292,10 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Entities\StoreAdminEntity.cs" />
     <Compile Include="Models\ManagerStoreModel.cs" />
+    <Compile Include="Models\ManyToManyModels\Manager\ManagerStore.cs" />
+    <Compile Include="Models\ManyToManyModels\Manager\ManagerStores.cs" />
+    <Compile Include="Models\ManyToManyModels\Store\StoreManager.cs" />
+    <Compile Include="Models\ManyToManyModels\Store\StoreManagers.cs" />
     <Compile Include="Models\Response models\DiscountResponseModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Response models\WorkingHoursResponseModel.cs" />
@@ -312,13 +316,14 @@
     <Compile Include="Repositories\EntityRepositories\Implementation\AccountRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IAccountRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IManagerRepository.cs" />
-    <Compile Include="Repositories\EntityRepositories\Contractor\IManagerStoreRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IProductRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IRoleRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IStoreAdminRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IStoreRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\ManagerRepository.cs" />
-    <Compile Include="Repositories\EntityRepositories\Implementation\ManagerStoreRepository.cs" />
+    <Compile Include="Service\Contractor\IManagerStoreService.cs" />
+    <Compile Include="Service\Contractor\IStoreManagerService.cs" />
+    <Compile Include="Service\Implementation\ManagerStoreService.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\ProductRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\RoleRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\StoreAdminRepository.cs" />
@@ -353,6 +358,7 @@
     <Compile Include="Service\Implementation\AccountService.cs" />
     <Compile Include="Service\Implementation\ManagerService.cs" />
     <Compile Include="Service\Implementation\ProductService.cs" />
+    <Compile Include="Service\Implementation\StoreManagerService.cs" />
     <Compile Include="Service\Implementation\StoreService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation\Validators\ManagerStoreValidator.cs" />

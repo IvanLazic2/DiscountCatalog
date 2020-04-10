@@ -20,5 +20,6 @@ namespace DiscountCatalog.WebAPI.REST.Account
         public string Street { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
+        public byte[] UserImage { get; set; }
     }
 }

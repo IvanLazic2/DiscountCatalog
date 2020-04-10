@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<DiscountCatalog.Common.Models.ManagerStore>
+﻿@model DiscountCatalog.MVC.ViewModels.ManyToManyViewModels.ManagerStoresViewModel
 @using PagedList.Mvc;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
@@ -6,65 +6,89 @@
     ViewBag.Title = "GetManagerStores";
 }
 
-@*<h2>Assign or unassign stores for @Model.ToList().First().Manager.UserName</h2>*@
+<h2>Assign or unassign stores for @Model.Manager.Identity.UserName</h2>
 
-<h2>Assign or unassign stores for @ViewBag.ManagerUserName</h2>
+<hr />
 
-@using (Html.BeginForm("GetAManagerStores", "StoreAdmin", FormMethod.Get))
-{
-    <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
+<div class="search-container">
+    @using (Html.BeginForm("GetManagerStores", "StoreAdmin", FormMethod.Get))
+    {
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+    }
+</div>
 
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("StoreName", "GetManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+
         </th>
         <th>
-            Country
+            @Html.ActionLink("Store name", "GetManagerStores", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
         </th>
         <th>
-            City
+            <span class="glyphicon glyphicon-time"></span> Working hours
         </th>
         <th>
-            PostalCode
-        </th>
-        <th>
-            Street
+            <span class="glyphicon glyphicon-map-marker"></span> Address
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Stores)
     {
-        <tr>
+        <tr class="main-table-data-row">
+            <td>
+                <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = item.Store.Id })">
+                    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Store.Id }));"></div>*@
+                    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
+                </a>
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Store.StoreName)
             </td>
-
             <td>
-                @Html.DisplayFor(modelItem => item.Store.Country)
+                <table class="working-hours-table">
+                    <tr>
+                        @if (!string.IsNullOrEmpty(item.Store.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(item.Store.WorkingHoursWeekEnd))
+                        {
+                            <td>Week: </td>
+                            <td>@item.Store.WorkingHoursWeekBegin - @item.Store.WorkingHoursWeekEnd</td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (!string.IsNullOrEmpty(item.Store.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(item.Store.WorkingHoursWeekendsEnd))
+                        {
+                            <td>Weekends: </td>
+                            <td>@item.Store.WorkingHoursWeekendsBegin - @item.Store.WorkingHoursWeekendsEnd</td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (!string.IsNullOrEmpty(item.Store.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(item.Store.WorkingHoursHolidaysEnd))
+                        {
+                            <td>Holidays: </td>
+                            <td>@item.Store.WorkingHoursHolidaysBegin - @item.Store.WorkingHoursHolidaysEnd</td>
+                        }
+                    </tr>
+                </table>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Store.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Store.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Store.Street)
+                @if (!string.IsNullOrEmpty(item.Store.Country) &&
+                     !string.IsNullOrEmpty(item.Store.City) &&
+                     !string.IsNullOrEmpty(item.Store.PostalCode) &&
+                     !string.IsNullOrEmpty(item.Store.Street))
+                {
+                    <p>@item.Store.Street, @item.Store.PostalCode @item.Store.City, @item.Store.Country</p>
+                }
             </td>
             <td>
                 @if (item.Assigned)
                 {
-                    @Html.ActionLink("Unassign", "Unassign", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                <a class="btn btn-default" href="@Url.Action("UnassignStore", "StoreAdmin", new { managerId = Model.Manager.Id, storeId = item.Store.Id })"> Unassign</a>
                 }
                 else
                 {
-                    @Html.ActionLink("Assign", "Assign", new { managerId = item.Manager.Id, storeId = item.Store.Id })
+                <a class="btn btn-primary" href="@Url.Action("AssignStore", "StoreAdmin", new { managerId = Model.Manager.Id, storeId = item.Store.Id })"> Assign</a>
                 }
             </td>
         </tr>
@@ -73,15 +97,18 @@
 
 </table>
 
-
-
-@Html.ActionLink("Back to the list", "GetAllManagers")
-
 <br />
-Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+Page @(Model.Stores.PageCount < Model.Stores.PageNumber ? 0 : Model.Stores.PageNumber) of @Model.Stores.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("GetManagerStores",
+@Html.PagedListPager(Model.Stores, page => Url.Action("GetManagerStores",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<hr />
+
+<a class="btn btn-default" href="@Url.Action("GetAllStores", "StoreAdmin")"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

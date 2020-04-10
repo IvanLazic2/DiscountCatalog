@@ -24,6 +24,10 @@ using AbatementHelper.MVC.Mapping;
 using DiscountCatalog.MVC.Cookies.Contractor;
 using DiscountCatalog.MVC.Cookies.Implementation;
 using DiscountCatalog.MVC.Validators;
+using DiscountCatalog.MVC.Models.ManyToManyModels;
+using DiscountCatalog.MVC.ViewModels.ManyToManyViewModels;
+using DiscountCatalog.MVC.Models.ManyToManyModels.Manager;
+using DiscountCatalog.MVC.Models.ManyToManyModels.Store;
 
 namespace DiscountCatalog.MVC.Controllers
 {
@@ -55,7 +59,7 @@ namespace DiscountCatalog.MVC.Controllers
 
         #region Methods
 
-        
+
 
         [HttpGet]
         [Route("Index")]
@@ -92,7 +96,7 @@ namespace DiscountCatalog.MVC.Controllers
             }
             else
             {
-                return RedirectToAction("GetAllManagers");
+                return RedirectToAction("GetAllManagers").Success(result.SuccessMessage);
             }
         }
 
@@ -194,7 +198,14 @@ namespace DiscountCatalog.MVC.Controllers
         {
             ManagerREST manager = await storeAdminRepository.GetManager(id);
 
-            return View(manager);
+            if (GlobalValidator.IsManagerValid(manager))
+            {
+                return View(manager);
+            }
+            else
+            {
+                return RedirectToAction("ManagerDetails").Error("Something went wrong, please try again.");
+            }
         }
 
         [HttpPost]
@@ -215,7 +226,7 @@ namespace DiscountCatalog.MVC.Controllers
                 return View(mapper.Map<ManagerREST>(manager));
             }
 
-            return RedirectToAction("ManagerDetails", new { id = manager.Id });
+            return RedirectToAction("ManagerDetails", new { id = manager.Id }).Success(result.SuccessMessage);
         }
 
         [HttpGet]
@@ -224,7 +235,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             ManagerREST manager = await storeAdminRepository.GetManager(id);
 
-            return View(manager);
+            if (GlobalValidator.IsManagerValid(manager))
+            {
+                return View(manager);
+            }
+
+            return RedirectToAction("ManagerDetails").Error("Something went wrong, please try again.");
         }
 
         [HttpPost]
@@ -243,7 +259,7 @@ namespace DiscountCatalog.MVC.Controllers
                 return View(manager);
             }
 
-            return RedirectToAction("GetAllManagers");
+            return RedirectToAction("GetAllManagers").Warning(result.SuccessMessage + ", you can restore it <a class='btn btn-warning btn-sm' href='/StoreAdmin/GetAllDeletedManagers')'> HERE</a>");
         }
 
         [HttpGet]
@@ -260,7 +276,7 @@ namespace DiscountCatalog.MVC.Controllers
                 }
             }
 
-            return RedirectToAction("GetAllDeletedManagers");
+            return RedirectToAction("GetAllDeletedManagers").Success(result.SuccessMessage);
         }
 
         [HttpGet]
@@ -284,39 +300,50 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 4;
 
-            PagingEntity<ManagerStore> managerStores = await storeAdminRepository.GetManagerStores(id, sortOrder, searchString, pageIndex, pageSize);
+            ManagerStores managerStores = await storeAdminRepository.GetManagerStores(id, sortOrder, searchString, pageIndex, pageSize);
 
-            StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Items, managerStores.MetaData.PageNumber, managerStores.MetaData.PageSize, managerStores.MetaData.TotalItemCount);
+            if (managerStores != null)
+            {
+                StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Stores.Items, managerStores.Stores.MetaData.PageNumber, managerStores.Stores.MetaData.PageSize, managerStores.Stores.MetaData.TotalItemCount);
 
-            return View(list);
+                ManagerStoresViewModel viewModel = new ManagerStoresViewModel
+                {
+                    Manager = managerStores.Manager,
+                    Stores = list
+                };
+
+                return View(viewModel);
+            }
+
+            return RedirectToAction("ManagerDetails", new { id }).Error("Something went wrong, please try again.");
         }
 
         [HttpGet]
-        [Route("Assign/{managerId}/{storeId}")]
-        public async Task<ActionResult> Assign(string managerId, string storeId)
+        [Route("AssignStore/{managerId}/{storeId}")]
+        public async Task<ActionResult> AssignStore(string managerId, string storeId)
         {
-            Result result = await storeAdminRepository.Assign(managerId, storeId);
+            Result result = await storeAdminRepository.AssignStore(managerId, storeId);
 
             foreach (var error in result.ModelState)
             {
                 ModelState.AddModelError(error.Key, error.Value);
             }
 
-            return RedirectToAction("GetManagerStores", new { id = managerId });
+            return RedirectToAction("GetManagerStores", new { id = managerId }).Success(result.SuccessMessage);
         }
 
         [HttpGet]
-        [Route("Unassign/{managerId}/{storeId}")]
-        public async Task<ActionResult> Unassign(string managerId, string storeId)
+        [Route("UnassignStore/{managerId}/{storeId}")]
+        public async Task<ActionResult> UnassignStore(string managerId, string storeId)
         {
-            Result result = await storeAdminRepository.Unassign(managerId, storeId);
+            Result result = await storeAdminRepository.UnassignStore(managerId, storeId);
 
             foreach (var error in result.ModelState)
             {
                 ModelState.AddModelError(error.Key, error.Value);
             }
 
-            return RedirectToAction("GetManagerStores", new { id = managerId });
+            return RedirectToAction("GetManagerStores", new { id = managerId }).Warning(result.SuccessMessage);
         }
 
         [Route("PostManagerImage/{id}")]
@@ -334,7 +361,7 @@ namespace DiscountCatalog.MVC.Controllers
                 }
             }
 
-            return RedirectToAction("ManagerDetails", new { id });
+            return RedirectToAction("ManagerDetails", new { id }).Success(result.SuccessMessage);
         }
 
         [Route("GetManagerImage/{id}")]
@@ -375,7 +402,7 @@ namespace DiscountCatalog.MVC.Controllers
             }
             else
             {
-                return RedirectToAction("GetAllStores");
+                return RedirectToAction("GetAllStores").Success(result.SuccessMessage);
             }
         }
 
@@ -478,7 +505,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             StoreREST store = await storeAdminRepository.GetStore(id);
 
-            return View(store);
+            if (GlobalValidator.IsStoreValid(store))
+            {
+                return View(store);
+            }
+
+            return RedirectToAction("StoreDetails").Error("Something went wrong, please try again.");
         }
 
         [HttpPost]
@@ -499,7 +531,7 @@ namespace DiscountCatalog.MVC.Controllers
                 return View(mapper.Map<StoreREST>(store));
             }
 
-            return RedirectToAction("StoreDetails", new { id = store.Id });
+            return RedirectToAction("StoreDetails", new { id = store.Id }).Success(result.SuccessMessage);
         }
 
         [HttpGet]
@@ -508,7 +540,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             StoreREST store = await storeAdminRepository.GetStore(id);
 
-            return View(store);
+            if (GlobalValidator.IsStoreValid(store))
+            {
+                return View(store);
+            }
+
+            return RedirectToAction("StoreDetails").Error("Something went wrong, please try again.");
         }
 
         [HttpPost]
@@ -527,7 +564,7 @@ namespace DiscountCatalog.MVC.Controllers
                 return View(store);
             }
 
-            return RedirectToAction("GetAllStores");
+            return RedirectToAction("GetAllStores").Warning(result.SuccessMessage);
         }
 
         [HttpGet]
@@ -544,26 +581,15 @@ namespace DiscountCatalog.MVC.Controllers
                 }
             }
 
-            return RedirectToAction("GetAllDeletedStores");
+            return RedirectToAction("GetAllDeletedStores").Success(result.SuccessMessage);
         }
 
         [Route("PostStoreImage/{id}")]
-        public async Task<ActionResult> PostStoreImage(string id, PostImage image)
+        public async Task<ActionResult> PostStoreImage(string id, HttpPostedFileBase file)
         {
-            byte[] array = ImageProcessor.GetBuffer(image.File);
+            byte[] image = ImageProcessor.ToValidByteArray(file);
 
-            byte[] imageArray = array;
-
-            float mb = (array.Length / 1024f) / 1024f;
-
-            if (mb > 1)
-            {
-                byte[] arrayScaled = ImageProcessor.To1MB(array);
-
-                imageArray = arrayScaled;
-            }
-
-            Result result = await storeAdminRepository.PostStoreImage(id, imageArray);
+            Result result = await storeAdminRepository.PostStoreImage(id, image);
 
             if (!result.Success)
             {
@@ -573,7 +599,7 @@ namespace DiscountCatalog.MVC.Controllers
                 }
             }
 
-            return RedirectToAction("StoreDetails", new { id });
+            return RedirectToAction("StoreDetails", new { id }).Success(result.SuccessMessage);
         }
 
         [Route("GetStoreImage/{id}")]
@@ -598,8 +624,75 @@ namespace DiscountCatalog.MVC.Controllers
                 return RedirectToAction("Index", "Store").Success($"{store.StoreName} selected.");
             }
 
-            return RedirectToAction("GetAllStores");
+            return RedirectToAction("GetAllStores").Error("Something went wrong, please try again.");
 
+        }
+
+        [HttpGet]
+        [Route("GetStoreManagers/{id}")]
+        public async Task<ActionResult> GetStoreManagers(string id, string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
+            int pageIndex = (page ?? 1);
+            int pageSize = 4;
+
+            StoreManagers storeManagers = await storeAdminRepository.GetStoreManagers(id, sortOrder, searchString, pageIndex, pageSize);
+
+            if (storeManagers != null)
+            {
+                StaticPagedList<StoreManager> list = new StaticPagedList<StoreManager>(storeManagers.Managers.Items, storeManagers.Managers.MetaData.PageNumber, storeManagers.Managers.MetaData.PageSize, storeManagers.Managers.MetaData.TotalItemCount);
+
+                StoreManagersViewModel viewModel = new StoreManagersViewModel
+                {
+                    Store = storeManagers.Store,
+                    Managers = list
+                };
+
+                return View(viewModel);
+            }
+
+            return RedirectToAction("StoreDetails", new { id }).Error("Something went wrong, please try again.");
+        }
+
+        [HttpGet]
+        [Route("AssignManager/{storeId}/{managerId}")]
+        public async Task<ActionResult> AssignManager(string storeId, string managerId)
+        {
+            Result result = await storeAdminRepository.AssignManager(storeId, managerId);
+
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
+
+            return RedirectToAction("GetStoreManagers", new { id = storeId }).Success(result.SuccessMessage);
+        }
+
+        [HttpGet]
+        [Route("UnassignManager/{storeId}/{managerId}")]
+        public async Task<ActionResult> UnassignManager(string storeId, string managerId)
+        {
+            Result result = await storeAdminRepository.UnassignManager(storeId, managerId);
+
+            foreach (var error in result.ModelState)
+            {
+                ModelState.AddModelError(error.Key, error.Value);
+            }
+
+            return RedirectToAction("GetStoreManagers", new { id = storeId }).Warning(result.SuccessMessage);
         }
 
         #endregion

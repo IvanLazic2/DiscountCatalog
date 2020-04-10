@@ -54,6 +54,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 ApplicationUser user = uow.Accounts.GetApproved(id);
 
+                user.UserImage = ImageProcessor.CreateThumbnail(user.UserImage);
+
                 AccountREST mapped = mapper.Map<AccountREST>(user);
 
                 return mapped;

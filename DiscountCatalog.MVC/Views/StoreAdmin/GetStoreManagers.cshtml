@@ -1,0 +1,112 @@
+﻿@model DiscountCatalog.MVC.ViewModels.ManyToManyViewModels.StoreManagersViewModel
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "GetStoreManagers";
+}
+
+<h2>Assign or unassign managers for @Model.Store.StoreName</h2>
+
+<hr />
+
+<div class="search-container">
+    @using (Html.BeginForm("GetStoreManagers", "StoreAdmin", FormMethod.Get))
+    {
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+    }
+</div>
+
+<table class="table" id="main-table">
+    <tr>
+        <th></th>
+        <th>
+            @Html.ActionLink("UserName", "GetStoreManagers", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter }, new { @class = "stay" })
+        </th>
+        <th>
+            FirstName
+        </th>
+        <th>
+            LastName
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            PhoneNumber
+        </th>
+        <th>
+            Address
+        <th>
+    </tr>
+    @foreach (var item in Model.Managers)
+    {
+        <tr class="main-table-data-row">
+            <td>
+                <a href="@Url.Action("ManagerDetails", "StoreAdmin", new { id = item.Manager.Id })">
+                    @*<div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = item.Manager.Id }));"></div>*@
+                    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Manager.Identity.UserImage)"></div>
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Identity.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Identity.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Identity.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Identity.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Identity.PhoneNumber)
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.Manager.Identity.Country) &&
+                     !string.IsNullOrEmpty(item.Manager.Identity.City) &&
+                     !string.IsNullOrEmpty(item.Manager.Identity.PostalCode) &&
+                     !string.IsNullOrEmpty(item.Manager.Identity.Street))
+                {
+                    <p>@item.Manager.Identity.Street, @item.Manager.Identity.PostalCode @item.Manager.Identity.City, @item.Manager.Identity.Country</p>
+                }
+            </td>
+            <td>
+                @if (item.Assigned)
+                {
+                    @*@Html.ActionLink("Unassign", "UnassignManager", new { storeId = Model.Store.Id, managerId = item.Manager.Id })*@
+                    <a class="btn btn-default" href="@Url.Action("UnassignManager", "StoreAdmin", new { storeId = Model.Store.Id, managerId = item.Manager.Id })"> Unassign</a>
+                }
+                else
+                {
+                    @*@Html.ActionLink("Assign", "AssignManager", new { storeId = Model.Store.Id, managerId = item.Manager.Id })*@
+                    <a class="btn btn-primary" href="@Url.Action("AssignManager", "StoreAdmin", new { storeId = Model.Store.Id, managerId = item.Manager.Id })"> Assign</a>
+                }
+            </td>
+
+        </tr>
+    }
+
+
+</table>
+
+<br />
+Page @(Model.Managers.PageCount < Model.Managers.PageNumber ? 0 : Model.Managers.PageNumber) of @Model.Managers.PageCount
+
+@Html.PagedListPager(Model.Managers, page => Url.Action("GetStoreManagers",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<hr />
+
+<a class="btn btn-default" href="@Url.Action("GetAllStores", "StoreAdmin")"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

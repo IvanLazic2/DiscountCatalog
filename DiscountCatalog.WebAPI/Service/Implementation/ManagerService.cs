@@ -68,46 +68,79 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return managers.ToList();
         }
 
-        public IList<ManagerREST> FilterStores(IList<ManagerREST> managers)
+        public IList<ManagerEntity> FilterStores(IList<ManagerEntity> managers, bool clear)
         {
-            List<ManagerREST> managerList = managers.ToList();
-
-            foreach (var manager in managerList)
+            if (clear)
             {
-                List<StoreREST> stores = manager.Stores.ToList();
+                foreach (var manager in managers)
+                {
+                    if (manager.Stores != null)
+                    {
+                        manager.Stores.Clear();
+                    }
+                }
+            }
+            else
+            {
+                foreach (var manager in managers)
+                {
+                    List<StoreEntity> stores = manager.Stores.ToList();
+                    stores.RemoveAll(s => s.Deleted || !s.Approved);
+                    manager.Stores = stores;
+                }
+            }
+
+            return managers;
+        }
+
+        public ManagerEntity FilterStores(ManagerEntity manager, bool clear)
+        {
+            if (clear)
+            {
+                if (manager.Stores != null)
+                {
+                    manager.Stores.Clear();
+                }
+            }
+            else
+            {
+                List<StoreEntity> stores = manager.Stores.ToList();
                 stores.RemoveAll(s => s.Deleted || !s.Approved);
                 manager.Stores = stores;
             }
 
-            return managerList;
-        }
-
-        public ManagerREST FilterStores(ManagerREST manager)
-        {
-            List<StoreREST> stores = manager.Stores.ToList();
-            stores.RemoveAll(s => s.Deleted || !s.Approved);
-            manager.Stores = stores;
-
             return manager;
         }
 
-        public IList<ManagerREST> FilterStoreAdmin(IList<ManagerREST> managers)
+        public IList<ManagerEntity> FilterStoreAdmin(IList<ManagerEntity> managers)
         {
-            List<ManagerREST> managerList = managers.ToList();
+            List<ManagerEntity> managerList = managers.ToList();
 
             foreach (var manager in managerList)
             {
-                manager.Administrator.Managers = Enumerable.Empty<ManagerREST>();
-                manager.Administrator.Stores = Enumerable.Empty<StoreREST>();
+                if (manager.Administrator.Managers != null)
+                {
+                    manager.Administrator.Managers.Clear();
+                }
+                if (manager.Administrator.Stores != null)
+                {
+                    manager.Administrator.Stores.Clear();
+                }
             }
 
             return managerList;
         }
 
-        public ManagerREST FilterStoreAdmin(ManagerREST manager)
+        public ManagerEntity FilterStoreAdmin(ManagerEntity manager)
         {
-            manager.Administrator.Managers = Enumerable.Empty<ManagerREST>();
-            manager.Administrator.Stores = Enumerable.Empty<StoreREST>();
+            if (manager.Administrator.Managers != null)
+            {
+                manager.Administrator.Managers.Clear();
+            }
+            if (manager.Administrator.Stores != null)
+            {
+                manager.Administrator.Stores.Clear();
+            }
 
             return manager;
         }
@@ -150,10 +183,13 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 IEnumerable<ManagerEntity> managers = uow.Managers.GetAllApproved(storeAdminIdentityId);
 
+                managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+
+                managers = FilterStores(managers.ToList(), true);
+                managers = FilterStoreAdmin(managers.ToList());
+
                 IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
-                //mapped = FilterStores(mapped);
-                mapped = FilterStoreAdmin(mapped);
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
@@ -171,9 +207,13 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 IEnumerable<ManagerEntity> managers = uow.Managers.GetAllDeleted(storeAdminIdentityId);
 
+                managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+
+                managers = FilterStores(managers.ToList(), true);
+                managers = FilterStoreAdmin(managers.ToList());
+
                 IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
-                mapped = FilterStores(mapped);
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
@@ -197,10 +237,13 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 ManagerEntity manager = uow.Managers.GetApproved(storeAdminIdentityId, managerId);
 
-                var mapped = mapper.Map<ManagerREST>(manager);
+                manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
+                manager.Stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
 
-                mapped = FilterStoreAdmin(mapped);
-                mapped = FilterStores(mapped);
+                manager = FilterStores(manager, false);
+                manager = FilterStoreAdmin(manager);
+
+                var mapped = mapper.Map<ManagerREST>(manager);
 
                 return mapped;
             }
@@ -260,56 +303,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #endregion
 
-        //ASSIGN/UNASSIGN //ovo neradi vise zbog storeAdminId (terba bit storeAdminIdentityId)
-
-        #region Assign/Unassign 
-
-        public Result Assign(string storeAdminIdentityId, string managerId, string storeId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.ManagerStores.Assign(storeAdminIdentityId, managerId, storeId);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        public Result Unassign(string storeAdminIdentityId, string managerId, string storeId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.ManagerStores.Unassign(storeAdminIdentityId, managerId, storeId);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        #endregion 
-
-        //MANAGER STORES
-
-        #region ManagerStores
-
-        public IPagingList<ManagerStore> GetManagerStores(string storeAdminIdentityId, string managerId, string sortOrder, string searchString, int pageIndex, int pageSize)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                IList<ManagerStore> managerStores = uow.ManagerStores.GetManagerStores(managerId, sortOrder, searchString).ToList();
-
-                IPagedList<ManagerStore> subset = managerStores.ToPagedList(pageIndex, pageSize);
-
-                IPagingList<ManagerStore> result = new PagingList<ManagerStore>(subset, subset.GetMetaData());
-
-                return result;
-            }
-        }
-
-        #endregion
-
         //GET/POST IMAGE
 
         #region Get/Post Image
@@ -340,7 +333,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        
+
 
         #endregion
 

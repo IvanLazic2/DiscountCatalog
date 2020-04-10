@@ -2,6 +2,9 @@
 using DiscountCatalog.Common.Models;
 using DiscountCatalog.Common.WebApiModels;
 using DiscountCatalog.MVC.Models;
+using DiscountCatalog.MVC.Models.ManyToManyModels;
+using DiscountCatalog.MVC.Models.ManyToManyModels.Manager;
+using DiscountCatalog.MVC.Models.ManyToManyModels.Store;
 using DiscountCatalog.MVC.Models.Paging;
 using DiscountCatalog.MVC.REST.Manager;
 using DiscountCatalog.MVC.REST.Store;
@@ -141,7 +144,7 @@ namespace DiscountCatalog.MVC.Repositories
             return result;
         }
 
-        public async Task<PagingEntity<ManagerStore>> GetManagerStores(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public async Task<ManagerStores> GetManagerStores(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
             AddTokenToHeader();
 
@@ -149,31 +152,31 @@ namespace DiscountCatalog.MVC.Repositories
 
             var request = await apiClient.GetAsync($"api/StoreAdmin/GetManagerStores/{storeAdminIdentityId}?managerId={id}&sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
-            var result = await request.Content.ReadAsAsync<PagingEntity<ManagerStore>>();
+            var result = await request.Content.ReadAsAsync<ManagerStores>();
 
             return result;
         }
 
-        public async Task<Result> Assign(string managerId, string storeId)
+        public async Task<Result> AssignStore(string managerId, string storeId)
         {
             AddTokenToHeader();
 
             string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/Assign/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/AssignStore/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
             return result;
         }
 
-        public async Task<Result> Unassign(string managerId, string storeId)
+        public async Task<Result> UnassignStore(string managerId, string storeId)
         {
             AddTokenToHeader();
 
             string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-            var request = await apiClient.GetAsync($"api/StoreAdmin/Unassign/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
+            var request = await apiClient.GetAsync($"api/StoreAdmin/UnassignStore/{storeAdminIdentityId}?managerId={managerId}&storeId={storeId}");
 
             var result = await request.Content.ReadAsAsync<Result>();
 
@@ -299,7 +302,46 @@ namespace DiscountCatalog.MVC.Repositories
             var result = await request.Content.ReadAsAsync<byte[]>();
 
             return result;
-        } 
+        }
+
+        public async Task<StoreManagers> GetStoreManagers(string id, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            AddTokenToHeader();
+
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            var request = await apiClient.GetAsync($"api/StoreAdmin/GetStoreManagers/{storeAdminIdentityId}?storeId={id}&sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+
+            var result = await request.Content.ReadAsAsync<StoreManagers>();
+
+            return result;
+        }
+
+        public async Task<Result> AssignManager(string storeId, string managerId)
+        {
+            AddTokenToHeader();
+
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            var request = await apiClient.GetAsync($"api/StoreAdmin/AssignManager/{storeAdminIdentityId}?storeId={storeId}&managerId={managerId}");
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
+
+        public async Task<Result> UnassignManager(string storeId, string managerId)
+        {
+            AddTokenToHeader();
+
+            string storeAdminIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
+
+            var request = await apiClient.GetAsync($"api/StoreAdmin/UnassignManager/{storeAdminIdentityId}?storeId={storeId}&managerId={managerId}");
+
+            var result = await request.Content.ReadAsAsync<Result>();
+
+            return result;
+        }
 
 
         #endregion

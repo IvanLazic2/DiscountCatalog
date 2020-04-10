@@ -44,7 +44,8 @@
             <tr class="main-table-data-row">
                 <td>
                     <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = item.Id })">
-                        <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Id }));"></div>
+                        @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = item.Id }));"></div>*@
+                        <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.StoreImage)"></div>
                     </a>
                 </td>
                 <td>

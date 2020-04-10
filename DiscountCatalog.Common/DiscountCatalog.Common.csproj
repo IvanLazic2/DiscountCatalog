@@ -102,7 +102,6 @@
     <Compile Include="Models\AuthenticationModel.cs" />
     <Compile Include="Models\Extended\AuthenticatedUserResult.cs" />
     <Compile Include="Models\Manager.cs" />
-    <Compile Include="Models\ManagerStore.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="Models\Store.cs" />

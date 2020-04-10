@@ -2,11 +2,13 @@
 @using PagedList;
 
 @{
+
     ViewBag.Title = "ManagerDetails";
 }
 
 <div id="user-info">
-    <div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id }));"></div>
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id }));"></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Identity.UserImage)"></div>
     <h2>@Model.Identity.UserName</h2>
 </div>
 
@@ -115,15 +117,15 @@
             </dd>
         </dl>
 
-        <br />  
+        <br />
 
         <h4>
-        <span class="glyphicon glyphicon-shopping-cart"></span> Stores 
-        <span>
-            <a href="@Url.Action("GetManagerStores", "StoreAdmin", new { id = Model.Id })" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></a>
+            <span class="glyphicon glyphicon-shopping-cart"></span> Stores
+            <span>
+                <a href="@Url.Action("GetManagerStores", "StoreAdmin", new { id = Model.Id })" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></a>
             </span>
         </h4>
-        
+
     </div>
 </div>
 

@@ -215,6 +215,10 @@
     <Compile Include="ModelBinders\CustomDateModelBinder.cs" />
     <Compile Include="ModelBinders\DecimalModelBinder.cs" />
     <Compile Include="Models\Cookies\StoreCookie.cs" />
+    <Compile Include="Models\ManyToManyModels\Manager\ManagerStore.cs" />
+    <Compile Include="Models\ManyToManyModels\Manager\ManagerStores.cs" />
+    <Compile Include="Models\ManyToManyModels\Store\StoreManager.cs" />
+    <Compile Include="Models\ManyToManyModels\Store\StoreManagers.cs" />
     <Compile Include="Models\Redirect\RedirectModel.cs" />
     <Compile Include="Models\Redirect\Route.cs" />
     <Compile Include="Models\SelectedStore.cs" />
@@ -264,6 +268,8 @@
     <Compile Include="Repositories\MVCRepositories\StoreRepository.cs" />
     <Compile Include="ViewModels\ManagerViewModel.cs" />
     <Compile Include="ViewModels\Manager\ManagerCreationViewModel.cs" />
+    <Compile Include="ViewModels\ManyToManyViewModels\ManagerStoresViewModel.cs" />
+    <Compile Include="ViewModels\ManyToManyViewModels\StoreManagersViewModel.cs" />
     <Compile Include="ViewModels\StoreViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\ProductViewModel.cs" />
@@ -602,6 +608,7 @@
     <Content Include="Views\Shared\_Flash.cshtml" />
     <Content Include="Views\StoreAdmin\_StoreList.cshtml" />
     <Content Include="Views\StoreAdmin\_ManagerList.cshtml" />
+    <Content Include="Views\StoreAdmin\GetStoreManagers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

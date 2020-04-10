@@ -29,15 +29,19 @@ namespace DiscountCatalog.WebAPI.Processors
             //    return thumbnail;
 
             //}
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            using (MemoryStream ms = new MemoryStream())
-            using (Image thumbnail = Image.FromStream(new MemoryStream(byteArray)).GetThumbnailImage(50, 50, null, new IntPtr()))
-            {
-                thumbnail.Save(ms, ImageFormat.Png);
-                return ms.ToArray();
-            }
-            //////////////////////////////////////////////////////////////////////////////////////////////
 
+
+            if (byteArray != null && byteArray.Length > 0)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                using (Image thumbnail = Image.FromStream(new MemoryStream(byteArray)).GetThumbnailImage(50, 50, null, new IntPtr()))
+                {
+                    thumbnail.Save(ms, ImageFormat.Png);
+                    return ms.ToArray();
+                }
+            }
+
+            return new byte[0];
         }
 
         public static byte[] SetDefault(string entityName)
@@ -47,7 +51,7 @@ namespace DiscountCatalog.WebAPI.Processors
             string target = root + "/Content/DefaultImages";
 
             byte[] image = File.ReadAllBytes($"{target}/{entityName}-dark.png");
-            
+
             return image;
         }
 
