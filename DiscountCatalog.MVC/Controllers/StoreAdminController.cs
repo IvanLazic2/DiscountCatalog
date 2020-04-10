@@ -300,19 +300,22 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 4;
 
-            ManagerStores managerStores = await storeAdminRepository.GetManagerStores(id, sortOrder, searchString, pageIndex, pageSize);
-
-            if (managerStores != null)
+            if (!string.IsNullOrEmpty(id))
             {
-                StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Stores.Items, managerStores.Stores.MetaData.PageNumber, managerStores.Stores.MetaData.PageSize, managerStores.Stores.MetaData.TotalItemCount);
+                ManagerStores managerStores = await storeAdminRepository.GetManagerStores(id, sortOrder, searchString, pageIndex, pageSize);
 
-                ManagerStoresViewModel viewModel = new ManagerStoresViewModel
+                if (managerStores != null)
                 {
-                    Manager = managerStores.Manager,
-                    Stores = list
-                };
+                    StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Stores.Items, managerStores.Stores.MetaData.PageNumber, managerStores.Stores.MetaData.PageSize, managerStores.Stores.MetaData.TotalItemCount);
 
-                return View(viewModel);
+                    ManagerStoresViewModel viewModel = new ManagerStoresViewModel
+                    {
+                        Manager = managerStores.Manager,
+                        Stores = list
+                    };
+
+                    return View(viewModel);
+                }
             }
 
             return RedirectToAction("ManagerDetails", new { id }).Error("Something went wrong, please try again.");
@@ -649,19 +652,22 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 4;
 
-            StoreManagers storeManagers = await storeAdminRepository.GetStoreManagers(id, sortOrder, searchString, pageIndex, pageSize);
-
-            if (storeManagers != null)
+            if (!string.IsNullOrEmpty(id))
             {
-                StaticPagedList<StoreManager> list = new StaticPagedList<StoreManager>(storeManagers.Managers.Items, storeManagers.Managers.MetaData.PageNumber, storeManagers.Managers.MetaData.PageSize, storeManagers.Managers.MetaData.TotalItemCount);
+                StoreManagers storeManagers = await storeAdminRepository.GetStoreManagers(id, sortOrder, searchString, pageIndex, pageSize);
 
-                StoreManagersViewModel viewModel = new StoreManagersViewModel
+                if (storeManagers != null)
                 {
-                    Store = storeManagers.Store,
-                    Managers = list
-                };
+                    StaticPagedList<StoreManager> list = new StaticPagedList<StoreManager>(storeManagers.Managers.Items, storeManagers.Managers.MetaData.PageNumber, storeManagers.Managers.MetaData.PageSize, storeManagers.Managers.MetaData.TotalItemCount);
 
-                return View(viewModel);
+                    StoreManagersViewModel viewModel = new StoreManagersViewModel
+                    {
+                        Store = storeManagers.Store,
+                        Managers = list
+                    };
+
+                    return View(viewModel);
+                }
             }
 
             return RedirectToAction("StoreDetails", new { id }).Error("Something went wrong, please try again.");

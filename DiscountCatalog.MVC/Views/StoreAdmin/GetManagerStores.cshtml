@@ -6,7 +6,11 @@
     ViewBag.Title = "GetManagerStores";
 }
 
-<h2>Assign or unassign stores for @Model.Manager.Identity.UserName</h2>
+<div id="user-info">
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Manager.Identity.UserImage)"></div>
+    <h2>@Model.Manager.Identity.UserName</h2>
+    <h4>Assign stores</h4>
+</div>
 
 <hr />
 

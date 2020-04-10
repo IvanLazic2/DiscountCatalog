@@ -125,7 +125,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 IList<StoreManager> storeManagers = new List<StoreManager>();
 
                 StoreEntity store = uow.Stores.GetApproved(storeAdminIdentityId, storeId);
-
+                store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+                
                 if (store != null)
                 {
                     IList<ManagerEntity> managers = uow.Managers.GetAllApproved(storeAdminIdentityId).ToList();
@@ -135,6 +136,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                     foreach (var manager in managers)
                     {
+                        manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
+
                         bool assigned = store.Managers.Any(m => m.Identity.Id == manager.Identity.Id);
 
                         storeManagers.Add
@@ -146,9 +149,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                             }
                         );
                     }
-
-                    store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
-                    managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
 
                     store = FilterManagers(store);
                     store = FilterStoreAdmin(store);
