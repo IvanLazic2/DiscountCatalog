@@ -25,7 +25,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         StoreEntity GetLoaded(string storeAdminIdentityId, string storeId);
         StoreEntity GetApproved(string storeAdminIdentityId, string storeId);
 
-
         Result PostStoreImage(string id, byte[] image);
         byte[] GetStoreImage(string id);
 

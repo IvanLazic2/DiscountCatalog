@@ -243,6 +243,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManagerController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -443,6 +444,7 @@
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Manager\" />
+    <Folder Include="Views\Product\" />
     <Folder Include="Views\StoreAdmin\" />
     <Folder Include="Views\Store\" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using DiscountCatalog.Common.Models;
+using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Paging.Contractor;
 using DiscountCatalog.WebAPI.REST.Product;
 using System;
@@ -30,5 +31,9 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
         Result PostProductImage(string storeId, string productId, byte[] image);
 
         byte[] GetImage(string productId);
+
+        decimal GetMinPrice(string storeId);
+
+        decimal GetMaxPrice(string storeId);
     }
 }

@@ -32,7 +32,7 @@ using DiscountCatalog.MVC.Models.ManyToManyModels.Store;
 namespace DiscountCatalog.MVC.Controllers
 {
     [RoutePrefix("StoreAdmin")]
-    public class StoreAdminController : Controller // TU SAM STAO - napravit cookiehandler za store i dizajnirat viewove
+    public class StoreAdminController : Controller
     {
         #region Fields
 
@@ -53,6 +53,7 @@ namespace DiscountCatalog.MVC.Controllers
             //accountCookieHandler = new AccountCookieHandler();
             storeCookieHandler = new StoreCookieHandler();
             storeAdminRepository = new StoreAdminRepository();
+            
         }
 
         #endregion
@@ -306,15 +307,19 @@ namespace DiscountCatalog.MVC.Controllers
 
                 if (managerStores != null)
                 {
-                    StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Stores.Items, managerStores.Stores.MetaData.PageNumber, managerStores.Stores.MetaData.PageSize, managerStores.Stores.MetaData.TotalItemCount);
-
-                    ManagerStoresViewModel viewModel = new ManagerStoresViewModel
+                    if (GlobalValidator.IsManagerValid(managerStores.Manager))
                     {
-                        Manager = managerStores.Manager,
-                        Stores = list
-                    };
+                        StaticPagedList<ManagerStore> list = new StaticPagedList<ManagerStore>(managerStores.Stores.Items, managerStores.Stores.MetaData.PageNumber, managerStores.Stores.MetaData.PageSize, managerStores.Stores.MetaData.TotalItemCount);
 
-                    return View(viewModel);
+                        ManagerStoresViewModel viewModel = new ManagerStoresViewModel
+                        {
+                            Manager = managerStores.Manager,
+                            Stores = list
+                        };
+
+                        return View(viewModel);
+                    }
+
                 }
             }
 
@@ -327,9 +332,9 @@ namespace DiscountCatalog.MVC.Controllers
         {
             Result result = await storeAdminRepository.AssignStore(managerId, storeId);
 
-            foreach (var error in result.ModelState)
+            if (!result.Success)
             {
-                ModelState.AddModelError(error.Key, error.Value);
+                return RedirectToAction("GetManagerStores", new { id = managerId }).Error("Something went wrong, please try again.");
             }
 
             return RedirectToAction("GetManagerStores", new { id = managerId }).Success(result.SuccessMessage);
@@ -341,12 +346,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             Result result = await storeAdminRepository.UnassignStore(managerId, storeId);
 
-            foreach (var error in result.ModelState)
+            if (!result.Success)
             {
-                ModelState.AddModelError(error.Key, error.Value);
+                return RedirectToAction("GetManagerStores", new { id = managerId }).Error("Something went wrong, please try again.");
             }
 
-            return RedirectToAction("GetManagerStores", new { id = managerId }).Warning(result.SuccessMessage);
+            return RedirectToAction("GetManagerStores", new { id = managerId }).Success(result.SuccessMessage);
         }
 
         [Route("PostManagerImage/{id}")]
@@ -622,6 +627,7 @@ namespace DiscountCatalog.MVC.Controllers
             if (store != null)
             {
                 cookieHandler.Set("StoreID", store.Id, true, System.Web.HttpContext.Current);
+                this.HttpContext.Session.Add("StoreID", store.Id);
                 cookieHandler.Set("StoreName", store.StoreName, true, System.Web.HttpContext.Current);
 
                 return RedirectToAction("Index", "Store").Success($"{store.StoreName} selected.");
@@ -658,15 +664,18 @@ namespace DiscountCatalog.MVC.Controllers
 
                 if (storeManagers != null)
                 {
-                    StaticPagedList<StoreManager> list = new StaticPagedList<StoreManager>(storeManagers.Managers.Items, storeManagers.Managers.MetaData.PageNumber, storeManagers.Managers.MetaData.PageSize, storeManagers.Managers.MetaData.TotalItemCount);
-
-                    StoreManagersViewModel viewModel = new StoreManagersViewModel
+                    if (GlobalValidator.IsStoreValid(storeManagers.Store))
                     {
-                        Store = storeManagers.Store,
-                        Managers = list
-                    };
+                        StaticPagedList<StoreManager> list = new StaticPagedList<StoreManager>(storeManagers.Managers.Items, storeManagers.Managers.MetaData.PageNumber, storeManagers.Managers.MetaData.PageSize, storeManagers.Managers.MetaData.TotalItemCount);
 
-                    return View(viewModel);
+                        StoreManagersViewModel viewModel = new StoreManagersViewModel
+                        {
+                            Store = storeManagers.Store,
+                            Managers = list
+                        };
+
+                        return View(viewModel);
+                    }
                 }
             }
 
@@ -679,9 +688,9 @@ namespace DiscountCatalog.MVC.Controllers
         {
             Result result = await storeAdminRepository.AssignManager(storeId, managerId);
 
-            foreach (var error in result.ModelState)
+            if (!result.Success)
             {
-                ModelState.AddModelError(error.Key, error.Value);
+                return RedirectToAction("GetStoreManagers", new { id = storeId }).Error("Something went wrong, please try again.");
             }
 
             return RedirectToAction("GetStoreManagers", new { id = storeId }).Success(result.SuccessMessage);
@@ -693,12 +702,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             Result result = await storeAdminRepository.UnassignManager(storeId, managerId);
 
-            foreach (var error in result.ModelState)
+            if (!result.Success)
             {
-                ModelState.AddModelError(error.Key, error.Value);
+                return RedirectToAction("GetStoreManagers", new { id = storeId }).Error("Something went wrong, please try again.");
             }
 
-            return RedirectToAction("GetStoreManagers", new { id = storeId }).Warning(result.SuccessMessage);
+            return RedirectToAction("GetStoreManagers", new { id = storeId }).Success(result.SuccessMessage);
         }
 
         #endregion

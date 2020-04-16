@@ -3,146 +3,149 @@
 @{
     ViewBag.Title = "CreateProduct";
 }
-<h2>Create a Product</h2>
+<h2>Create a new Product</h2>
 
-@using (Html.BeginForm())
+<hr />
+
+@using (Html.BeginForm("CreateProduct", "Store", FormMethod.Post, new { enctype = "multipart/form-data", id = "image-form" }))
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(model => model.ProductName, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
+    <div class="image-form-container" style="left: 60%;">
+        <p>Upload a new image:</p>
+        <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+        <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+        <br>
+        <img id="uploadedPreview" alt="">
+        <br>
+        <div id="form-actions">
+            <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.CompanyName, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <h4><span class="glyphicon glyphicon-signal"></span> Product info</h4>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.OldPrice, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.OldPrice, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.OldPrice, "", new { @class = "text-danger" })
-        </div>
-    </div>
+    <div class="form-horizontal">
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.NewPrice, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.NewPrice, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.NewPrice, "", new { @class = "text-danger" })
-        </div>
-    </div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.DiscountPercentage, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    @*<div class="form-group">
-        @Html.LabelFor(model => model.DiscountDateBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class='input-group date datetimepicker1 col-md-3'>
-                @Html.EditorFor(model => model.DiscountDateBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
+        <div class="form-group">
+            @Html.Label("products name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ProductName, "", new { @class = "text-danger" })
             </div>
-            @Html.ValidationMessageFor(model => model.DiscountDateBegin, "", new { @class = "text-danger" })
         </div>
-    </div>*@
 
-    @*<div class="form-group">
-            @Html.LabelFor(model => model.DiscountDateEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class='input-group date datetimepicker1 col-md-3'>
-                    @Html.EditorFor(model => model.DiscountDateEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
+        <div class="form-group">
+            @Html.Label("Company name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.CompanyName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <h4><span class="glyphicon glyphicon-music"></span> Price</h4>
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("Old price", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.OldPrice, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.OldPrice, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("New Price", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.NewPrice, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NewPrice, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Discount percentage", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <h4><span class="glyphicon glyphicon-calendar"></span> Discount date</h4>
+
+    <div class="form-inline form-padding">
+        <div class="container left">
+            @Html.Label("Date", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class='col-md-6'>
+                <div class="form-group">
+                    <div class='input-group date datepicker'>
+                        @Html.EditorFor(model => model.DiscountDateBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
                 </div>
-                @Html.ValidationMessageFor(model => model.DiscountDateEnd, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
-
-    <div class="container">
-        @Html.LabelFor(model => model.DiscountDateBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class='col-md-5'>
-            <div class="form-group">
-                <div class='input-group date datepicker'>
-                    @Html.EditorFor(model => model.DiscountDateBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
+                <div class="form-group"><p> &ndash; </p></div>
+                <div class="form-group">
+                    <div class='input-group date datepicker'>
+                        @Html.EditorFor(model => model.DiscountDateEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
                 </div>
                 @Html.ValidationMessageFor(model => model.DiscountDateBegin, "", new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        @Html.LabelFor(model => model.DiscountDateEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class='col-md-5'>
-            <div class="form-group">
-                <div class='input-group date datepicker'>
-                    @Html.EditorFor(model => model.DiscountDateEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
                 @Html.ValidationMessageFor(model => model.DiscountDateEnd, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+    <h4><span class="glyphicon glyphicon-inbox"></span> Jos nesto</h4>
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("Quantity", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Description", htmlAttributes: new { @class = "control-label col-md-2", })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Note", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.Note, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-4">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-        </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Note, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Note, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Note, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
-        </div>
-    </div>
-</div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "GetAllProducts")
+    <a href="@Url.Action("GetAllProducts", "Store")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
 </div>
+
+@Styles.Render("~/Content/IndividualPageStyles/Create")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Create")
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

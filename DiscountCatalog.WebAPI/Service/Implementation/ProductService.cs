@@ -258,6 +258,35 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #endregion
 
+        //PRICE
+
+        #region Price
+
+        public decimal GetMinPrice(string storeId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
+
+                decimal? min = products.Select(p => p.NewPrice).Min();
+
+                return min.Value;
+            }
+        }
+
+        public decimal GetMaxPrice(string storeId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
+
+                decimal? max = products.Select(p => p.NewPrice).Max();
+
+                return max.Value;
+            }
+        }
+
+        #endregion
 
         #endregion
 

@@ -3,8 +3,11 @@ using DiscountCatalog.MVC.Cookies.Implementation;
 using DiscountCatalog.MVC.Factory;
 using DiscountCatalog.MVC.ModelBinders;
 using DiscountCatalog.MVC.Models.Redirect;
+using DiscountCatalog.MVC.REST.Store;
+using Hanssens.Net;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -17,7 +20,7 @@ using System.Web.Routing;
 
 namespace DiscountCatalog.MVC
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         private readonly List<string> _allowedControllers = new List<string>
         {
@@ -32,6 +35,13 @@ namespace DiscountCatalog.MVC
             "Register"
         };
         private RedirectFactory _redirectFactory;
+        private readonly ICookieHandler cookieHandler;
+
+
+        public MvcApplication()
+        {
+            cookieHandler = new CookieHandler();
+        }
 
         protected void Application_Start()
         {
@@ -72,11 +82,13 @@ namespace DiscountCatalog.MVC
                 _redirectFactory = new RedirectFactory(currentContext, context, _allowedControllers, _allowedActions);
                 _redirectFactory.GenerateRedirect(new RedirectModel(controllerName, actionName));
             }
+
+            string value = ConfigurationManager.AppSettings["api"];
         }
 
         private void Application_Error(object sender, EventArgs e)
         {
-           // HttpContext context = ((HttpApplication)sender).Context;
+            // HttpContext context = ((HttpApplication)sender).Context;
 
             var ex = Server.GetLastError();
             var httpException = ex as HttpException ?? ex.InnerException as HttpException;
@@ -86,7 +98,7 @@ namespace DiscountCatalog.MVC
             {
                 HttpContext.Current.ClearError();
                 HttpContext.Current.Response.Redirect("~/Error/FileTooBig");
-                //Response.Write("Too big a file, dude");
+                //Response.Write("File too big");
             }
         }
     }

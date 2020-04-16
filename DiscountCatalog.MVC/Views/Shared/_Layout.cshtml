@@ -4,11 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="@Url.Content("~/Content/button-style.css")" rel="stylesheet" />
-
 
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/bundles/jqueryui/css")
     @Styles.Render("~/Content/IndividualPageStyles/Common")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
@@ -16,7 +15,7 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/FlashMessage")
     @Scripts.Render("~/Scripts/IndividualPageScripts/Common")
-    @*<script src="@Url.Content("~/Scripts/IndividualPageScripts/Common.js")"></script>*@
+    @Scripts.Render("~/bundles/jqueryui")
 </head>
 <body>
 
@@ -34,6 +33,6 @@
     </div>
 
     @RenderSection("scripts", required: false)
-    
+
 </body>
 </html>

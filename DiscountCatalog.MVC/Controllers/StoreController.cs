@@ -19,21 +19,28 @@ using DiscountCatalog.MVC.REST.Product;
 using DiscountCatalog.MVC.Models.Paging;
 using AutoMapper;
 using AbatementHelper.MVC.Mapping;
+using DiscountCatalog.MVC.Repositories.MVCRepositories;
+using DiscountCatalog.MVC.Cookies.Contractor;
+using DiscountCatalog.MVC.Cookies.Implementation;
 
 namespace DiscountCatalog.MVC.Controllers
 {
-    public class StoreController : Controller //!!!dodat redirectprocessor il tak nest koji ce primat result i vracat string path
+    public class StoreController : Controller
     {
         private readonly IMapper mapper;
+        private readonly ICookieHandler cookieHandler;
         private readonly StoreRepository storeRepository;
+        private readonly ProductRepository productRepository;
 
         public StoreController()
         {
-            storeRepository = new StoreRepository();
             mapper = AutoMapping.Initialise();
+            cookieHandler = new CookieHandler();
+            storeRepository = new StoreRepository();
+            productRepository = new ProductRepository();
         }
 
-        public ActionResult Index() 
+        public ActionResult Index()
         {
             return View();
         }
@@ -44,10 +51,27 @@ namespace DiscountCatalog.MVC.Controllers
         //by storename...
 
         [Route("GetAllProducts")]
-        public async Task<ActionResult> GetAllProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> GetAllProducts(string sortOrder, string currentFilter, string searchString, int? page, string filterType, string filter)
         {
+            ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+            ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+
+            if (filter != null)
+            {
+                string[] arr = filter.Split(",".ToCharArray());
+
+                ViewBag.From = Convert.ToInt32(arr[0]);
+                ViewBag.To = Convert.ToInt32(arr[1]);
+            }
+            else
+            {
+                ViewBag.From = ViewBag.Min;
+                ViewBag.To = ViewBag.Max;
+            }
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
 
             if (searchString != null)
             {

@@ -12,15 +12,16 @@
 <p>
     @Html.ActionLink("Create New", "CreateProduct")
 </p>
+
 <hr />
 
-@using (Html.BeginForm("GetAllProducts", "Store", FormMethod.Get))
-{
-    <p>
-        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
-        <input type="submit" value="Search" />
-    </p>
-}
+<div class="search-container">
+    @using (Html.BeginForm("GetAllProducts", "Store", FormMethod.Get))
+    {
+        <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+    }
+</div>
 
 <div class="container">
     <table>
@@ -35,6 +36,15 @@
         </tr>
     </table>
 </div>
+
+
+<p>
+    <label for="amount">Price range:</label>
+    <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+
+<div id="slider-range"></div>
+
 
 <div class="container">
     <div class="row" id="products">
@@ -77,6 +87,33 @@ Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.Page
 @Html.PagedListPager(Model, page => Url.Action("GetAllProducts",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 
+
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+<script>
+    $(function () {
+        $("#slider-range").slider({
+            range: true,
+            min: @ViewBag.Min,
+            max: @ViewBag.Max,
+            values: [@ViewBag.From, @ViewBag.To],
+            slide: function (event, ui) {
+                $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+            },
+            change: function (event, ui) {
+                let action = "@Html.Raw(Url.Action("GetAllProducts", "Store", new { filterType = "price", filter = "tempFilter" }))";
+                let array = ui.values;
+                array = array.join(",");
+                action = action.replace("tempFilter", array);
+                location.href = action;
+            }
+        });
+        $("#amount").val("$" + $("#slider-range").slider("values", 0) +
+            " - $" + $("#slider-range").slider("values", 1));
+    });
+</script>

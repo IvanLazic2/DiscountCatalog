@@ -479,6 +479,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         }
 
         #endregion
+        
 
         #endregion
 

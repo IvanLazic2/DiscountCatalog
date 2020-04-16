@@ -1,170 +1,186 @@
-﻿@model DiscountCatalog.Common.WebApiModels.WebApiStore
+﻿@model DiscountCatalog.MVC.REST.Store.StoreREST
 
 @{
     ViewBag.Title = "EditStore";
 }
 
+<div id="store-info">
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.StoreImage)"></div>
+    <h2 style="display: inline">@Model.StoreName</h2>
+</div>
 
-<h2>Edit @Model.StoreName</h2>
+<hr />
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+<div class="store-info-container">
 
-    <div class="form-horizontal">
+    @using (Html.BeginForm("EditStore", "Manager", FormMethod.Post, new { enctype = "multipart/form-data", id = "image-form" }))
+    {
+        @Html.AntiForgeryToken()
 
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StoreName, "", new { @class = "text-danger" })
+        <div class="image-form-container" style="left: 60%">
+            <p>Upload a new image:</p>
+            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+            <br>
+            <img id="uploadedPreview" alt="">
+            <br>
+            <div id="form-actions">
+                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
             </div>
         </div>
 
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursWeekBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursWeekBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Store info</h4>
+
+        <div class="form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                @Html.Label("Store name", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.StoreName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <h4><span class="glyphicon glyphicon-time"></span> Working hours</h4>
+
+        <div class="form-inline form-padding">
+
+            <div class="container left">
+                @Html.Label("Week", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class='col-md-6'>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursWeekBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group"><p> &ndash; </p></div>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursWeekEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekBegin, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursWeekEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursWeekEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
-                    </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
-        </div>
 
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursWeekendsBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursWeekendsBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
+            <div class="container left">
+                @Html.Label("Weekends", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class='col-md-6'>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursWeekendsBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group"><p> &ndash; </p></div>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursWeekendsEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsBegin, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursWeekendsEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursWeekendsEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
-                    </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursWeekendsEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
-        </div>
 
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursHolidaysBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursHolidaysBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
+            <div class="container left">
+                @Html.Label("Holidays", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class='col-md-6'>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursHolidaysBegin, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group"><p> &ndash; </p></div>
+                    <div class="form-group">
+                        <div class='input-group date timepicker'>
+                            @Html.EditorFor(model => model.WorkingHoursHolidaysEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </span>
+                        </div>
                     </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysBegin, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            @Html.LabelFor(model => model.WorkingHoursHolidaysEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class='col-md-5'>
-                <div class="form-group">
-                    <div class='input-group date timepicker'>
-                        @Html.EditorFor(model => model.WorkingHoursHolidaysEnd, new { htmlAttributes = new { type = "text", @class = "form-control" } })
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-time"></span>
-                        </span>
-                    </div>
                     @Html.ValidationMessageFor(model => model.WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
-                    @Html.ValidationMessageFor(model => model._WorkingHoursHolidaysEnd, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Country, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        <h4><span class="glyphicon glyphicon-map-marker"></span> Address</h4>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        <div class="form-horizontal">
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.PostalCode, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PostalCode, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.Label("Country", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Street, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Street, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.Label("City", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="form-group">
+                @Html.Label("Postal code", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.PostalCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Street", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.Street, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Street, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save</button>
+                </div>
             </div>
         </div>
-    </div>
-}
-}
+    }
+
+</div>
 
 <div>
-    @Html.ActionLink("Back to List", "GetAllStores")
+    <a href="@Url.Action("StoreDetails", "Manager", new { id = Model.Id })" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
 </div>
+
+
+
+@Styles.Render("~/Content/IndividualPageStyles/Edit")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Edit")
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

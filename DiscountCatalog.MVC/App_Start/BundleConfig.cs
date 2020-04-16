@@ -34,6 +34,14 @@ namespace DiscountCatalog.MVC
                       "~/Scripts/bootstrap-datetimepicker.min.js",
                       "~/Scripts/datepicker.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
+                "~/Scripts/jquery-ui-{version}.js",
+                "~/Scripts/jquery-ui-{version}.min.js"));
+
+            bundles.Add(new StyleBundle("~/bundles/jqueryui/css").Include(
+                "~/Content/themes/base/jquery-ui.css",
+                "~/Content/themes/base/jquery-ui.min.css"));
+
             //bundles.Add(new ScriptBundle("~/bundles/datetimepicker").Include(
             //    "~/Scripts/bootstrap-datetimepicker.js"));
 
@@ -93,6 +101,8 @@ namespace DiscountCatalog.MVC
             bundles.Add(new ScriptBundle("~/Scripts/FlashMessage").Include(
                 "~/Scripts/jquery.cookie.js",
                 "~/Scripts/jquery.flashmessage.js"));
+
+            
 
         }
     }

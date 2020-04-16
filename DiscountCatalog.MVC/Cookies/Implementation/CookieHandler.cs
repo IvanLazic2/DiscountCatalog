@@ -18,8 +18,7 @@ namespace DiscountCatalog.MVC.Cookies.Implementation
             context.Response.Cookies.Add(new HttpCookie(key)
             {
                 Value = value,
-                HttpOnly = httpOnly,
-                Expires = DateTime.Now.AddYears(1) //
+                HttpOnly = httpOnly
             });
         }
 

@@ -1,120 +1,73 @@
-﻿//using DiscountCatalog.Common.Models;
-//using DiscountCatalog.Common.WebApiModels;
-//using DiscountCatalog.MVC.Models;
-//using Newtonsoft.Json;
-//using System;
-//using System.Collections.Generic;
-//using System.Configuration;
-//using System.Linq;
-//using System.Net.Http;
-//using System.Net.Http.Headers;
-//using System.Text;
-//using System.Threading.Tasks;
-//using System.Web;
+﻿using DiscountCatalog.Common.Models;
+using DiscountCatalog.Common.WebApiModels;
+using DiscountCatalog.MVC.Models;
+using DiscountCatalog.MVC.Models.Paging;
+using DiscountCatalog.MVC.REST.Store;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
-//namespace DiscountCatalog.MVC.Repositories
-//{
-//    public class ManagerRepository
-//    {
-//        private HttpClient apiClient;
+namespace DiscountCatalog.MVC.Repositories
+{
+    public class ManagerRepository : MVCRepository
+    {
+        public async Task<PagingEntity<StoreREST>> GetAllStores(string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            AddTokenToHeader();
 
-//        public ManagerRepository()
-//        {
-//            InitializeClient();
-//        }
+            string managerIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-//        private void InitializeClient()
-//        {
-//            string api = ConfigurationManager.AppSettings["api"];
+            var request = await apiClient.GetAsync($"api/Manager/GetAllStores/{managerIdentityId}?&sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
 
-//            apiClient = new HttpClient();
-//            apiClient.BaseAddress = new Uri(api);
-//            apiClient.DefaultRequestHeaders.Accept.Clear();
-//            apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//        }
+            var result = await request.Content.ReadAsAsync<PagingEntity<StoreREST>>();
 
-//        public void AddTokenToHeader()
-//        {
-//            var token = HttpContext.Current.Request.Cookies["Access_Token"];
+            return result;
+        }
 
-//            if (token != null)
-//            {
-//                apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token.Value.ToString());
-//            }
-//        }
+        public async Task<StoreREST> GetStore(string id)
+        {
+            AddTokenToHeader();
 
-//        public async Task<WebApiListOfStoresResult> GetAllStoresAsync()
-//        {
-//            string managerId = HttpContext.Current.Request.Cookies["UserID"].Value;
+            string managerIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-//            AddTokenToHeader();
+            var request = await apiClient.GetAsync($"api/Manager/GetStore/{managerIdentityId}?storeId={id}");
 
-//            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/GetAllStoresAsync/" + managerId);
+            var result = await request.Content.ReadAsAsync<StoreREST>();
 
-//            WebApiListOfStoresResult result = await request.Content.ReadAsAsync<WebApiListOfStoresResult>();
+            return result;
+        }
 
-//            return result;
-//        }
+        public async Task<Result> EditStore(StoreRESTPut store)
+        {
+            AddTokenToHeader();
 
-//        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
-//        {
-//            AddTokenToHeader();
+            string managerIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-//            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/SelectAsync/" + id);
+            var request = await apiClient.PutAsJsonAsync($"api/Manager/EditStore/{managerIdentityId}", store);
 
-//            WebApiSelectedStoreResult result = await request.Content.ReadAsAsync<WebApiSelectedStoreResult>();
+            var result = await request.Content.ReadAsAsync<Result>();
 
-//            return result;
-//        }
+            return result;
+        }
 
-//        public async Task<WebApiStoreResult> EditStoreAsync(string id)
-//        {
-//            AddTokenToHeader();
+        public async Task<Result> PostStoreImage(string id, byte[] image)
+        {
+            AddTokenToHeader();
 
-//            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/EditStoreAsync/" + id);
+            string managerIdentityId = HttpContext.Current.Request.Cookies["UserID"].Value;
 
-//            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
+            var request = await apiClient.PutAsJsonAsync($"api/Manager/PostStoreImage/{managerIdentityId}?storeId={id}", image);
 
-//            return result;
-//        }
+            var result = await request.Content.ReadAsAsync<Result>();
 
-//        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
-//        {
-//            AddTokenToHeader();
-
-//            HttpResponseMessage request = await apiClient.PutAsJsonAsync("api/Manager/EditStoreAsync", store);
-
-//            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
-
-//            return result;
-//        }
-
-//        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
-//        {
-//            AddTokenToHeader();
-
-//            HttpResponseMessage request = await apiClient.GetAsync("api/Manager/DetailsStoreAsync/" + id);
-
-//            WebApiStoreResult result = await request.Content.ReadAsAsync<WebApiStoreResult>();
-
-//            return result;
-//        }
-
-//        public async Task<WebApiResult> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
-//        {
-//            AddTokenToHeader();
-
-//            storeUnassign.ManagerId = HttpContext.Current.Request.Cookies["UserID"].Value;
-
-//            var jsonContent = JsonConvert.SerializeObject(storeUnassign);
-
-//            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-//            HttpResponseMessage request = await apiClient.PostAsync("api/Manager/AbandonStoreAsync/", httpContent);
-
-//            WebApiResult result = await request.Content.ReadAsAsync<WebApiResult>();
-
-//            return result;
-//        }
-//    }
-//}
+            return result;
+        }
+    }
+}

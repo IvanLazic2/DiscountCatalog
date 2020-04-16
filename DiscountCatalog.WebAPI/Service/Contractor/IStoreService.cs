@@ -13,13 +13,23 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
     public interface IStoreService
     {
         Task<Result> CreateAsync(StoreRESTPost store);
+
         StoreREST Get(string storeAdminIdentityId, string storeId);
+        StoreREST Get(string managerIdentityId, string storeAdminIdentityId, string storeId);
+
         IPagingList<StoreREST> GetAll(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<StoreREST> GetAll(string managerIdentityId, string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
+
         IPagingList<StoreREST> GetAllDeleted(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        //IPagingList<StoreREST> GetAllDeleted(string managerIdentityId, string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
+
         Task<Result> UpdateAsync(string storeAdminIdentityId, StoreRESTPut store);
+        Task<Result> UpdateAsync(string managerIdentityId, string storeAdminIdentityId, StoreRESTPut store);
+
         Result Delete(string storeAdminIdentityId, string storeId);
         Result Restore(string storeAdminIdentityId, string storeId);
         Result PostImage(string storeAdminIdentityId, string storeId, byte[] image);
+        Result PostImage(string managerIdentityId, string storeAdminIdentityId, string storeId, byte[] image);
         byte[] GetImage(string storeId);
 
         IList<StoreEntity> FilterManagers(IList<StoreEntity> stores, bool clear);

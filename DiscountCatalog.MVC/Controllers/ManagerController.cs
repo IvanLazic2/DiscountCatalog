@@ -1,218 +1,154 @@
-﻿//using DiscountCatalog.Common.Models;
-//using DiscountCatalog.Common.WebApiModels;
-//using DiscountCatalog.MVC.Repositories;
-//using PagedList;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Web;
-//using System.Web.Mvc;
-//using DiscountCatalog.MVC.Extensions;
-//using System.Threading.Tasks;
-//using DiscountCatalog.MVC.Models;
+﻿using DiscountCatalog.Common.Models;
+using DiscountCatalog.Common.WebApiModels;
+using DiscountCatalog.MVC.Repositories;
+using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using DiscountCatalog.MVC.Extensions;
+using System.Threading.Tasks;
+using DiscountCatalog.MVC.Models;
+using DiscountCatalog.MVC.Models.Paging;
+using DiscountCatalog.MVC.REST.Store;
+using DiscountCatalog.MVC.Validators;
+using DiscountCatalog.MVC.Processors;
+using AutoMapper;
+using AbatementHelper.MVC.Mapping;
+using DiscountCatalog.MVC.Cookies.Contractor;
+using DiscountCatalog.MVC.Cookies.Implementation;
 
-//namespace DiscountCatalog.MVC.Controllers
-//{
-//    public class ManagerController : Controller
-//    {
-//        private ManagerRepository managerRepository = new ManagerRepository();
+namespace DiscountCatalog.MVC.Controllers
+{
+    public class ManagerController : Controller
+    {
+        private readonly IMapper mapper;
+        private readonly ICookieHandler cookieHandler;
+        private readonly ManagerRepository managerRepository;
 
-//        public ActionResult Index()
-//        {
-//            return View();
-//        }
+        public ManagerController()
+        {
+            mapper = AutoMapping.Initialise();
+            cookieHandler = new CookieHandler();
+            managerRepository = new ManagerRepository();
+        }
 
-//        [Route("GetAllStores")]
-//        public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
-//        {
-//            List<WebApiStore> stores = new List<WebApiStore>();
+        public ActionResult Index()
+        {
+            return View();
+        }
 
-//            ViewBag.CurrentSort = sortOrder;
-//            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+        [Route("GetAllStores")]
+        public async Task<ActionResult> GetAllStores(string sortOrder, string currentFilter, string searchString, int? page)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
 
-//            if (searchString != null)
-//            {
-//                page = 1;
-//            }
-//            else
-//            {
-//                searchString = currentFilter;
-//            }
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
-//            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentFilter = searchString;
 
-//            WebApiListOfStoresResult result = await managerRepository.GetAllStoresAsync();
+            int pageSize = 12;
+            int pageNumber = (page ?? 1);
 
-//            if (result.Success)
-//            {
-//                stores = result.Stores;
-//            }
-//            else
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
-//            }
+            PagingEntity<StoreREST> stores = await managerRepository.GetAllStores(sortOrder, searchString, pageNumber, pageSize);
 
-//            if (!string.IsNullOrEmpty(searchString))
-//            {
-//                stores = stores.Where(u => u.StoreName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
-//            }
+            StaticPagedList<StoreREST> list = new StaticPagedList<StoreREST>(stores.Items, stores.MetaData.PageNumber, stores.MetaData.PageSize, stores.MetaData.TotalItemCount);
 
-//            switch (sortOrder)
-//            {
-//                case "name_desc":
-//                    stores = stores.OrderByDescending(u => u.StoreName).ToList();
-//                    break;
-//                default:
-//                    stores = stores.OrderBy(u => u.StoreName).ToList();
-//                    break;
-//            }
+            return View(list);
+        }
 
-//            int pageSize = 12;
-//            int pageNumber = (page ?? 1);
+        [HttpGet]
+        [Route("StoreDetails/{id}")]
+        public async Task<ActionResult> StoreDetails(string id)
+        {
+            StoreREST store = await managerRepository.GetStore(id);
 
-//            return View(stores.ToPagedList(pageNumber, pageSize));
-//        }
+            if (GlobalValidator.IsStoreValid(store))
+            {
+                return View(store);
+            }
 
-//        [HttpGet]
-//        [Route("Select/{id}")]
-//        public async Task<ActionResult> Select(string id)
-//        {
-//            WebApiSelectedStoreResult result = await managerRepository.SelectAsync(id);
+            return RedirectToAction("GetAllStores").Error("Something went wrong, please try again.");
+        }
 
-//            SelectedStore store = result.Store;
+        [HttpGet]
+        [Route("EditStore")]
+        public async Task<ActionResult> EditStore(string id)
+        {
+            StoreREST store = await managerRepository.GetStore(id);
 
-//            if (result.Success)
-//            {
-//                if (store != null)
-//                {
-//                    Response.Cookies.Add(new HttpCookie("StoreID")
-//                    {
-//                        Value = store.Id,
-//                        HttpOnly = true
-//                    });
-//                    Response.Cookies.Add(new HttpCookie("StoreName")
-//                    {
-//                        Value = store.StoreName,
-//                        HttpOnly = true
-//                    });
+            if (GlobalValidator.IsStoreValid(store))
+            {
+                return View(store);
+            }
 
-//                    return RedirectToAction("Index", "Store");
-//                }
-//            }
+            return RedirectToAction("StoreDetails").Error("Something went wrong, please try again.");
+        }
 
-//            foreach (var error in result.ModelState)
-//            {
-//                ModelState.AddModelError(error.Key, error.Value);
-//            }
+        [HttpPost]
+        [Route("EditStore")]
+        public async Task<ActionResult> EditStore(StoreRESTPut store)
+        {
+            store.StoreImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
 
-//            return RedirectToAction("GetAllStores");
+            Result result = await managerRepository.EditStore(store);
 
-//        }
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
 
-//        [HttpGet]
-//        [Route("EditStore/{id}")]
-//        public async Task<ActionResult> EditStore(string id)
-//        {
-//            WebApiStoreResult result = await managerRepository.EditStoreAsync(id);
+                return View(mapper.Map<StoreREST>(store));
+            }
 
-//            if (result.Success)
-//            {
-//                WebApiStore store = result.Store;
+            return RedirectToAction("StoreDetails", new { id = store.Id }).Success(result.SuccessMessage);
+        }
 
-//                return View(store);
-//            }
-//            else
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
+        [HttpGet]
+        [Route("Select/{id}")]
+        public async Task<ActionResult> Select(string id)
+        {
+            StoreREST store = await managerRepository.GetStore(id);
 
-//                return RedirectToAction("GetAllStores");
-//            }
-//        }
+            if (store != null)
+            {
+                cookieHandler.Set("StoreID", store.Id, true, System.Web.HttpContext.Current);
+                cookieHandler.Set("StoreName", store.StoreName, true, System.Web.HttpContext.Current);
 
-//        [HttpPost]
-//        [Route("EditStore")]
-//        public async Task<ActionResult> EditStore(WebApiStore store)
-//        {
-//            WebApiResult result = await managerRepository.EditStoreAsync(store);
+                return RedirectToAction("Index", "Store").Success($"{store.StoreName} selected.");
+            }
 
-//            if (result.Success)
-//            {
-//                return RedirectToAction("GetAllStores");
-//            }
-//            else
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
+            return RedirectToAction("GetAllStores").Error("Something went wrong, please select the store again.");
 
-//                return View(store);
-//            }
-//        }
+        }
 
-//        [HttpGet]
-//        [Route("DetailsStore/{id}")]
-//        public async Task<ActionResult> DetailsStore(string id)
-//        {
-//            WebApiStoreResult result = await managerRepository.DetailsStoreAsync(id);
+        [Route("PostStoreImage/{id}")]
+        public async Task<ActionResult> PostStoreImage(string id, HttpPostedFileBase file)
+        {
+            byte[] image = ImageProcessor.ToValidByteArray(file);
 
-//            if (result.Success)
-//            {
-//                return View(result.Store);
-//            }
-//            else
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
+            Result result = await managerRepository.PostStoreImage(id, image);
 
-//                return RedirectToAction("GetAllStores");
-//            }
-//        }
+            if (!result.Success)
+            {
+                foreach (var error in result.ModelState)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+            }
 
-//        [HttpGet]
-//        [Route("AbandonStore/{id}")]
-//        public async Task<ActionResult> AbandonStore(string id)
-//        {
-//            WebApiStoreResult result = await managerRepository.DetailsStoreAsync(id);
-
-//            if (result.Success)
-//            {
-//                return View(result.Store);
-//            }
-//            else
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
-
-//                return RedirectToAction("GetAllStores");
-//            }
-//        }
-
-//        [HttpPost]
-//        [Route("UnassignStore/{id}")]
-//        public async Task<ActionResult> AbandonStorePost(string id)
-//        {
-//            WebApiResult result = await managerRepository.AbandonStoreAsync(new WebApiStoreAssign { StoreId = id });
-
-//            if (!result.Success)
-//            {
-//                foreach (var error in result.ModelState)
-//                {
-//                    ModelState.AddModelError(error.Key, error.Value);
-//                }
-//            }
-
-//            return RedirectToAction("");
-//        }
-//    }
-//}
+            return RedirectToAction("StoreDetails", new { id }).Success(result.SuccessMessage);
+        }
+    }
+}

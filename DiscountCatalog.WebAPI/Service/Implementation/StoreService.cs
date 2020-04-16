@@ -199,6 +199,35 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
+        public IPagingList<StoreREST> GetAll(string managerIdentityId, string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                ApplicationUser identitiy = uow.Accounts.GetApproved(managerIdentityId);
+                ManagerEntity manager = uow.Managers.GetAllLoaded().FirstOrDefault(m => m.Identity.Id == identitiy.Id);
+                storeAdminIdentityId = manager.Administrator.Identity.Id;
+
+                IEnumerable<StoreEntity> stores = manager.Stores
+                    .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
+
+                stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+
+                stores = FilterManagers(stores.ToList(), true);
+                stores = FilterStoreAdmin(stores.ToList());
+
+                var mapped = mapper.Map<IList<StoreREST>>(stores);
+
+                mapped = Search(mapped, searchString);
+                mapped = Order(mapped, sortOrder);
+
+                IPagedList<StoreREST> subset = mapped.ToPagedList(pageIndex, pageSize);
+
+                IPagingList<StoreREST> result = new PagingList<StoreREST>(subset, subset.GetMetaData());
+
+                return result;
+            }
+        }
+
         public IPagingList<StoreREST> GetAllDeleted(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
@@ -222,6 +251,33 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 return result;
             }
         }
+
+        //public IPagingList<StoreREST> GetAllDeleted(string managerIdentityId, string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        ManagerEntity manager = uow.Managers.GetApproved(managerIdentityId);
+
+        //        IEnumerable<StoreEntity> stores = manager.Stores
+        //            .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Deleted);
+
+        //        stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+
+        //        stores = FilterManagers(stores.ToList(), true);
+        //        stores = FilterStoreAdmin(stores.ToList());
+
+        //        IList<StoreREST> mapped = mapper.Map<IList<StoreREST>>(stores);
+
+        //        mapped = Search(mapped, searchString);
+        //        mapped = Order(mapped, sortOrder);
+
+        //        IPagedList<StoreREST> subset = mapped.ToPagedList(pageIndex, pageSize);
+
+        //        IPagingList<StoreREST> result = new PagingList<StoreREST>(subset, subset.GetMetaData());
+
+        //        return result;
+        //    }
+        //}
 
         #endregion
 
@@ -247,6 +303,27 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
+        public StoreREST Get(string managerIdentityId, string storeAdminIdentityId, string storeId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                ApplicationUser identitiy = uow.Accounts.GetApproved(managerIdentityId);
+                ManagerEntity manager = uow.Managers.GetAllLoaded().FirstOrDefault(m => m.Identity.Id == identitiy.Id);
+                storeAdminIdentityId = manager.Administrator.Identity.Id;
+
+                StoreEntity store = manager.Stores.FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
+
+                store = FilterManagers(store, true);
+                store = FilterStoreAdmin(store);
+
+                store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+
+                var mapped = mapper.Map<StoreREST>(store);
+
+                return mapped;
+            }
+        }
+
         #endregion
 
         //UPDATE
@@ -258,6 +335,30 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 Result result = await uow.Stores.UpdateAsync(storeAdminIdentityId, store);
+
+                if (result.Success)
+                {
+                    uow.Complete();
+                }
+
+                return result;
+            }
+        }
+
+        public async Task<Result> UpdateAsync(string managerIdentityId, string storeAdminIdentityId, StoreRESTPut store)
+        {
+            Result result = new Result();
+
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                ApplicationUser identitiy = uow.Accounts.GetApproved(managerIdentityId);
+                ManagerEntity manager = uow.Managers.GetAllLoaded().FirstOrDefault(m => m.Identity.Id == identitiy.Id);
+                storeAdminIdentityId = manager.Administrator.Identity.Id;
+
+                StoreEntity dbStore = manager.Stores
+                    .FirstOrDefault(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
+
+                result = await uow.Stores.UpdateAsync(storeAdminIdentityId, store);
 
                 if (result.Success)
                 {
@@ -305,6 +406,18 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
         #region Get/Post Image
 
         public Result PostImage(string storeAdminIdentityId, string storeId, byte[] image)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                Result result = uow.Stores.PostStoreImage(storeId, image);
+
+                uow.Complete();
+
+                return result;
+            }
+        }
+
+        public Result PostImage(string managerIdentityId, string storeAdminIdentityId, string storeId, byte[] image)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {

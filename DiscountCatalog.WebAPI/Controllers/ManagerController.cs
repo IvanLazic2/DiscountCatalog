@@ -1,86 +1,82 @@
-﻿//using DiscountCatalog.Common.Models;
-//using DiscountCatalog.Common.WebApiModels;
-//using DiscountCatalog.WebAPI.Models;
-//using DiscountCatalog.WebAPI.Repositories;
-//using System;
-//using System.Collections.Generic;
-//using System.ComponentModel.DataAnnotations;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using System.Web;
-//using System.Web.Http;
+﻿using DiscountCatalog.Common.Models;
+using DiscountCatalog.Common.WebApiModels;
+using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Paging.Contractor;
+using DiscountCatalog.WebAPI.Repositories;
+using DiscountCatalog.WebAPI.REST.Manager;
+using DiscountCatalog.WebAPI.REST.Store;
+using DiscountCatalog.WebAPI.Service.Contractor;
+using DiscountCatalog.WebAPI.Service.Implementation;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
 
-//namespace DiscountCatalog.WebAPI.Controllers
-//{
-//    //[Authorize(Roles = "Manager")]
-//    [RoutePrefix("api/Manager")]
-//    public class ManagerController : ApiController
-//    {
-//        private ManagerRepository managerRepository = new ManagerRepository();
+namespace DiscountCatalog.WebAPI.Controllers
+{
+    [Authorize(Roles = "Manager")]
+    [RoutePrefix("api/Manager")]
+    public class ManagerController : ApiController
+    {
+        private readonly IStoreService storeService;
 
-//        private void SimulateValidation(object model)
-//        {
-//            var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(model, null, null);
-//            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
-//            Validator.TryValidateObject(model, validationContext, validationResults, true);
-//            foreach (var validationResult in validationResults)
-//            {
-//                ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-//            }
-//        }
+        public ManagerController()
+        {
+            storeService = new StoreService();
+        }
 
-//        [HttpGet]
-//        [Route("GetAllStoresAsync/{id}")]
-//        public async Task<WebApiListOfStoresResult> GetAllStoresAsync(string id)
-//        {
-//            WebApiListOfStoresResult result = await managerRepository.GetAllStoresAsync(id);
+        [HttpGet]
+        [Route("GetAllStores/{managerIdentityId}")]
+        public  IHttpActionResult GetAllStores(string managerIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<StoreREST> stores = storeService.GetAll(managerIdentityId, string.Empty, sortOrder, searchString, pageIndex, pageSize);
 
-//            return result;
-//        }
+            return Ok(stores);
+        }
 
-//        [HttpGet]
-//        [Route("SelectAsync/{id}")]
-//        public async Task<WebApiSelectedStoreResult> SelectAsync(string id)
-//        {
-//            WebApiSelectedStoreResult result = await managerRepository.SelectStoreAsync(id);
+        [HttpPut]
+        [Route("EditStore/{managerIdentityId}")]
+        public async Task<IHttpActionResult> EditStore(string managerIdentityId, StoreRESTPut store)
+        {
+            Result result = await storeService.UpdateAsync(managerIdentityId, string.Empty, store);
 
-//            return result;
-//        }
+            return Ok(result);
+        }
 
-//        [HttpGet]
-//        [Route("EditStoreAsync/{id}")]
-//        public async Task<WebApiStoreResult> EditStoreAsync(string id)
-//        {
-//            WebApiStoreResult result = await managerRepository.ReadStoreByIdAsync(id);
+        [HttpGet]
+        [Route("GetStore/{managerIdentityId}")]
+        public IHttpActionResult GetStore(string managerIdentityId, string storeId)
+        {
+            StoreREST store = storeService.Get(managerIdentityId, string.Empty, storeId);
 
-//            return result;
-//        }
+            return Ok(store);
+        }
 
-//        [HttpPut]
-//        [Route("EditStoreAsync")]
-//        public async Task<WebApiResult> EditStoreAsync(WebApiStore store)
-//        {
-//            WebApiResult result = await managerRepository.EditStoreAsync(store);
+        [HttpPut]
+        [Route("PostStoreImage/{managerIdentityId}")]
+        public IHttpActionResult PostStoreImage(string managerIdentityId, string storeId, byte[] image)
+        {
+            Result result = storeService.PostImage(managerIdentityId, string.Empty, storeId, image);
 
-//            return result;
-//        }
+            if (result.Success)
+            {
+                return Content(HttpStatusCode.OK, result);
+            }
+            else
+            {
+                return Content(HttpStatusCode.BadRequest, result);
+            }
+        }
 
-//        [HttpGet]
-//        [Route("DetailsStoreAsync/{id}")]
-//        public async Task<WebApiStoreResult> DetailsStoreAsync(string id)
-//        {
-//            WebApiStoreResult result = await managerRepository.ReadStoreByIdAsync(id);
-
-//            return result;
-//        }
-
-//        [HttpPost]
-//        [Route("AbandonStoreAsync")]
-//        public async Task<WebApiResult> AbandonStoreAsync(WebApiStoreAssign storeUnassign)
-//        {
-//            WebApiResult result = await managerRepository.AbandonStoreAsync(storeUnassign);
-
-//            return result;
-//        }
-//    }
-//}
+        [HttpPost]
+        [Route("AbandonStore/{managerId}")]
+        public IHttpActionResult AbandonStore(string managerIdentityId, string storeId)
+        {
+            return Ok();
+        } 
+    }
+}
