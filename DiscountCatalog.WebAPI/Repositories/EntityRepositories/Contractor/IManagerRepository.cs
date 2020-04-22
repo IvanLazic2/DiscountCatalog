@@ -14,10 +14,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
     {
         Task<Result> CreateAsync(string storeAdminId, ManagerEntity manager, string password);
 
-        IEnumerable<ManagerEntity> GetAllApproved();
+        IQueryable<ManagerEntity> GetAllQuery(bool includeApproved, bool inludeDeleted);
         IEnumerable<ManagerEntity> GetAllDeleted();
         IEnumerable<ManagerEntity> GetAllLoaded();
-        IEnumerable<ManagerEntity> GetAllApproved(string storeAdminIdentityId);
+        IEnumerable<ManagerEntity> GetAll(string storeAdminIdentityId);
         IEnumerable<ManagerEntity> GetAllDeleted(string storeAdminIdentityId);
         IEnumerable<ManagerEntity> GetAllLoaded(string storeAdminIdentityId);
 
@@ -33,5 +33,11 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         Result MarkAsRestored(string managerId);
         Result MarkAsDeleted(string storeAdminIdentityId, string managerId);
         Result MarkAsRestored(string storeAdminIdentityId, string managerId);
+
+
+        /////////////////////
+        ///
+
+        IQueryable<ManagerEntity> GetAllTest();
     }
 }

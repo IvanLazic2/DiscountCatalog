@@ -181,7 +181,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 IEnumerable<StoreEntity> stores = uow.Stores.GetAllApproved(storeAdminIdentityId);
 
-                stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+                //stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
 
                 stores = FilterManagers(stores.ToList(), true);
                 stores = FilterStoreAdmin(stores.ToList());
@@ -210,7 +210,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 IEnumerable<StoreEntity> stores = manager.Stores
                     .Where(s => s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
 
-                stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+                //stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
 
                 stores = FilterManagers(stores.ToList(), true);
                 stores = FilterStoreAdmin(stores.ToList());
@@ -234,7 +234,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 IEnumerable<StoreEntity> stores = uow.Stores.GetAllDeleted(storeAdminIdentityId);
 
-                stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+                //stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
 
                 stores = FilterManagers(stores.ToList(), true);
                 stores = FilterStoreAdmin(stores.ToList());
@@ -291,8 +291,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 StoreEntity store = uow.Stores.GetApproved(storeAdminIdentityId, storeId);
 
-                store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
-                store.Managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+                //store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+                //store.Managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
 
                 store = FilterManagers(store, false);
                 store = FilterStoreAdmin(store);
@@ -316,7 +316,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 store = FilterManagers(store, true);
                 store = FilterStoreAdmin(store);
 
-                store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+                //store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
 
                 var mapped = mapper.Map<StoreREST>(store);
 
@@ -429,15 +429,15 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public byte[] GetImage(string storeId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                byte[] image = uow.Stores.GetStoreImage(storeId);
+        //public byte[] GetImage(string storeId)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        byte[] image = uow.Stores.GetStoreImage(storeId);
 
-                return ImageProcessor.CreateThumbnail(image);
-            }
-        }
+        //        return ImageProcessor.CreateThumbnail(image);
+        //    }
+        //}
 
 
 

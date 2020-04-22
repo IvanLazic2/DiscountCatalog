@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiscountCatalog.WebAPI.REST.Image;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,6 +18,6 @@ namespace DiscountCatalog.WebAPI.REST.Account
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
-        public byte[] UserImage { get; set; }
+        public ImageRESTPut UserImage { get; set; }
     }
 }

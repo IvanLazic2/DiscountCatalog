@@ -157,14 +157,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetProductImage/{storeId}")]
-        public byte[] GeStoreImage(string storeId, string productId)
-        {
-            byte[] image = productService.GetImage(productId);
+        //[HttpGet]
+        //[Route("GetProductImage/{storeId}")]
+        //public byte[] GeStoreImage(string storeId, string productId)
+        //{
+        //    byte[] image = productService.GetImage(productId);
 
-            return image;
-        }
+        //    return image;
+        //}
 
         #endregion
 

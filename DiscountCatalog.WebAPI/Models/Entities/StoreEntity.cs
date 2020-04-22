@@ -29,10 +29,10 @@ namespace DiscountCatalog.WebAPI.Models.Entities
 
         [Required]
         public StoreAdminEntity Administrator { get; set; }
-
         public ICollection<ProductEntity> Products { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-        public byte[] StoreImage { get; set; }
+
+        public ImageEntity StoreImage { get; set; }
     }
 }

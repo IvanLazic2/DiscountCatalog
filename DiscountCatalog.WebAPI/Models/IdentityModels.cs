@@ -32,8 +32,9 @@ namespace DiscountCatalog.WebAPI.Models
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public override string UserName { get; set; }
+        public ImageEntity UserImage { get; set; }
 
-        public byte[] UserImage { get; set; }
+        //public byte[] UserImage { get; set; }
 
         public ApplicationUser()
         {

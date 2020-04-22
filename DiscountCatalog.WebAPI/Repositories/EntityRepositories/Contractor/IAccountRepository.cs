@@ -43,6 +43,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         Task<AuthenticatedUserResult> Authenticate(string emailOrUserName, string password);
 
         Task<Result> PostUserImage(string id, byte[] image);
-        Task<byte[]> GetUserImage(string id);
+        //Task<byte[]> GetUserImage(string id);
     }
 }

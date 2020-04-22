@@ -20,6 +20,6 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
         Result Delete(string id);
         Result Restore(string id);
         Task<Result> PostUserImageAsync(string id, byte[] image);
-        Task<byte[]> GetUserImageAsync(string id);
+        //Task<byte[]> GetUserImageAsync(string id);
     }
 }

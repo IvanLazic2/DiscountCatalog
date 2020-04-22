@@ -30,7 +30,7 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         Result PostProductImage(string storeId, string productId, byte[] image);
 
-        byte[] GetImage(string productId);
+        //byte[] GetImage(string productId);
 
         decimal GetMinPrice(string storeId);
 

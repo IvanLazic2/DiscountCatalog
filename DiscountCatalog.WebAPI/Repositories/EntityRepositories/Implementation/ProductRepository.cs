@@ -454,14 +454,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 ProductEntity product = GetApproved(productId);
 
-                if (product != null)
-                {
-                    product.ProductImage = image;
-                }
-                else
-                {
-                    result.Add("Product does not exist.");
-                }
+                //if (product != null)
+                //{
+                //    product.ProductImage = image;
+                //}
+                //else
+                //{
+                //    result.Add("Product does not exist.");
+                //}
             }
             else
             {
@@ -471,16 +471,15 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return result;
         }
 
-        public byte[] GetProductImage(string productId)
-        {
-            ProductEntity product = GetLoaded(productId);
+        //public byte[] GetProductImage(string productId)
+        //{
+        //    ProductEntity product = GetLoaded(productId);
 
-            return product.ProductImage;
-        }
+        //    return product.ProductImage;
+        //}
 
         #endregion
         
-
         #endregion
 
     }

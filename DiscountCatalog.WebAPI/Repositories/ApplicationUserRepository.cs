@@ -28,9 +28,9 @@ namespace AbatementHelper.WebAPI.Repositories
             Context.Set<ApplicationUser>().AddRange(entities);
         }
 
-        public IEnumerable<ApplicationUser> Find(Expression<Func<ApplicationUser, bool>> predicate)
+        public IQueryable<ApplicationUser> Find(Expression<Func<ApplicationUser, bool>> predicate)
         {
-            return Context.Set<ApplicationUser>().Where(predicate);
+            return Context.Set<ApplicationUser>().Where(predicate).AsQueryable();
         }
 
         public ApplicationUser Get(string id)
@@ -38,9 +38,9 @@ namespace AbatementHelper.WebAPI.Repositories
             return Context.Set<ApplicationUser>().Find(id);
         }
 
-        public IEnumerable<ApplicationUser> GetAll()
+        public IQueryable<ApplicationUser> GetAll()
         {
-            return Context.Set<ApplicationUser>().ToList();
+            return Context.Set<ApplicationUser>().AsQueryable();
         }
 
         public void Remove(ApplicationUser entity)

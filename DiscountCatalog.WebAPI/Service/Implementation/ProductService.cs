@@ -232,17 +232,17 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region Get/Post Image
 
-        public byte[] GetImage(string productId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                byte[] image = uow.Products.GetProductImage(productId);
+        //public byte[] GetImage(string productId)
+        //{
+        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+        //    {
+        //        byte[] image = uow.Products.GetProductImage(productId);
 
-                //return ImageProcessor.CreateThumbnail(image);
+        //        //return ImageProcessor.CreateThumbnail(image);
 
-                return image;
-            }
-        }
+        //        return image;
+        //    }
+        //}
 
         public Result PostProductImage(string storeId, string productId, byte[] image)
         {
