@@ -6,6 +6,16 @@
     box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
+.avatar-sm {
+    width: 35px;
+    height: 35px;
+    vertical-align: middle;
+    border-radius: 50%;
+    box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.2);
+    margin: 0;
+    display: inline-block;
+}
+
 /*USER/STORE INFO*/
 
 #user-info, #store-info {

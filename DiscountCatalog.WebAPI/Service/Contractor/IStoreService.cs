@@ -30,7 +30,7 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
         Result Restore(string storeAdminIdentityId, string storeId);
         Result PostImage(string storeAdminIdentityId, string storeId, byte[] image);
         Result PostImage(string managerIdentityId, string storeAdminIdentityId, string storeId, byte[] image);
-        //byte[] GetImage(string storeId);
+        byte[] GetImage(string storeId);
 
         IList<StoreEntity> FilterManagers(IList<StoreEntity> stores, bool clear);
         StoreEntity FilterManagers(StoreEntity store, bool clear);

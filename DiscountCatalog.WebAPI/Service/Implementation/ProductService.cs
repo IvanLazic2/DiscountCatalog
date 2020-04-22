@@ -61,10 +61,71 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
         {
             if (!string.IsNullOrEmpty(searchString))
             {
-                products = products.Where(p => p.ProductName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
+                products = products.Where(p => p.ProductName.Contains(searchString, StringComparer.OrdinalIgnoreCase) || p.Store.Administrator.Identity.UserName.Contains(searchString, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
             return products.ToList();
+        }
+
+
+
+        #endregion
+
+        //FILTER
+
+        #region Filter
+
+        public IEnumerable<ProductEntity> FilterPrice(IEnumerable<ProductEntity> products, string priceFilter)
+        {
+            if (!string.IsNullOrEmpty(priceFilter))
+            {
+                string[] arr = priceFilter.Split(",".ToCharArray());
+
+                int from = Convert.ToInt32(arr[0]);
+                int to = Convert.ToInt32(arr[1]);
+
+                products = products.Where(p => p.NewPrice >= from && p.NewPrice <= to);
+            }
+
+            return products;
+        }
+
+        public IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter)
+        {
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                DateTime date = DateTime.Parse(dateFilter);
+
+                if (date != null)
+                {
+                    products = products.Where(p => DateTime.Parse(p.DiscountDateEnd).CompareTo(date) >= 0);
+                }
+            }
+
+            return products;
+        }
+
+        public IEnumerable<ProductEntity> FilterStoreAdmin(IEnumerable<ProductEntity> products)
+        {
+            foreach (var product in products)
+            {
+                if (product.Store.Administrator.Stores != null)
+                    product.Store.Administrator.Stores.Clear();
+                if (product.Store.Administrator.Managers != null)
+                    product.Store.Administrator.Managers.Clear();
+            }
+
+            return products;
+        }
+
+        public ProductEntity FilterStoreAdmin(ProductEntity product)
+        {
+            if (product.Store.Administrator.Stores != null)
+                product.Store.Administrator.Stores.Clear();
+            if (product.Store.Administrator.Managers != null)
+                product.Store.Administrator.Managers.Clear();
+
+            return product;
         }
 
         #endregion
@@ -96,16 +157,24 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region GetAll
 
-        public IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
 
-                IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
+                products = FilterStoreAdmin(products);
+                products = FilterDate(products, dateFilter);
+                products = FilterPrice(products, priceFilter);
 
+                IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
+                
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
+
+                //mapped.ToList().ForEach(p => p.ProductImage = ImageProcessor.CreateThumbnail(p.ProductImage));
+                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
+                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
 
                 IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
 
@@ -114,6 +183,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 return result;
             }
         }
+
+        //jos jedan getall
 
         public IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
@@ -232,17 +303,17 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region Get/Post Image
 
-        //public byte[] GetImage(string productId)
-        //{
-        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-        //    {
-        //        byte[] image = uow.Products.GetProductImage(productId);
+        public byte[] GetImage(string productId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                byte[] image = uow.Products.GetProductImage(productId);
 
-        //        //return ImageProcessor.CreateThumbnail(image);
+                //return ImageProcessor.CreateThumbnail(image);
 
-        //        return image;
-        //    }
-        //}
+                return image;
+            }
+        }
 
         public Result PostProductImage(string storeId, string productId, byte[] image)
         {

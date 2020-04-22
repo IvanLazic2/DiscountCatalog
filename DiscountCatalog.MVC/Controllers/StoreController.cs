@@ -51,29 +51,23 @@ namespace DiscountCatalog.MVC.Controllers
         //by storename...
 
         [Route("GetAllProducts")]
-        public async Task<ActionResult> GetAllProducts(string sortOrder, string currentFilter, string searchString, int? page, string filterType, string filter)
+        public async Task<ActionResult> GetAllProducts(string sortOrder, 
+                                                       string currentFilter,
+                                                       string searchString,
+                                                       int? page,
+                                                       string currentPrice,
+                                                       string priceFilter,
+                                                       string currentDate,
+                                                       string dateFilter)
         {
             ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
             ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
-
-            if (filter != null)
-            {
-                string[] arr = filter.Split(",".ToCharArray());
-
-                ViewBag.From = Convert.ToInt32(arr[0]);
-                ViewBag.To = Convert.ToInt32(arr[1]);
-            }
-            else
-            {
-                ViewBag.From = ViewBag.Min;
-                ViewBag.To = ViewBag.Max;
-            }
 
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
 
-            if (searchString != null)
+            if (!string.IsNullOrEmpty(searchString))
             {
                 page = 1;
             }
@@ -84,10 +78,51 @@ namespace DiscountCatalog.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
+            if (!string.IsNullOrEmpty(priceFilter))
+            {
+                string[] arr = priceFilter.Split(",".ToCharArray());
+
+                ViewBag.From = Convert.ToInt32(arr[0]);
+                ViewBag.To = Convert.ToInt32(arr[1]);
+
+                page = 1;
+            }
+            else
+            {
+                priceFilter = currentPrice;
+
+                if (currentPrice != null)
+                {
+                    string[] arr = currentPrice.Split(",".ToCharArray());
+
+                    ViewBag.From = Convert.ToInt32(arr[0]);
+                    ViewBag.To = Convert.ToInt32(arr[1]);
+                }
+                else
+                {
+                    ViewBag.From = ViewBag.Min;
+                    ViewBag.To = ViewBag.Max;
+                }
+            }
+
+            ViewBag.CurrentPrice = priceFilter;
+
+
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                page = 1;
+            }
+            else
+            {
+                dateFilter = currentDate;
+            }
+
+            ViewBag.CurrentDate = dateFilter;
+
             int pageIndex = (page ?? 1);
             int pageSize = 14;
 
-            PagingEntity<ProductREST> products = await storeRepository.GetAllProducts(sortOrder, searchString, pageIndex, pageSize);
+            PagingEntity<ProductREST> products = await storeRepository.GetAllProducts(sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter);
 
             StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 

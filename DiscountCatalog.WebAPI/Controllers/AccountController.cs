@@ -518,14 +518,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetUserImage/{id}")]
-        //public async Task<IHttpActionResult> GetUserImage(string id)
-        //{
-        //    byte[] image = await accountService.GetUserImageAsync(id);
+        [HttpGet]
+        [Route("GetUserImage/{id}")]
+        public async Task<IHttpActionResult> GetUserImage(string id)
+        {
+            byte[] image = await accountService.GetUserImageAsync(id);
 
-        //    return Ok(image);
-        //}
+            return Ok(image);
+        }
 
         #endregion
 

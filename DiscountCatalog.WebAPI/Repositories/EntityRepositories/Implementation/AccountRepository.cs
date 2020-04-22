@@ -129,10 +129,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             user.Approved = true;
             user.Deleted = false;
 
-            //if (user.UserImage == null || !(user.UserImage.Length > 0))
-            //{
-            //    user.UserImage = ImageProcessor.SetDefault(role);
-            //}
+            if (user.UserImage == null || !(user.UserImage.Length > 0))
+            {
+                user.UserImage = ImageProcessor.SetDefault(role);
+            }
 
             var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();
 
@@ -176,17 +176,17 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbUser.City = user.City;
                 dbUser.PostalCode = user.PostalCode;
                 dbUser.Street = user.Street;
-                //if (user.UserImage.Length > 0)
-                //{
-                //    if (ImageProcessor.IsValid(user.UserImage))
-                //    {
-                //        dbUser.UserImage = user.UserImage;
-                //    }
-                //    else
-                //    {
-                //        modelState.Add("Image is not valid.");
-                //    }
-                //}
+                if (user.UserImage.Length > 0)
+                {
+                    if (ImageProcessor.IsValid(user.UserImage))
+                    {
+                        dbUser.UserImage = user.UserImage;
+                    }
+                    else
+                    {
+                        modelState.Add("Image is not valid.");
+                    }
+                }
                 
                 dbUser.Roles.Clear();
                 var identityRole = DbContext.Roles.Where(r => r.Name == role).FirstOrDefault();
@@ -444,14 +444,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 ApplicationUser user = await FindByIdAsync(id);
 
-                //if (user != null)
-                //{
-                //    user.UserImage = image;
-                //}
-                //else
-                //{
-                //    modelState.Add("User does not exist.");
-                //}
+                if (user != null)
+                {
+                    user.UserImage = image;
+                }
+                else
+                {
+                    modelState.Add("User does not exist.");
+                }
             }
             else
             {
@@ -461,12 +461,12 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return modelState.GetResult();
         }
 
-        //public async Task<byte[]> GetUserImage(string id)
-        //{
-        //    ApplicationUser user = await FindByIdAsync(id);
+        public async Task<byte[]> GetUserImage(string id)
+        {
+            ApplicationUser user = await FindByIdAsync(id);
 
-        //    return user.UserImage;
-        //}
+            return user.UserImage;
+        }
 
         public ApplicationUser GetApproved(string id)
         {

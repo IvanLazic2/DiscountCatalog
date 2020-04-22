@@ -37,7 +37,6 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         [Required]
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-
-        public ImageEntity ProductImage { get; set; }
+        public byte[] ProductImage { get; set; }
     }
 }

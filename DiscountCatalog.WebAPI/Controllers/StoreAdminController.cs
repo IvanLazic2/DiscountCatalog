@@ -74,14 +74,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetAllManagers/{storeAdminIdentityId}")]
-        //public IHttpActionResult GetAllManagers(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
-        //{
-        //    IPagingList<ManagerREST> list = managerService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
+        [HttpGet]
+        [Route("GetAllManagers/{storeAdminIdentityId}")]
+        public IHttpActionResult GetAllManagers(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            IPagingList<ManagerREST> list = managerService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
-        //    return Ok(list);
-        //}
+            return Ok(list);
+        }
 
         [HttpGet]
         [Route("GetAllDeletedManagers/{storeAdminIdentityId}")]
@@ -165,14 +165,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetManagerImage/{storeAdminIdentityId}")]
-        //public async Task<byte[]> GetManagerImage(string storeAdminIdentityId, string managerId)
-        //{
-        //    byte[] image = await managerService.GetImageAsync(managerId);
+        [HttpGet]
+        [Route("GetManagerImage/{storeAdminIdentityId}")]
+        public async Task<byte[]> GetManagerImage(string storeAdminIdentityId, string managerId)
+        {
+            byte[] image = await managerService.GetImageAsync(managerId);
 
-        //    return image;
-        //}
+            return image;
+        }
 
         [HttpGet]
         [Route("GetManagerStores/{storeAdminIdentityId}")]
@@ -327,14 +327,14 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetStoreImage/{storeAdminIdentityId}")]
-        //public byte[] GeStoreImage(string storeAdminIdentityId, string storeId)
-        //{
-        //    byte[] image = storeService.GetImage(storeId);
+        [HttpGet]
+        [Route("GetStoreImage/{storeAdminIdentityId}")]
+        public byte[] GeStoreImage(string storeAdminIdentityId, string storeId)
+        {
+            byte[] image = storeService.GetImage(storeId);
 
-        //    return image;
-        //}
+            return image;
+        }
 
         //[HttpGet]
         //[Route("SelectStore{storeAdminId}")]

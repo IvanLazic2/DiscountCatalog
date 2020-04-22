@@ -15,19 +15,17 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
     {
         Task<Result> CreateAsync(ManagerRESTPost manager);
         ManagerREST Get(string storeAdminIdentityId, string managerId);
-
-        Task<List<ManagerEntity>> GetAll();
-
+        IPagingList<ManagerREST> GetAll(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
         Task<Result> UpdateAsync(string storeAdminIdentityId, ManagerRESTPut manager);
         IPagingList<ManagerREST> GetAllDeleted(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize);
         Result Delete(string storeAdminIdentityId, string managerId);
         Result Restore(string storeAdminIdentityId, string managerId);
         Task<Result> PostImageAsync(string storeAdminIdentityId, string managerId, byte[] image);
-        //Task<byte[]> GetImageAsync(string managerId);
+        Task<byte[]> GetImageAsync(string managerId);
 
-        IQueryable<ManagerEntity> FilterStores(IQueryable<ManagerEntity> managers, bool clear);
+        IList<ManagerEntity> FilterStores(IList<ManagerEntity> managers, bool clear);
         ManagerEntity FilterStores(ManagerEntity manager, bool clear);
-        IQueryable<ManagerEntity> FilterStoreAdmin(IQueryable<ManagerEntity> managers);
+        IList<ManagerEntity> FilterStoreAdmin(IList<ManagerEntity> managers);
         ManagerEntity FilterStoreAdmin(ManagerEntity manager);
     }
 }

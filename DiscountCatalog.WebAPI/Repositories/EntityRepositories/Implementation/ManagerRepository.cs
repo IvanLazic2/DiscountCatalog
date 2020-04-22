@@ -74,22 +74,17 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
 
         #region GetAllApproved
 
-        public IQueryable<ManagerEntity> GetAllQuery(bool includeDisabled = false, bool includeDeleted = false)
+        public IEnumerable<ManagerEntity> GetAllApproved()
         {
-            IQueryable<ManagerEntity> managers = GetAll()
+            return DbContext.Managers
+                .Include(m => m.Identity)
                 .Include(m => m.Administrator.Identity)
-                .Include(m => m.Stores)
-                .Include(m => m.Identity.UserImage);
-
-            if (!includeDisabled)
-                managers = managers.Where(m => m.Identity.Approved && !m.Identity.Deleted);
-            if (includeDeleted)
-                managers = managers.Where(m => m.Identity.Deleted);
-
-            return managers;
+                //.Include(m => m.Stores)
+                .Where(m => m.Identity.Approved && !m.Identity.Deleted)
+                .ToList();
         }
 
-        public IEnumerable<ManagerEntity> GetAll(string storeAdminIdentityId)
+        public IEnumerable<ManagerEntity> GetAllApproved(string storeAdminIdentityId)
         {
             return DbContext.Managers
                 .Include(m => m.Identity)
@@ -149,7 +144,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         //GET
 
         #region GetApproved
-            
+
         public ManagerEntity GetApproved(string managerId)
         {
             return DbContext.Managers
@@ -358,15 +353,6 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         }
 
         #endregion
-
-
-        public IQueryable<ManagerEntity> GetAllTest()
-        {
-            return DbContext.Managers
-                .Include(m => m.Identity)
-                .AsQueryable();
-        }
-
 
         #endregion
     }

@@ -1,25 +1,97 @@
 ﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Product.ProductREST>
 @using PagedList.Mvc
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
-<link href="~/Content/product-card.css" rel="stylesheet" />
+<link href="~/Content/IndividualPageStyles/GetAll/GetAll_products.css" rel="stylesheet" />
 
 @{
     ViewBag.Title = "GetAllProducts";
 }
-
 <h2>All products</h2>
-
 <p>
     @Html.ActionLink("Create New", "CreateProduct")
 </p>
-
 <hr />
-
 <div class="search-container">
-    @using (Html.BeginForm("GetAllProducts", "Store", FormMethod.Get))
+    @using (Html.BeginForm("GetAllProducts", "Store", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
     {
         <p>Find by name: </p> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+
+        <br>
+
+        <p>Date: </p>
+
+        <div class='input-group date datepicker'>
+            @Html.TextBox("DateFilter", ViewBag.CurrentDate as string, new { @class = "form-control" })
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+        <button class="close" type="button" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+
+        <script>
+            $(document).on("dp.change", ".datepicker", function () {
+
+                if (sessionStorage["date"] !== $("#DateFilter")[0].value) {
+                    sessionStorage["date"] = $("#DateFilter")[0].value;
+                    $("#filter-form").submit();
+                }
+            });
+
+            $(".close").on("click", function () {
+                $("#DateFilter").val('');
+                sessionStorage["date"] = '';
+                $("#filter-form").submit();
+            });
+        </script>
+
+        <br>
+
+        <p>
+            <label for="amount">Price range:</label>
+            <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+            <input type="hidden" name="PriceFilter" id="PriceFilter" value=@ViewBag.CurrentPrice />
+        </p>
+        <div id="slider-range"></div>
+
+        <script>
+            $(function () {
+                $("#slider-range").slider({
+                    range: true,
+                    min: @ViewBag.Min,
+                    max: @ViewBag.Max,
+                    values: [@ViewBag.From, @ViewBag.To],
+                    slide: function (event, ui) {
+                        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+                    },
+                    change: function (event, ui) {
+
+
+
+                        let array = ui.values;
+                        array = array.join(",");
+
+                        $("#PriceFilter").val(array);
+                        $("#filter-form").submit();
+
+
+                        @*let action = "@Html.Raw(Url.Action("GetAllProducts", "Store", new { PriceFilter = "tempFilter" }))";
+                        let array = ui.values;
+                        array = array.join(",");
+                        action = action.replace("tempFilter", array);
+                        location.href = action;*@
+                    }
+                });
+                $("#amount").val("$" + $("#slider-range").slider("values", 0) +
+                    " - $" + $("#slider-range").slider("values", 1));
+
+
+            });
+
+            //let a = @*@Html.Raw(@ViewBag.CurrentPrice)*@ 
+            //console.log(a);
+        </script>
     }
 </div>
 
@@ -28,22 +100,15 @@
         <tr>
             Sort by:
             <th>
-                @Html.ActionLink("Name", "GetAllProducts", new { sortOrder = ViewBag.NameSortParm }),
+                @Html.ActionLink("Name", "GetAllProducts", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
             </th>
             <th>
-                @Html.ActionLink("Price", "GetAllProducts", new { sortOrder = ViewBag.PriceSortParm })
+                @Html.ActionLink("Price", "GetAllProducts", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
             </th>
         </tr>
     </table>
 </div>
 
-
-<p>
-    <label for="amount">Price range:</label>
-    <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
-</p>
-
-<div id="slider-range"></div>
 
 
 <div class="container">
@@ -55,23 +120,31 @@
                 <div class="card rounded">
                     <div class="card-image">
                         @*<span class="card-notify-badge"></span>*@
-                        <span class="card-notify-year">@item.DiscountPercentage%</span>
-                        <img class="img-fluid" src="@Url.Action("GetProductImage", "Store", new { id = item.Id })" alt="Alternate Text" />
+                        <span class="card-notify-year"><big>@Convert.ToInt32(item.DiscountPercentage)%</big></span>
+                        <img class="product-image" src="data:image/gif;base64,@Convert.ToBase64String(item.ProductImage)" />
                     </div>
                     <div class="card-image-overlay m-auto">
                         <span class="card-detail-badge" style="text-decoration: line-through">@item.OldPrice @item.Currency</span>
                         <span class="card-detail-badge">@item.NewPrice @item.Currency</span>
-
                     </div>
                     <div class="card-body text-center">
                         <div class="p-title m-auto">
                             <h5>@item.ProductName</h5>
                         </div>
+                        <div class="text-center">
+                            <p class="h4">@item.DiscountDateBegin - @item.DiscountDateEnd</p>
+                        </div>
+                        <div>
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.Administrator.Identity.UserImage)"></div>
+                            <p style="display: inline">@item.Store.Administrator.Identity.UserName</p>
+                            &nbsp;
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
+                            <p style="display: inline">@item.Store.StoreName</p>
+                        </div>
                         @*<a class="p-btn" href="#">View</a>*@
                         @Html.ActionLink("Details", "ProductDetails", new { id = item.Id }, new { @class = "p-btn" })
                     </div>
                     <div class="card-footer">
-
                         @Html.ActionLink("Edit", "EditProduct", new { id = item.Id })
                         @Html.ActionLink("Delete", "DeleteProduct", new { id = item.Id })
                     </div>
@@ -80,40 +153,42 @@
         }
     </div>
 </div>
-
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-
 @Html.PagedListPager(Model, page => Url.Action("GetAllProducts",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
-
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }))
 
 @Styles.Render("~/Content/IndividualPageStyles/GetAll")
 @Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datetimepicker")
 }
 
 <script>
-    $(function () {
-        $("#slider-range").slider({
-            range: true,
-            min: @ViewBag.Min,
-            max: @ViewBag.Max,
-            values: [@ViewBag.From, @ViewBag.To],
-            slide: function (event, ui) {
-                $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
-            },
-            change: function (event, ui) {
-                let action = "@Html.Raw(Url.Action("GetAllProducts", "Store", new { filterType = "price", filter = "tempFilter" }))";
-                let array = ui.values;
-                array = array.join(",");
-                action = action.replace("tempFilter", array);
-                location.href = action;
-            }
-        });
-        $("#amount").val("$" + $("#slider-range").slider("values", 0) +
-            " - $" + $("#slider-range").slider("values", 1));
+
+
+    $(document).ready(function () {
+
+
+
+        let elementArray = document.getElementsByClassName("card");
+        let widthArray = new Array();
+        let heightArray = new Array();
+
+        for (const element of elementArray) {
+            widthArray.push($(element).width());
+            heightArray.push($(element).height());
+        };
+
+        for (const element of elementArray) {  
+            $(element).width(Math.max.apply(Math, widthArray))
+            $(element).height(Math.max.apply(Math, heightArray))
+        }
     });
 </script>
+
+

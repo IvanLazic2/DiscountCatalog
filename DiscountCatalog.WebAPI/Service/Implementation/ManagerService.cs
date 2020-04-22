@@ -17,7 +17,6 @@ using DiscountCatalog.WebAPI.REST.Manager;
 using DiscountCatalog.WebAPI.REST.Store;
 using DiscountCatalog.WebAPI.Service.Contractor;
 using PagedList;
-using System.Data.Entity;
 
 namespace DiscountCatalog.WebAPI.Service.Implementation
 {
@@ -69,7 +68,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return managers.ToList();
         }
 
-        public IQueryable<ManagerEntity> FilterStores(IQueryable<ManagerEntity> managers, bool clear)
+        public IList<ManagerEntity> FilterStores(IList<ManagerEntity> managers, bool clear)
         {
             if (clear)
             {
@@ -113,9 +112,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return manager;
         }
 
-        public IQueryable<ManagerEntity> FilterStoreAdmin(IQueryable<ManagerEntity> managers)
+        public IList<ManagerEntity> FilterStoreAdmin(IList<ManagerEntity> managers)
         {
-            foreach (var manager in managers)
+            List<ManagerEntity> managerList = managers.ToList();
+
+            foreach (var manager in managerList)
             {
                 if (manager.Administrator.Managers != null)
                 {
@@ -127,7 +128,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 }
             }
 
-            return managers;
+            return managerList;
         }
 
         public ManagerEntity FilterStoreAdmin(ManagerEntity manager)
@@ -176,32 +177,27 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region GetAll
 
-        public async Task<List<ManagerEntity>> GetAll()
+        public IPagingList<ManagerREST> GetAll(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                IQueryable<ManagerEntity> managers = uow.Managers.GetAllQuery(true, false);
+                IEnumerable<ManagerEntity> managers = uow.Managers.GetAllApproved(storeAdminIdentityId);
 
-                managers = FilterStores(managers, false);
-                managers = FilterStoreAdmin(managers);
+                managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
 
-                //List<ManagerREST> mapped = await mapper.MapAsync<List<ManagerEntity>, List<ManagerREST>>(managers);
-                
-                //managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+                managers = FilterStores(managers.ToList(), true);
+                managers = FilterStoreAdmin(managers.ToList());
 
-                //managers = FilterStores(managers.ToList(), true);
-                //managers = FilterStoreAdmin(managers.ToList());
-                
-                //IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
+                IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
-                //mapped = Search(mapped, searchString);
-                //mapped = Order(mapped, sortOrder);
+                mapped = Search(mapped, searchString);
+                mapped = Order(mapped, sortOrder);
 
-                //IPagedList<ManagerREST> subset = mapped.ToPagedList(pageIndex, pageSize);
+                IPagedList<ManagerREST> subset = mapped.ToPagedList(pageIndex, pageSize);
 
-                //IPagingList<ManagerREST> result = new PagingList<ManagerREST>(subset, subset.GetMetaData());
+                IPagingList<ManagerREST> result = new PagingList<ManagerREST>(subset, subset.GetMetaData());
 
-                return managers.ToList();
+                return result;
             }
         }
 
@@ -211,10 +207,10 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 IEnumerable<ManagerEntity> managers = uow.Managers.GetAllDeleted(storeAdminIdentityId);
 
-                //managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+                managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
 
-                //managers = FilterStores(managers.ToList(), true);
-                //managers = FilterStoreAdmin(managers.ToList());
+                managers = FilterStores(managers.ToList(), true);
+                managers = FilterStoreAdmin(managers.ToList());
 
                 IList<ManagerREST> mapped = mapper.Map<IList<ManagerREST>>(managers);
 
@@ -241,8 +237,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 ManagerEntity manager = uow.Managers.GetApproved(storeAdminIdentityId, managerId);
 
-                //manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
-                //manager.Stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+                manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
+                manager.Stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
 
                 manager = FilterStores(manager, false);
                 manager = FilterStoreAdmin(manager);
@@ -325,17 +321,17 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        //public async Task<byte[]> GetImageAsync(string managerId)
-        //{
-        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-        //    {
-        //        ManagerEntity manager = uow.Managers.GetLoaded(managerId);
+        public async Task<byte[]> GetImageAsync(string managerId)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                ManagerEntity manager = uow.Managers.GetLoaded(managerId);
 
-        //        byte[] image = await uow.Accounts.GetUserImage(manager.Identity.Id);
+                byte[] image = await uow.Accounts.GetUserImage(manager.Identity.Id);
 
-        //        return ImageProcessor.CreateThumbnail(image);
-        //    }
-        //}
+                return ImageProcessor.CreateThumbnail(image);
+            }
+        }
 
 
 

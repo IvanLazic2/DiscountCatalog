@@ -54,7 +54,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 ApplicationUser user = uow.Accounts.GetApproved(id);
 
-                //user.UserImage = ImageProcessor.CreateThumbnail(user.UserImage);
+                user.UserImage = ImageProcessor.CreateThumbnail(user.UserImage);
 
                 AccountREST mapped = mapper.Map<AccountREST>(user);
 
@@ -62,15 +62,15 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        //public async Task<byte[]> GetUserImageAsync(string id)
-        //{
-        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-        //    {
-        //        byte[] image = await uow.Accounts.GetUserImage(id);
+        public async Task<byte[]> GetUserImageAsync(string id)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                byte[] image = await uow.Accounts.GetUserImage(id);
 
-        //        return ImageProcessor.CreateThumbnail(image);
-        //    }
-        //}
+                return ImageProcessor.CreateThumbnail(image);
+            }
+        }
 
         public async Task<Result> PostUserImageAsync(string id, byte[] image)
         {

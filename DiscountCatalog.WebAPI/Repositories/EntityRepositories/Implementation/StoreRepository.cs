@@ -52,10 +52,10 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 SuccessMessage = "Store created."
             };
 
-            //if (store.StoreImage == null || !(store.StoreImage.Length > 0))
-            //{
-            //    store.StoreImage = ImageProcessor.SetDefault("Store");
-            //}
+            if (store.StoreImage == null || !(store.StoreImage.Length > 0))
+            {
+                store.StoreImage = ImageProcessor.SetDefault("Store");
+            }
 
             UnitOfWork uow = new UnitOfWork(DbContext);
 
@@ -250,17 +250,17 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbStore.City = store.City;
                 dbStore.PostalCode = store.PostalCode;
                 dbStore.Street = store.Street;
-                //if (store.StoreImage.Length > 0)
-                //{
-                //    if (ImageProcessor.IsValid(store.StoreImage))
-                //    {
-                //        dbStore.StoreImage = store.StoreImage;
-                //    }
-                //    else
-                //    {
-                //        modelState.Add("Image is not valid.");
-                //    }
-                //}
+                if (store.StoreImage.Length > 0)
+                {
+                    if (ImageProcessor.IsValid(store.StoreImage))
+                    {
+                        dbStore.StoreImage = store.StoreImage;
+                    }
+                    else
+                    {
+                        modelState.Add("Image is not valid.");
+                    }
+                }
 
                 var validator = new StoreValidator();
                 var validationResult = await validator.ValidateAsync(dbStore);
@@ -381,14 +381,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 StoreEntity store = GetApproved(id);
 
-                //if (store != null)
-                //{
-                //    store.StoreImage = image;
-                //}
-                //else
-                //{
-                //    result.Add("Store does not exist.");
-                //}
+                if (store != null)
+                {
+                    store.StoreImage = image;
+                }
+                else
+                {
+                    result.Add("Store does not exist.");
+                }
             }
             else
             {
@@ -398,12 +398,12 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return result;
         }
 
-        //public byte[] GetStoreImage(string id)
-        //{
-        //    StoreEntity store = GetLoaded(id);
+        public byte[] GetStoreImage(string id)
+        {
+            StoreEntity store = GetLoaded(id);
 
-        //    return store.StoreImage;
-        //}
+            return store.StoreImage;
+        }
 
         #endregion
 

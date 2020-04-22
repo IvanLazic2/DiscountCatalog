@@ -59,9 +59,9 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllProducts/{storeId}")]
-        public IHttpActionResult GetAllProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IHttpActionResult GetAllProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter)
         {
-            IPagingList<ProductREST> list = productService.GetAll(storeId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ProductREST> list = productService.GetAll(storeId, sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter);
 
             return Ok(list);
         }
@@ -157,178 +157,16 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetProductImage/{storeId}")]
-        //public byte[] GeStoreImage(string storeId, string productId)
-        //{
-        //    byte[] image = productService.GetImage(productId);
+        [HttpGet]
+        [Route("GetProductImage/{storeId}")]
+        public byte[] GeStoreImage(string storeId, string productId)
+        {
+            byte[] image = productService.GetImage(productId);
 
-        //    return image;
-        //}
+            return image;
+        }
 
         #endregion
 
-
-        //[HttpGet]
-        //[Route("GetAllActiveProductsAsync/{id}")]
-        //public async Task<WebApiListOfProductsResult> GetAllActiveProductsAsync(string id)
-        //{
-        //    WebApiListOfProductsResult result = await storeRepository.GetAllActiveProductsAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpPost]
-        //[Route("CreateProductAsync")]
-        //public async Task<WebApiResult> CreateProductAsync(WebApiProduct product)
-        //{
-        //    //SimulateValidation(product);
-
-        //    var result = new WebApiResult();
-
-        //    var priceValidator = new PriceValidator();
-        //    var discountValidator = new DiscountValidator();
-
-        //    var priceValidatorResult = priceValidator.GetErrors(product);
-
-        //    if (!priceValidatorResult.Success)
-        //    {
-        //        foreach (var error in priceValidatorResult.Errors)
-        //        {
-        //            result.AddModelError(error.Key, error.Value);
-        //        }
-
-        //        return result;
-        //    }
-
-        //    product.OldPrice = priceValidatorResult.OldPrice;
-        //    product.NewPrice = priceValidatorResult.NewPrice;
-        //    product.Discount = priceValidatorResult.Discount;
-
-        //    FluentValidation.Results.ValidationResult discountValidatorResult = discountValidator.Validate(product);
-
-        //    if (!discountValidatorResult.IsValid)
-        //    {
-        //        foreach (ValidationFailure failure in discountValidatorResult.Errors)
-        //        {
-        //            result.AddModelError(failure.PropertyName, failure.ErrorMessage);
-        //        }
-
-        //        return result;
-        //    }
-
-        //    result = await storeRepository.CreateProductAsync(product);
-
-        //    return result;
-        //}
-
-        //[HttpPut]
-        //[Route("EditProductAsync")]
-        //public async Task<WebApiResult> EditProductAsync(WebApiProduct product)
-        //{
-        //    //SimulateValidation(product);
-
-        //    var result = new WebApiResult();
-
-        //    var priceValidator = new PriceValidator();
-        //    var discountValidator = new DiscountValidator();
-
-        //    var priceValidatorResult = priceValidator.GetErrors(product);
-
-        //    if (!priceValidatorResult.Success)
-        //    {
-        //        foreach (var error in priceValidatorResult.Errors)
-        //        {
-        //            result.AddModelError(error.Key, error.Value);
-        //        }
-
-        //        return result;
-        //    }
-
-        //    product.OldPrice = priceValidatorResult.OldPrice;
-        //    product.NewPrice = priceValidatorResult.NewPrice;
-        //    product.Discount = priceValidatorResult.Discount;
-
-        //    FluentValidation.Results.ValidationResult discountValidatorResult = discountValidator.Validate(product);
-
-        //    if (!discountValidatorResult.IsValid)
-        //    {
-        //        foreach (ValidationFailure failure in discountValidatorResult.Errors)
-        //        {
-        //            result.AddModelError(failure.PropertyName, failure.ErrorMessage);
-        //        }
-
-        //        return result;
-        //    }
-
-        //    result = await storeRepository.EditProductAsync(product);
-
-        //    return result;
-        //}
-
-        //[HttpGet]
-        //[Route("ProductDetailsAsync/{id}")]
-        //public async Task<WebApiProductResult> ProductDetailsAsync(string id)
-        //{
-        //    WebApiProductResult result = await storeRepository.ReadProductByIdAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpPut]
-        //[Route("DeleteProductAsync/{id}")]
-        //public async Task<WebApiResult> DeleteProductAsync(string id)
-        //{
-        //    WebApiResult result = await storeRepository.DeleteProductAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpGet]
-        //[Route("GetAllDeletedProductsAsync/{id}")]
-        //public async Task<WebApiListOfProductsResult> GetAllDeletedProductsAsync(string id)
-        //{
-        //    WebApiListOfProductsResult result = await storeRepository.GetAllDeletedProductsAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpPut]
-        //[Route("RestoreProductAsync/{id}")]
-        //public async Task<WebApiResult> RestoreProductAsync(string id)
-        //{
-        //    WebApiResult result = await storeRepository.RestoreProductAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpGet]
-        //[Route("GetAllExpiredProductsAsync/{id}")]
-        //public async Task<WebApiListOfProductsResult> GetAllExpiredProductsAsync(string id)
-        //{
-        //    WebApiListOfProductsResult result = await storeRepository.GetAllExpiredProductsAsync(id);
-
-        //    return result;
-        //}
-
-        //[HttpPut]
-        //[Route("PostProductImageAsync")]
-        //public async Task<WebApiResult> PostProductImageAsync(WebApiPostImage product)
-        //{
-        //    WebApiResult result = await storeRepository.PostProductImageAsync(product);
-
-        //    return result;
-        //}
-
-        //[HttpGet]
-        //[Route("GetProductImageAsync/{id}")]
-        //public async Task<byte[]> GetProductImageAsync(string id)
-        //{
-        //    byte[] byteArray = await storeRepository.GetProductImageAsync(id);
-
-        //    return ImageProcessor.CreateThumbnail(byteArray);
-
-        //    //return byteArray;
-        //}
     }
 }

@@ -7,13 +7,13 @@ namespace DiscountCatalog.WebAPI.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class _in : IMigrationMetadata
+    public sealed partial class stoename : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(_in));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(stoename));
         
         string IMigrationMetadata.Id
         {
-            get { return "202004162116055_in"; }
+            get { return "202004071601465_stoename"; }
         }
         
         string IMigrationMetadata.Source

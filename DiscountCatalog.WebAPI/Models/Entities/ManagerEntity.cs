@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -16,6 +15,7 @@ namespace DiscountCatalog.WebAPI.Models.Entities
         public ApplicationUser Identity { get; set; }
         [Required]
         public StoreAdminEntity Administrator { get; set; }
+        
         public ICollection<StoreEntity> Stores { get; set; }
     }
 

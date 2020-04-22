@@ -45,17 +45,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AbatementHelper.CommonModels">
-      <HintPath>..\AbatementHelper.CommonModels\bin\Debug\AbatementHelper.CommonModels.dll</HintPath>
-    </Reference>
     <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="DiscountCatalog.Common">
-      <HintPath>..\DiscountCatalog.Common\obj\Debug\DiscountCatalog.Common.dll</HintPath>
+      <HintPath>..\DiscountCatalog.Common\bin\Debug\DiscountCatalog.Common.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.8.6.1\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
@@ -196,9 +196,6 @@
     <Reference Include="Microsoft.AspNet.TelemetryCorrelation">
       <HintPath>..\packages\Microsoft.AspNet.TelemetryCorrelation.1.0.0\lib\net45\Microsoft.AspNet.TelemetryCorrelation.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\AuthorizationOperationFilter.cs" />
@@ -248,22 +245,37 @@
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\MapperExtensions.cs" />
-    <Compile Include="Filter\Contractor\IFilter.cs" />
-    <Compile Include="Filter\Implementation\Manager\ManagerFilter.cs" />
     <Compile Include="Mapping\AutoMapping.cs" />
-    <Compile Include="Migrations\202004162116055_in.cs" />
-    <Compile Include="Migrations\202004162116055_in.Designer.cs">
-      <DependentUpon>202004162116055_in.cs</DependentUpon>
+    <Compile Include="Migrations\202003281026346_product.cs" />
+    <Compile Include="Migrations\202003281026346_product.Designer.cs">
+      <DependentUpon>202003281026346_product.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\202003281136183_prod.cs" />
+    <Compile Include="Migrations\202003281136183_prod.Designer.cs">
+      <DependentUpon>202003281136183_prod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003282352171_price.cs" />
+    <Compile Include="Migrations\202003282352171_price.Designer.cs">
+      <DependentUpon>202003282352171_price.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202003311905521_test.cs" />
+    <Compile Include="Migrations\202003311905521_test.Designer.cs">
+      <DependentUpon>202003311905521_test.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004071601465_stoename.cs" />
+    <Compile Include="Migrations\202004071601465_stoename.Designer.cs">
+      <DependentUpon>202004071601465_stoename.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004162054415_init.cs" />
+    <Compile Include="Migrations\202004162054415_init.Designer.cs">
+      <DependentUpon>202004162054415_init.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelState\EntityModelState.cs" />
     <Compile Include="Models\BindingModels\AuthenticationBindingModel.cs" />
     <Compile Include="Models\BindingModels\ManagerBindingModel.cs" />
     <Compile Include="Models\BindingModels\StoreAdminBindingModel.cs" />
     <Compile Include="Models\BindingModels\StoreBindingModel.cs" />
     <Compile Include="Models\BindingModels\UserBindingModel.cs" />
-    <Compile Include="Models\Entities\ImageEntity.cs" />
     <Compile Include="Models\Entities\ManagerEntity.cs" />
     <Compile Include="Models\Entities\ProductEntity.cs" />
     <Compile Include="Models\Entities\StoreEntity.cs" />
@@ -277,6 +289,7 @@
     <Compile Include="Interfaces\IManagerValidation.cs" />
     <Compile Include="Interfaces\IProductValidation.cs" />
     <Compile Include="Interfaces\IStoreValidation.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BindingModels\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Entities\StoreAdminEntity.cs" />
@@ -310,9 +323,6 @@
     <Compile Include="Repositories\EntityRepositories\Contractor\IStoreAdminRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Contractor\IStoreRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\ManagerRepository.cs" />
-    <Compile Include="REST\Image\ImageREST.cs" />
-    <Compile Include="REST\Image\ImageRESTPost.cs" />
-    <Compile Include="REST\Image\ImageRESTPut.cs" />
     <Compile Include="Service\Contractor\IManagerStoreService.cs" />
     <Compile Include="Service\Contractor\IStoreManagerService.cs" />
     <Compile Include="Service\Implementation\ManagerStoreService.cs" />
@@ -432,8 +442,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Order\" />
-    <Folder Include="Sort\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Manager\" />
@@ -471,8 +479,23 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202004162116055_in.resx">
-      <DependentUpon>202004162116055_in.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202003281026346_product.resx">
+      <DependentUpon>202003281026346_product.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003281136183_prod.resx">
+      <DependentUpon>202003281136183_prod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003282352171_price.resx">
+      <DependentUpon>202003282352171_price.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202003311905521_test.resx">
+      <DependentUpon>202003311905521_test.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004071601465_stoename.resx">
+      <DependentUpon>202004071601465_stoename.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004162054415_init.resx">
+      <DependentUpon>202004162054415_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

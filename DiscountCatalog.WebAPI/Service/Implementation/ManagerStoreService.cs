@@ -131,7 +131,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 ManagerEntity manager = uow.Managers.GetApproved(storeAdminIdentityId, managerId);
 
-                //manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
+                manager.Identity.UserImage = ImageProcessor.CreateThumbnail(manager.Identity.UserImage);
 
                 if (manager != null)
                 {
@@ -142,7 +142,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                     foreach (var store in stores)
                     {
-                        //store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+                        store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
 
                         bool assigned = manager.Stores.Any(s => s.Id == store.Id);
 

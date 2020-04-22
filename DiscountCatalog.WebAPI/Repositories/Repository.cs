@@ -26,9 +26,9 @@ namespace DiscountCatalog.WebAPI.Repositories
             Context.Set<TEntity>().AddRange(entities);
         }
 
-        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().Where(predicate).AsQueryable();
+            return Context.Set<TEntity>().Where(predicate);
         }
 
         public TEntity Get(string id)
@@ -36,9 +36,9 @@ namespace DiscountCatalog.WebAPI.Repositories
             return Context.Set<TEntity>().Find(id);
         }
 
-        public IQueryable<TEntity> GetAll()
+        public IEnumerable<TEntity> GetAll()
         {
-            return Context.Set<TEntity>().AsQueryable();
+            return Context.Set<TEntity>().ToList();
         }
 
         public void Remove(TEntity entity)

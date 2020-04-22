@@ -10,8 +10,8 @@ namespace DiscountCatalog.WebAPI.Repositories
     public interface IRepository<TEntity> where TEntity : class
     {
         TEntity Get(string id);
-        IQueryable<TEntity> GetAll();
-        IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+        IEnumerable<TEntity> GetAll();
+        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
 
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);

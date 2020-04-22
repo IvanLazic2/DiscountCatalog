@@ -27,10 +27,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Data.Entity;
-using DiscountCatalog.WebAPI.Service.Contractor;
-using DiscountCatalog.WebAPI.Service.Implementation;
-using DiscountCatalog.WebAPI.REST.Manager;
 
 namespace DiscountCatalog.WebAPI.Controllers
 {
@@ -383,22 +379,22 @@ namespace DiscountCatalog.WebAPI.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("GetAllApprovedManagers")]
-        //public IHttpActionResult GetAllApprovedManagers(string sortOrder, string searchString, int pageIndex, int pageSize)
-        //{
-        //    using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-        //    {
-        //        var managers = uow.Managers.GetAllApproved();
+        [HttpGet]
+        [Route("GetAllApprovedManagers")]
+        public IHttpActionResult GetAllApprovedManagers(string sortOrder, string searchString, int pageIndex, int pageSize)
+        {
+            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            {
+                var managers = uow.Managers.GetAllApproved();
 
-        //        var mapped = mapper.Map<List<Manager>>(managers);
+                var mapped = mapper.Map<List<Manager>>(managers);
 
-        //        var subset = mapped.ToPagedList(pageIndex, pageSize);
-        //        var result = new { items = subset, metaData = subset.GetMetaData() };
+                var subset = mapped.ToPagedList(pageIndex, pageSize);
+                var result = new { items = subset, metaData = subset.GetMetaData() };
 
-        //        return Ok(result);
-        //    }
-        //}
+                return Ok(result);
+            }
+        }
 
         [HttpGet]
         [Route("GetAllDeletedManagers")]
@@ -515,7 +511,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         #endregion
 
         #region Update
-
+        
         //UPDATE
 
         //[HttpPut]
@@ -640,7 +636,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         #endregion
 
         #region Delete
-
+        
         //DELETE
 
         [HttpGet]
@@ -730,7 +726,7 @@ namespace DiscountCatalog.WebAPI.Controllers
         #endregion
 
         #region Restore
-
+        
         //RESTORE
 
         [HttpGet]
@@ -819,16 +815,5 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         #endregion
 
-        ///////////////////////////////////////////////////////////////////
-
-
-        public async Task<IHttpActionResult> GetAllTest()
-        {
-            IManagerService managerService = new ManagerService();
-
-            var managers = await managerService.GetAll();
-
-            return Ok(managers);
-        }
     }
 }

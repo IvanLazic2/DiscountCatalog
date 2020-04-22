@@ -26,7 +26,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         StoreEntity GetApproved(string storeAdminIdentityId, string storeId);
 
         Result PostStoreImage(string id, byte[] image);
-        //byte[] GetStoreImage(string id);
+        byte[] GetStoreImage(string id);
 
         Task<Result> UpdateAsync(StoreRESTPut store);
         Task<Result> UpdateAsync(string storeAdminIdentityId, StoreRESTPut store);

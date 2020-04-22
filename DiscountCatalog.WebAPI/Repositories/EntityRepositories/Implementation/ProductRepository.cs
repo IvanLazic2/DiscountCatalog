@@ -107,7 +107,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllApproved()
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Approved && !p.Deleted && !p.Expired)
                 .ToList();
         }
@@ -115,7 +115,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllApproved(string storeId)
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Store.Id == storeId && p.Approved && !p.Deleted && !p.Expired)
                 .ToList();
         }
@@ -454,14 +454,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             {
                 ProductEntity product = GetApproved(productId);
 
-                //if (product != null)
-                //{
-                //    product.ProductImage = image;
-                //}
-                //else
-                //{
-                //    result.Add("Product does not exist.");
-                //}
+                if (product != null)
+                {
+                    product.ProductImage = image;
+                }
+                else
+                {
+                    result.Add("Product does not exist.");
+                }
             }
             else
             {
@@ -471,15 +471,16 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             return result;
         }
 
-        //public byte[] GetProductImage(string productId)
-        //{
-        //    ProductEntity product = GetLoaded(productId);
+        public byte[] GetProductImage(string productId)
+        {
+            ProductEntity product = GetLoaded(productId);
 
-        //    return product.ProductImage;
-        //}
+            return product.ProductImage;
+        }
 
         #endregion
         
+
         #endregion
 
     }

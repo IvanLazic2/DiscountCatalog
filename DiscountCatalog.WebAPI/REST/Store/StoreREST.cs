@@ -1,5 +1,4 @@
-﻿using DiscountCatalog.WebAPI.REST.Image;
-using DiscountCatalog.WebAPI.REST.Manager;
+﻿using DiscountCatalog.WebAPI.REST.Manager;
 using DiscountCatalog.WebAPI.REST.StoreAdmin;
 using System;
 using System.Collections.Generic;
@@ -26,6 +25,6 @@ namespace DiscountCatalog.WebAPI.REST.Store
         public string Street { get; set; }
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
-        public ImageREST StoreImage { get; set; }
+        public byte[] StoreImage { get; set; }
     }
 }

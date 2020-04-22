@@ -1,5 +1,6 @@
 ﻿using DiscountCatalog.Common.Models;
 using DiscountCatalog.WebAPI.Models;
+using DiscountCatalog.WebAPI.Models.Entities;
 using DiscountCatalog.WebAPI.Paging.Contractor;
 using DiscountCatalog.WebAPI.REST.Product;
 using System;
@@ -16,7 +17,7 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         ProductREST Get(string storeId, string productId);
 
-        IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter);
 
         IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize);
 
@@ -30,10 +31,19 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         Result PostProductImage(string storeId, string productId, byte[] image);
 
-        //byte[] GetImage(string productId);
+        byte[] GetImage(string productId);
 
         decimal GetMinPrice(string storeId);
 
         decimal GetMaxPrice(string storeId);
+
+        IEnumerable<ProductEntity> FilterPrice(IEnumerable<ProductEntity> products, string priceFilter);
+
+        IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter);
+
+        IEnumerable<ProductEntity> FilterStoreAdmin(IEnumerable<ProductEntity> products);
+        ProductEntity FilterStoreAdmin(ProductEntity product);
+
+
     }
 }
