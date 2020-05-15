@@ -31,39 +31,39 @@ namespace DiscountCatalog.MVC.Repositories
             return result;
         }
 
-        public async Task<PagingEntity<ProductREST>> GetAllProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter)
+        public async Task<PagingEntity<ProductREST>> GetAllProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            var request = await apiClient.GetAsync($"api/Store/GetAllProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}&priceFilter={priceFilter}&dateFilter={dateFilter}");
+            var request = await apiClient.GetAsync($"api/Store/GetAllProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}&priceFilter={priceFilter}&dateFilter={dateFilter}&includeUpcoming={includeUpcoming}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
 
             return result;
         }
 
-        public async Task<PagingEntity<ProductREST>> GetAllDeletedProducts(string sortOrder, string searchString, int pageIndex, int pageSize)
+        public async Task<PagingEntity<ProductREST>> GetAllDeletedProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            var request = await apiClient.GetAsync($"api/Store/GetAllDeletedProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/Store/GetAllDeletedProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}&priceFilter={priceFilter}&dateFilter={dateFilter}&includeUpcoming={includeUpcoming}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
 
             return result;
         }
 
-        public async Task<PagingEntity<ProductREST>> GetAllExpiredProducts(string sortOrder, string searchString, int pageIndex, int pageSize)
+        public async Task<PagingEntity<ProductREST>> GetAllExpiredProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             AddTokenToHeader();
 
             string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
 
-            var request = await apiClient.GetAsync($"api/Store/GetAllExpiredProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}");
+            var request = await apiClient.GetAsync($"api/Store/GetAllExpiredProducts/{storeId}?sortOrder={sortOrder}&searchString={searchString}&pageIndex={pageIndex}&pageSize={pageSize}&priceFilter={priceFilter}&dateFilter={dateFilter}&includeUpcoming={includeUpcoming}");
 
             var result = await request.Content.ReadAsAsync<PagingEntity<ProductREST>>();
 

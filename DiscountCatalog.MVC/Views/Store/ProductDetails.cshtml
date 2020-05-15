@@ -1,119 +1,130 @@
 ﻿@model DiscountCatalog.MVC.REST.Product.ProductREST
-
 @{
     ViewBag.Title = "ProductDetails";
 }
 
-<h2>@Model.ProductName Details</h2>
+<div id="product-info">
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>
+    <h2 style="display: inline">@Model.ProductName</h2>
+</div>
 
-@if (Model != null)
-{
-    <div>
-        <hr />
+<hr />
 
-        <div style="width: 50%; display: inline; float: right">
+<div class="main-details-window">
 
-            @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,
-                        new { enctype = "multipart/form-data" }))
-            {
-                <label for="file">Upload Image:</label>
-                <input type="hidden" name="id" id="id" value="@Model.Id">
-                <input type="file" name="file" id="file" style="width: 100%;" />
-                <input type="submit" value="Upload" class="submit" />
-            }
+    <div class="image-form-container">
+        @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,
+                            new { enctype = "multipart/form-data", id = "image-form" }))
+        {
+            <p>Upload a new image:</p>
+            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+            <input type="hidden" name="id" id="id" value="@Model.Id">
+            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+            <br>
+            <img id="uploadedPreview" alt="">
+            <br>
+            <div id="form-actions">
+                <button class="btn btn-secondary" type="submit"><span class="glyphicon glyphicon-upload"></span> Upload</button>
+                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
+            </div>
+        }
+    </div>
 
-            <div style="background-image: url(@Url.Action("GetProductImage", "Store", new { id = Model.Id })); width: 100px; height: 100px;"></div>
+    <div class="product-info-container">
 
-        </div>
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Product info</h4>
 
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.ProductName)
+                Product name
             </dt>
-
             <dd>
                 @Html.DisplayFor(model => model.ProductName)
             </dd>
-
             <dt>
-                @Html.DisplayNameFor(model => model.CompanyName)
+                Store name
             </dt>
-
+            <dd>
+                <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = Model.Store.Id })">@Html.DisplayFor(model => model.Store.StoreName)</a>
+            </dd>
+            <dt>
+                Company name
+            </dt>
             <dd>
                 @Html.DisplayFor(model => model.CompanyName)
             </dd>
+        </dl>
 
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Price</h4>
+
+        <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.OldPrice)
+                Old price
             </dt>
-
             <dd>
-                @Html.DisplayFor(model => model.OldPrice)
+                @Html.DisplayFor(model => model.OldPrice) @Html.DisplayFor(model => model.Currency)
             </dd>
-
             <dt>
-                @Html.DisplayNameFor(model => model.NewPrice)
+                New Price
             </dt>
-
             <dd>
-                @Html.DisplayFor(model => model.NewPrice)
+                @Html.DisplayFor(model => model.NewPrice) @Html.DisplayFor(model => model.Currency)
             </dd>
-
             <dt>
-                @Html.DisplayNameFor(model => model.DiscountPercentage)
+                Discount percentage
             </dt>
-
             <dd>
-                @Html.DisplayFor(model => model.DiscountPercentage)
+                @Html.DisplayFor(model => model.DiscountPercentage)%
             </dd>
+        </dl>
 
+        <h4><span class="glyphicon glyphicon-calendar"></span> Date</h4>
+
+        <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.DiscountDateBegin)
+                Date
             </dt>
-
             <dd>
-                @Html.DisplayFor(model => model.DiscountDateBegin)
+                @Html.DisplayFor(model => model.DiscountDateBegin) - @Html.DisplayFor(model => model.DiscountDateEnd)
             </dd>
+        </dl>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.DiscountDateEnd)
-            </dt>
+        <h4><span class="glyphicon glyphicon-book"></span> Other</h4>
 
-            <dd>
-                @Html.DisplayFor(model => model.DiscountDateEnd)
-            </dd>
-
+        <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Quantity)
             </dt>
-
             <dd>
-                @Html.DisplayFor(model => model.Quantity)
+                @Html.DisplayFor(model => model.Quantity) @Html.DisplayFor(model => model.MeasuringUnit)
             </dd>
-
             <dt>
                 @Html.DisplayNameFor(model => model.Description)
             </dt>
-
             <dd>
                 @Html.DisplayFor(model => model.Description)
             </dd>
-
             <dt>
                 @Html.DisplayNameFor(model => model.Note)
             </dt>
-
             <dd>
                 @Html.DisplayFor(model => model.Note)
             </dd>
 
-
         </dl>
     </div>
-    <p>
-        @Html.ActionLink("Edit", "EditProduct", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "GetAllProducts")
-    </p>
-}
+</div>
 
+<hr />
+
+<p>
+    <a href="@Url.Action("GetAllProducts", "Store")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+    <a href="@Url.Action("EditProduct", "Store", new { id = Model.Id })" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+    <a href="@Url.Action("DeleteProduct", "Store", new { id = Model.Id })" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+</p>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")
 

@@ -16,21 +16,21 @@
     display: inline-block;
 }
 
-/*USER/STORE INFO*/
+/*USER/STORE/PRODUCT INFO*/
 
-#user-info, #store-info {
+#user-info, #store-info, #product-info {
     margin: 30px 0 20px 0;
 }
 
-    #user-info div, #store-info div {
+    #user-info div, #store-info div, #product-info div {
         display: inline-block;
     }
 
-    #user-info h2 {
+    #user-info h2, #store-info h2, #product-info h2 {
         display: inline-block;
     }
 
-    #user-info h2, #store-info h2 {
+    #user-info h2, #store-info, #product-info h2 {
         vertical-align: middle;
     }
 

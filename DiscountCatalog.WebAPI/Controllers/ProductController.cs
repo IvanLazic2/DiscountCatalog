@@ -12,6 +12,24 @@ namespace DiscountCatalog.WebAPI.Controllers
     [RoutePrefix("api/Product")]
     public class ProductController : ApiController
     {
+        private IList<string> currencies = new List<string>()
+        {
+            "kn",
+            "$",
+            "€",
+            "£"
+        };
+
+        private IList<string> measuringUnits = new List<string>()
+        {
+            "kg",
+            "g",
+            "l",
+            "ml",
+            "cm",
+            "m"
+        };
+
         private readonly IProductService productService;
 
         public ProductController()
@@ -35,6 +53,20 @@ namespace DiscountCatalog.WebAPI.Controllers
             decimal max = productService.GetMaxPrice(storeId);
 
             return Ok(max);
+        }
+
+        [HttpGet]
+        [Route("GetAllCurrencies")]
+        public IHttpActionResult GetAllCurrencies()
+        {
+            return Ok(currencies);
+        }
+
+        [HttpGet]
+        [Route("GetAllMeasuringUnits")]
+        public IHttpActionResult GetAllMeasuringUnits()
+        {
+            return Ok(measuringUnits);
         }
     }
 }

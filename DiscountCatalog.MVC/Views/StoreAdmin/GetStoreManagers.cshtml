@@ -8,7 +8,7 @@
 
 <div id="store-info">
     <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Store.StoreImage)"></div>
-    <h2>@Model.Store.StoreImage</h2>
+    <h2>@Model.Store.StoreName</h2>
     <h4>Assign stores</h4>
 </div>
 
@@ -104,8 +104,9 @@ Page @(Model.Managers.PageCount < Model.Managers.PageNumber ? 0 : Model.Managers
 
 <hr />
 
-<a class="btn btn-default" href="@Url.Action("GetAllStores", "StoreAdmin")"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+<a class="btn btn-default" href="@Url.Action("StoreDetails", "StoreAdmin", new { id = Model.Store.Id })"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
 
+@Styles.Render("~/Content/IndividualPageStyles/Common")
 @Styles.Render("~/Content/IndividualPageStyles/GetAll")
 @Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
 

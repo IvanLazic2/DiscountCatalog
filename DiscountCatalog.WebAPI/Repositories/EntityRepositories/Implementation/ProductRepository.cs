@@ -127,7 +127,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllDeleted()
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Deleted)
                 .ToList();
         }
@@ -135,7 +135,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllDeleted(string storeId)
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Store.Id == storeId && p.Deleted)
                 .ToList();
         }
@@ -147,7 +147,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllExpired()
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Approved && !p.Deleted && p.Expired)
                 .ToList();
         }
@@ -155,7 +155,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllExpired(string storeId)
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Store.Id == storeId && p.Expired && p.Approved && !p.Deleted)
                 .ToList();
         }
@@ -167,14 +167,14 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public IEnumerable<ProductEntity> GetAllLoaded()
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .ToList();
         }
 
         public IEnumerable<ProductEntity> GetAllLoaded(string storeId)
         {
             return DbContext.Products
-                .Include(p => p.Store)
+                .Include(p => p.Store.Administrator.Identity)
                 .Where(p => p.Store.Id == storeId)
                 .ToList();
         }
@@ -410,6 +410,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             if (product != null)
             {
                 product.Expired = true;
+
+                DbContext.SaveChanges();
             }
             else
             {
@@ -431,6 +433,50 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
             if (product != null)
             {
                 product.Expired = true;
+
+                DbContext.SaveChanges();
+            }
+            else
+            {
+                modelState.Add("Product does not exist.");
+            }
+
+            return modelState.GetResult();
+        }
+
+        public Result MarkAsActive(string productId)
+        {
+            var modelState = new EntityModelState()
+            {
+                SuccessMessage = "Product set as active."
+            };
+
+            ProductEntity product = GetApproved(productId);
+
+            if (product != null)
+            {
+                product.Expired = false;
+            }
+            else
+            {
+                modelState.Add("Product does not exist.");
+            }
+
+            return modelState.GetResult();
+        }
+
+        public Result MarkAsActive(string storeId, string productId)
+        {
+            var modelState = new EntityModelState()
+            {
+                SuccessMessage = "Product set as active."
+            };
+
+            ProductEntity product = GetApproved(storeId, productId);
+
+            if (product != null)
+            {
+                product.Expired = false;
             }
             else
             {
@@ -479,7 +525,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         }
 
         #endregion
-        
+
 
         #endregion
 

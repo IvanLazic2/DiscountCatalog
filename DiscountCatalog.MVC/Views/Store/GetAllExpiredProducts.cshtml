@@ -4,17 +4,16 @@
 <link href="~/Content/IndividualPageStyles/GetAll/GetAll_products.css" rel="stylesheet" />
 
 @{
-    ViewBag.Title = "GetAllProducts";
+    ViewBag.Title = "GetAllExpiredProducts";
 }
 
-<h2>All products</h2>
+<h2>All deleted products</h2>
 
 <hr />
 
-<a href="@Url.Action("CreateProduct", "Store")" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Create</a>
 
 <div class="search-container">
-    @using (Html.BeginForm("GetAllProducts", "Store", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
+    @using (Html.BeginForm("GetAllExpiredProducts", "Store", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
     {
         <table id="filter-table">
             <tr>
@@ -115,10 +114,10 @@
         <tr>
             Sort by:
             <th>
-                @Html.ActionLink("Name", "GetAllProducts", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
+                @Html.ActionLink("Name", "GetAllExpiredProducts", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
             </th>
             <th>
-                @Html.ActionLink("Price", "GetAllProducts", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
+                @Html.ActionLink("Price", "GetAllExpiredProducts", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
             </th>
         </tr>
     </table>
@@ -132,12 +131,12 @@
         @foreach (var item in Model)
         {
             <div class="col-md-4">
-                <div class="card rounded">
-                    <a href="@Url.Action("ProductDetails", "Store", new { id = item.Id })">
-                        <div class="card-image" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.ProductImage));">
-                            <span class="card-notify-year"><big>@Convert.ToInt32(item.DiscountPercentage)%</big></span>
-                        </div>
-                    </a>
+                <div class="card rounded deleted">
+
+                    <div class="card-image greyed" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.ProductImage)); border-radius:10px!important">
+                        <span class="card-notify-year" style="background-color: #bfbfbf;"><big>@Convert.ToInt32(item.DiscountPercentage)%</big></span>
+                    </div>
+
                     <div class="card-image-overlay m-auto">
 
                     </div>
@@ -147,28 +146,16 @@
                         </div>
                         <br />
                         <div>
-                            <span class="card-detail-badge" id="old">@item.OldPrice @item.Currency</span>
+                            <span class="card-detail-badge" id="old" style="background-color: #bfbfbf;">@item.OldPrice @item.Currency</span>
                             &nbsp;
-                            <span class="card-detail-badge" id="new">@item.NewPrice @item.Currency</span>
+                            <span class="card-detail-badge" id="new" style="background-color: #bfbfbf;">@item.NewPrice @item.Currency</span>
                         </div>
                         <br />
                         <div class="text-center">
                             <p class="h4">@item.DiscountDateBegin - @item.DiscountDateEnd</p>
                         </div>
                         <br />
-                        <div>
-                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.Administrator.Identity.UserImage)"></div>
-                            <p style="display: inline">@item.Store.Administrator.Identity.UserName</p>
-                            &nbsp;
-                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
-                            <p style="display: inline">@item.Store.StoreName</p>
-                        </div>
-                        @Html.ActionLink("Details", "ProductDetails", new { id = item.Id }, new { @class = "p-btn" })
-                    </div>
-                    <hr />
-                    <div class="card-footer">
-                        <a href="@Url.Action("EditProduct", "Store", new { id = item.Id })" class="btn-sm btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-                        <a href="@Url.Action("DeleteProduct", "Store", new { id = item.Id })" class="btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+                        @Html.ActionLink("Refresh", "EditProduct", new { id = item.Id }, new { @class = "p-btn-restore" })
                     </div>
                 </div>
             </div>
@@ -176,13 +163,14 @@
     </div>
 </div>
 
-<a href="@Url.Action("GetAllDeletedProducts", "Store")" class="btn btn-warning pull-right" style="margin: 5px"><span class="glyphicon glyphicon-trash"></span></a>
-<a href="@Url.Action("GetAllExpiredProducts", "Store")" class="btn btn-warning pull-right" style="margin: 5px"><span class="glyphicon glyphicon-time"></span></a>
-
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("GetAllProducts",
+@Html.PagedListPager(Model, page => Url.Action("GetAllExpiredProducts",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }))
+
+<div>
+    <a href="@Url.Action("GetAllExpiredProducts", "Store")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+</div>
 
 @Styles.Render("~/Content/IndividualPageStyles/Common")
 @Styles.Render("~/Content/IndividualPageStyles/GetAll")

@@ -36,9 +36,11 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Contractor
         Result MarkAsDeleted(string productId);
         Result MarkAsRestored(string productId);
         Result MarkAsExpired(string productId);
+        Result MarkAsActive(string productId);
         Result MarkAsDeleted(string storeId, string productId);
         Result MarkAsRestored(string storeId, string productId);
         Result MarkAsExpired(string storeId, string productId);
+        Result MarkAsActive(string storeId, string productId);
 
         bool IsExpired(ProductEntity product);
 

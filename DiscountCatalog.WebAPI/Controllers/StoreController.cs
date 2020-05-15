@@ -59,27 +59,27 @@ namespace DiscountCatalog.WebAPI.Controllers
 
         [HttpGet]
         [Route("GetAllProducts/{storeId}")]
-        public IHttpActionResult GetAllProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter)
+        public IHttpActionResult GetAllProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
-            IPagingList<ProductREST> list = productService.GetAll(storeId, sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter);
+            IPagingList<ProductREST> list = productService.GetAll(storeId, sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             return Ok(list);
         }
 
         [HttpGet]
         [Route("GetAllDeletedProducts/{storeId}")]
-        public IHttpActionResult GetAllDeletedProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IHttpActionResult GetAllDeletedProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
-            IPagingList<ProductREST> list = productService.GetAllDeleted(storeId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ProductREST> list = productService.GetAllDeleted(storeId, sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             return Ok(list);
         }
 
         [HttpGet]
         [Route("GetAllExpiredProducts/{storeId}")]
-        public IHttpActionResult GetAllExpiredProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IHttpActionResult GetAllExpiredProducts(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
-            IPagingList<ProductREST> list = productService.GetAllExpired(storeId, sortOrder, searchString, pageIndex, pageSize);
+            IPagingList<ProductREST> list = productService.GetAllExpired(storeId, sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             return Ok(list);
         }

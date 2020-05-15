@@ -49,6 +49,12 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 case "name_desc":
                     products = products.OrderByDescending(p => p.ProductName).ToList();
                     break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.NewPrice).ToList();
+                    break;
+                case "price_asc":
+                    products = products.OrderBy(p => p.NewPrice).ToList();
+                    break;
                 default:
                     products = products.OrderBy(p => p.ProductName).ToList();
                     break;
@@ -90,7 +96,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return products;
         }
 
-        public IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter)
+        public IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter, bool includeUpcoming)
         {
             if (!string.IsNullOrEmpty(dateFilter))
             {
@@ -98,7 +104,10 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 if (date != null)
                 {
-                    products = products.Where(p => DateTime.Parse(p.DiscountDateEnd).CompareTo(date) >= 0);
+                    if (includeUpcoming)
+                        products = products.Where(p => DateTime.Parse(p.DiscountDateEnd).CompareTo(date) >= 0);
+                    else
+                        products = products.Where(p => DateTime.Parse(p.DiscountDateEnd).CompareTo(date) >= 0 && DateTime.Parse(p.DiscountDateBegin).CompareTo(date) <= 0);
                 }
             }
 
@@ -157,14 +166,14 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region GetAll
 
-        public IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter)
+        public IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
 
                 products = FilterStoreAdmin(products);
-                products = FilterDate(products, dateFilter);
+                products = FilterDate(products, dateFilter, includeUpcoming);
                 products = FilterPrice(products, priceFilter);
 
                 IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
@@ -186,16 +195,23 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         //jos jedan getall
 
-        public IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 IEnumerable<ProductEntity> products = uow.Products.GetAllDeleted(storeId);
 
+                products = FilterStoreAdmin(products);
+                products = FilterDate(products, dateFilter, includeUpcoming);
+                products = FilterPrice(products, priceFilter);
+
                 IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
 
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
+
+                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
+                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
 
                 IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
 
@@ -205,16 +221,23 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public IPagingList<ProductREST> GetAllExpired(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize)
+        public IPagingList<ProductREST> GetAllExpired(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
                 IEnumerable<ProductEntity> products = uow.Products.GetAllExpired(storeId);
 
+                products = FilterStoreAdmin(products);
+                products = FilterDate(products, dateFilter, includeUpcoming);
+                products = FilterPrice(products, priceFilter);
+
                 IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
 
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
+
+                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
+                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
 
                 IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
 
@@ -237,6 +260,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 ProductEntity product = uow.Products.GetApproved(storeId, productId);
 
                 var mapped = mapper.Map<ProductREST>(product);
+
+                mapped.ProductImage = ImageProcessor.CreateThumbnail(product.ProductImage);
 
                 return mapped;
             }
@@ -341,6 +366,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
                 decimal? min = products.Select(p => p.NewPrice).Min();
 
+                if (min == null)
+                {
+                    min = 0;
+                }
+
                 return min.Value;
             }
         }
@@ -352,6 +382,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
 
                 decimal? max = products.Select(p => p.NewPrice).Max();
+
+                if (max == null)
+                {
+                    max = 0;
+                }
 
                 return max.Value;
             }

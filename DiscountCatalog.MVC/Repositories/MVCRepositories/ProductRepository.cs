@@ -30,5 +30,27 @@ namespace DiscountCatalog.MVC.Repositories.MVCRepositories
 
             return result;
         }
+
+        public async Task<IEnumerable<string>> GetAllCurrencies()
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync($"api/Product/GetAllCurrencies");
+
+            IEnumerable<string> result = await request.Content.ReadAsAsync<IEnumerable<string>>();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<string>> GetAllMeasuringUnits()
+        {
+            AddTokenToHeader();
+
+            HttpResponseMessage request = await apiClient.GetAsync($"api/Product/GetAllMeasuringUnits");
+
+            IEnumerable<string> result = await request.Content.ReadAsAsync<IEnumerable<string>>();
+
+            return result;
+        }
     }
 }

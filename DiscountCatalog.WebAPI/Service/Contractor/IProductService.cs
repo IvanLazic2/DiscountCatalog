@@ -17,11 +17,11 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         ProductREST Get(string storeId, string productId);
 
-        IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter);
+        IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);
 
-        IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);
 
-        IPagingList<ProductREST> GetAllExpired(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize);
+        IPagingList<ProductREST> GetAllExpired(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);
 
         Task<Result> UpdateAsync(string storeId, ProductRESTPut product);
 
@@ -39,7 +39,7 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         IEnumerable<ProductEntity> FilterPrice(IEnumerable<ProductEntity> products, string priceFilter);
 
-        IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter);
+        IEnumerable<ProductEntity> FilterDate(IEnumerable<ProductEntity> products, string dateFilter, bool includeUpcoming);
 
         IEnumerable<ProductEntity> FilterStoreAdmin(IEnumerable<ProductEntity> products);
         ProductEntity FilterStoreAdmin(ProductEntity product);

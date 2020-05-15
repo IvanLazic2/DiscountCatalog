@@ -9,7 +9,7 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.ProductName)
+            Product name
         </dt>
 
         <dd>
@@ -17,7 +17,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CompanyName)
+            Company name
         </dt>
 
         <dd>
@@ -25,55 +25,47 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.OldPrice)
+            Old price
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.OldPrice)
+            @Html.DisplayFor(model => model.OldPrice) @Html.DisplayFor(model => model.Currency)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.NewPrice)
+            New price
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.NewPrice)
+            @Html.DisplayFor(model => model.NewPrice) @Html.DisplayFor(model => model.Currency)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.DiscountPercentage)
+            Discount percentage
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.DiscountPercentage)
+            @Html.DisplayFor(model => model.DiscountPercentage)%
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.DiscountDateBegin)
+            Discount date
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.DiscountDateBegin)
+            @Html.DisplayFor(model => model.DiscountDateBegin) - @Html.DisplayFor(model => model.DiscountDateEnd)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.DiscountDateEnd)
+            Quantity
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.DiscountDateEnd)
+            @Html.DisplayFor(model => model.Quantity) @Html.DisplayFor(model => model.MeasuringUnit)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            Description
         </dt>
 
         <dd>
@@ -81,7 +73,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Note)
+            Note
         </dt>
 
         <dd>
@@ -93,9 +85,9 @@
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "GetAllProducts")
-        </div>
+    <div class="form-actions no-color">
+        <a href="@Url.Action("ProductDetails", "Store", new { id = Model.Id })" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+        <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+    </div>
     }
 </div>

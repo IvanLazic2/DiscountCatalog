@@ -654,6 +654,7 @@
     <Content Include="Views\StoreAdmin\_StoreList.cshtml" />
     <Content Include="Views\StoreAdmin\_ManagerList.cshtml" />
     <Content Include="Views\StoreAdmin\GetStoreManagers.cshtml" />
+    <Content Include="Views\Store\GetAllExpiredProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

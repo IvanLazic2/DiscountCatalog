@@ -28,3 +28,29 @@ function setSlider(min, max) {
     $("#amount").val("$" + $("#slider-range").slider("values", 0) +
         " - $" + $("#slider-range").slider("values", 1));
 }
+
+//ss
+
+//$(function () {
+//    $("#slider-range").slider({
+//        range: true,
+//        min: @ViewBag.Min,
+//    max: @ViewBag.Max,
+//    values: [@ViewBag.From, @ViewBag.To],
+//    slide: function (event, ui) {
+//        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+//    },
+//    change: function (event, ui) {
+
+
+
+//        let array = ui.values;
+//        array = array.join(",");
+
+//        $("#PriceFilter").val(array);
+//        $("#filter-form").submit();
+//    }
+//});
+//$("#amount").val("$" + $("#slider-range").slider("values", 0) +
+//    " - $" + $("#slider-range").slider("values", 1));
+//            });

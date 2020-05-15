@@ -51,14 +51,15 @@ namespace DiscountCatalog.MVC.Controllers
         //by storename...
 
         [Route("GetAllProducts")]
-        public async Task<ActionResult> GetAllProducts(string sortOrder, 
+        public async Task<ActionResult> GetAllProducts(string sortOrder,
                                                        string currentFilter,
                                                        string searchString,
                                                        int? page,
                                                        string currentPrice,
                                                        string priceFilter,
                                                        string currentDate,
-                                                       string dateFilter)
+                                                       string dateFilter,
+                                                       bool includeUpcoming = false)
         {
             ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
             ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
@@ -122,7 +123,7 @@ namespace DiscountCatalog.MVC.Controllers
             int pageIndex = (page ?? 1);
             int pageSize = 14;
 
-            PagingEntity<ProductREST> products = await storeRepository.GetAllProducts(sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter);
+            PagingEntity<ProductREST> products = await storeRepository.GetAllProducts(sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 
@@ -133,6 +134,9 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("CreateProduct")]
         public ActionResult CreateProduct()
         {
+            ViewBag.Currencies = productRepository.GetAllCurrencies();
+            ViewBag.MeasuringUnits = productRepository.GetAllMeasuringUnits();
+
             return View();
         }
 
@@ -277,12 +281,24 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("GetAllDeletedProducts")]
-        public async Task<ActionResult> GetAllDeletedProducts(string sortOrder, string currentFilter, string searchString, int? page) //TU SAM STAO sredit view-ove, kontam si iduce napravit da se slike loadaju zajedno sa objektima
+        public async Task<ActionResult> GetAllDeletedProducts(string sortOrder,
+                                                       string currentFilter,
+                                                       string searchString,
+                                                       int? page,
+                                                       string currentPrice,
+                                                       string priceFilter,
+                                                       string currentDate,
+                                                       string dateFilter,
+                                                       bool includeUpcoming = false) 
         {
+            ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+            ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
 
-            if (searchString != null)
+            if (!string.IsNullOrEmpty(searchString))
             {
                 page = 1;
             }
@@ -293,10 +309,51 @@ namespace DiscountCatalog.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
+            if (!string.IsNullOrEmpty(priceFilter))
+            {
+                string[] arr = priceFilter.Split(",".ToCharArray());
+
+                ViewBag.From = Convert.ToInt32(arr[0]);
+                ViewBag.To = Convert.ToInt32(arr[1]);
+
+                page = 1;
+            }
+            else
+            {
+                priceFilter = currentPrice;
+
+                if (currentPrice != null)
+                {
+                    string[] arr = currentPrice.Split(",".ToCharArray());
+
+                    ViewBag.From = Convert.ToInt32(arr[0]);
+                    ViewBag.To = Convert.ToInt32(arr[1]);
+                }
+                else
+                {
+                    ViewBag.From = ViewBag.Min;
+                    ViewBag.To = ViewBag.Max;
+                }
+            }
+
+            ViewBag.CurrentPrice = priceFilter;
+
+
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                page = 1;
+            }
+            else
+            {
+                dateFilter = currentDate;
+            }
+
+            ViewBag.CurrentDate = dateFilter;
+
             int pageIndex = (page ?? 1);
             int pageSize = 14;
 
-            PagingEntity<ProductREST> products = await storeRepository.GetAllDeletedProducts(sortOrder, searchString, pageIndex, pageSize);
+            PagingEntity<ProductREST> products = await storeRepository.GetAllDeletedProducts(sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 
@@ -322,12 +379,24 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("GetAllExpiredProducts")]
-        public async Task<ActionResult> GetAllExpiredProducts(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<ActionResult> GetAllExpiredProducts(string sortOrder,
+                                                       string currentFilter,
+                                                       string searchString,
+                                                       int? page,
+                                                       string currentPrice,
+                                                       string priceFilter,
+                                                       string currentDate,
+                                                       string dateFilter,
+                                                       bool includeUpcoming = false)
         {
+            ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+            ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
 
-            if (searchString != null)
+            if (!string.IsNullOrEmpty(searchString))
             {
                 page = 1;
             }
@@ -338,10 +407,51 @@ namespace DiscountCatalog.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
+            if (!string.IsNullOrEmpty(priceFilter))
+            {
+                string[] arr = priceFilter.Split(",".ToCharArray());
+
+                ViewBag.From = Convert.ToInt32(arr[0]);
+                ViewBag.To = Convert.ToInt32(arr[1]);
+
+                page = 1;
+            }
+            else
+            {
+                priceFilter = currentPrice;
+
+                if (currentPrice != null)
+                {
+                    string[] arr = currentPrice.Split(",".ToCharArray());
+
+                    ViewBag.From = Convert.ToInt32(arr[0]);
+                    ViewBag.To = Convert.ToInt32(arr[1]);
+                }
+                else
+                {
+                    ViewBag.From = ViewBag.Min;
+                    ViewBag.To = ViewBag.Max;
+                }
+            }
+
+            ViewBag.CurrentPrice = priceFilter;
+
+
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                page = 1;
+            }
+            else
+            {
+                dateFilter = currentDate;
+            }
+
+            ViewBag.CurrentDate = dateFilter;
+
             int pageIndex = (page ?? 1);
             int pageSize = 14;
 
-            PagingEntity<ProductREST> products = await storeRepository.GetAllExpiredProducts(sortOrder, searchString, pageIndex, pageSize);
+            PagingEntity<ProductREST> products = await storeRepository.GetAllExpiredProducts(sortOrder, searchString, pageIndex, pageSize, priceFilter, dateFilter, includeUpcoming);
 
             StaticPagedList<ProductREST> list = new StaticPagedList<ProductREST>(products.Items, products.MetaData.PageNumber, products.MetaData.PageSize, products.MetaData.TotalItemCount);
 
