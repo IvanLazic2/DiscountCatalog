@@ -658,6 +658,8 @@
     <Content Include="Views\User\ProductDetails.cshtml" />
     <Content Include="Views\User\StoreAdminDetails.cshtml" />
     <Content Include="Views\User\StoreDetails.cshtml" />
+    <Content Include="Views\User\_ProductList.cshtml" />
+    <Content Include="Views\User\_StoreList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

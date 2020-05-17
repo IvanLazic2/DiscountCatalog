@@ -1,7 +1,119 @@
-﻿
+﻿@model DiscountCatalog.MVC.REST.Store.StoreREST
 @{
-    ViewBag.Title = "StoreDetails";
+    ViewBag.Title = "DetailsStore";
 }
+<div id="store-info">
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.StoreImage)"></div>
+    <h2>@Model.StoreName <span style="font-size: large; vertical-align: middle;"> - store</span></h2>
+</div>
+<hr />
+<div class="main-details-window">
 
-<h2>StoreDetails</h2>
+    <div class="store-info-container">
+
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Store info</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Store name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.StoreName)
+            </dd>
+        </dl>
+        <h4><span class="glyphicon glyphicon-time"></span> Working hours</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                Week
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekEnd))
+                {
+                    <p>@Model.WorkingHoursWeekBegin - @Model.WorkingHoursWeekEnd</p>
+                }
+            </dd>
+            <dt>
+                Weekends
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursWeekendsBegin) && !string.IsNullOrEmpty(Model.WorkingHoursWeekendsEnd))
+                {
+                    <p>@Model.WorkingHoursWeekendsBegin - @Model.WorkingHoursWeekendsEnd</p>
+                }
+            </dd>
+            <dt>
+                Holidays
+            </dt>
+            <dd>
+                @if (!string.IsNullOrEmpty(Model.WorkingHoursHolidaysBegin) && !string.IsNullOrEmpty(Model.WorkingHoursHolidaysEnd))
+                {
+                    <p>@Model.WorkingHoursHolidaysBegin - @Model.WorkingHoursHolidaysEnd</p>
+                }
+            </dd>
+        </dl>
+        <h4><span class="glyphicon glyphicon-map-marker"></span> Address</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                Country
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Country)
+            </dd>
+            <dt>
+                City
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.City)
+            </dd>
+            <dt>
+                Postal code
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PostalCode)
+            </dd>
+            <dt>
+                Street
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Street)
+            </dd>
+        </dl>
+        <h4><span class="glyphicon glyphicon-user"></span> Retail chain</h4>
+        <a href="@Url.Action("StoreAdminDetails", "User", new { id = Model.Administrator.Identity.Id })">
+            <div id="store-info" style="margin: 20px 0 20px 100px">
+                <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Administrator.Identity.UserImage)"></div>
+                <h2 style="font-size: 20px">@Model.Administrator.Identity.UserName</h2>
+            </div>
+        </a>
+
+        <br />
+    </div>
+</div>
+
+<h4><span class="glyphicon glyphicon-shopping-cart"></span> Products</h4>
+
+<br />
+@{
+    Html.RenderPartial("_ProductList", Model.Products);
+}
+<hr />
+<p>
+    <a href="@Url.Action("GetAllProducts", "User")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+</p>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datetimepicker")
+}
 

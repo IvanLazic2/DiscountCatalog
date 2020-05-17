@@ -7,12 +7,10 @@
     ViewBag.Title = "GetAllProducts";
 }
 
-<h2>All products on discount</h2>
-
 <hr />
 
 <div class="search-container">
-    @using (Html.BeginForm("GetAllProducts", "User", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
+    @using (Html.BeginForm("StoreDetails", "User", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
     {
         <table id="filter-table">
             <tr>
@@ -113,10 +111,10 @@
         <tr>
             Sort by:
             <th>
-                @Html.ActionLink("Name", "GetAllProducts", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
+                @Html.ActionLink("Name", "StoreDetails", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
             </th>
             <th>
-                @Html.ActionLink("Price", "GetAllProducts", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
+                @Html.ActionLink("Price", "StoreDetails", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
             </th>
         </tr>
     </table>
@@ -155,18 +153,11 @@
                         </div>
                         <br />
                         <div>
-                            <a href="@Url.Action("StoreAdminDetails", "User", new { id = item.Store.Administrator.Identity.Id })">
-                                <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.Administrator.Identity.UserImage)"></div>
-                                <p style="display: inline">@item.Store.Administrator.Identity.UserName</p>
-                            </a>
-
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.Administrator.Identity.UserImage)"></div>
+                            <p style="display: inline">@item.Store.Administrator.Identity.UserName</p>
                             &nbsp;
-
-                            <a href="@Url.Action("StoreDetails", "User", new { id = item.Store.Id })">
-                                <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
-                                <p style="display: inline">@item.Store.StoreName</p>
-                            </a>
-
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
+                            <p style="display: inline">@item.Store.StoreName</p>
                         </div>
                         @Html.ActionLink("Details", "ProductDetails", new { id = item.Id }, new { @class = "p-btn" })
                     </div>
@@ -182,18 +173,9 @@
 
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("GetAllProducts",
+@Html.PagedListPager(Model, page => Url.Action("StoreDetails",
     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }))
 
-@Styles.Render("~/Content/IndividualPageStyles/Common")
-@Styles.Render("~/Content/IndividualPageStyles/GetAll")
-@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/moment")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/datetimepicker")
-}
 
 

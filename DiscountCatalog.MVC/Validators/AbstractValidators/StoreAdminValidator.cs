@@ -11,14 +11,17 @@ namespace DiscountCatalog.MVC.Validators.AbstractValidators
     {
         public StoreAdminValidator()
         {
+            RuleFor(s => s.Identity)
+                .NotNull();
+
             RuleFor(s => s.Identity.Id)
                 .NotEmpty()
-                .NotNull();
+                .NotNull().When(s => s.Identity != null);
 
             RuleFor(s => s.Identity.UserName)
                 .NotEmpty()
-                .NotNull();
-
+                .NotNull().When(s => s.Identity != null);
+            
             RuleFor(s => s.Stores)
                 .NotNull();
         }

@@ -127,7 +127,12 @@ namespace DiscountCatalog.MVC.Controllers
         {
             ProductREST product = await userRepository.GetProduct(id);
 
-            return View(product);
+            if (GlobalValidator.IsProductValid(product))
+            {
+                return View(product);
+            }
+
+            return RedirectToAction("Index").Error("Something went wrong, please try again.");
         }
 
         public async Task<ActionResult> StoreAdminDetails(string id, string sortOrder, string currentFilter, string searchString, int? page)
@@ -164,7 +169,7 @@ namespace DiscountCatalog.MVC.Controllers
             return RedirectToAction("Index").Error("Something went wrong, please try again.");
         }
 
-        public async Task<ActionResult> StoreDetails(string id, 
+        public async Task<ActionResult> StoreDetails(string id,
                                                      string sortOrder,
                                                      string currentFilter,
                                                      string searchString,
@@ -175,8 +180,8 @@ namespace DiscountCatalog.MVC.Controllers
                                                      string dateFilter,
                                                      bool includeUpcoming = false)
         {
-            ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
-            ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
+            ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(id));
+            ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(id));
 
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";

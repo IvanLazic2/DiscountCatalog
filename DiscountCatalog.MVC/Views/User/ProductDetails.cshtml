@@ -4,36 +4,20 @@
 }
 
 <div id="product-info">
-    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
-    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>
     <h2 style="display: inline">@Model.ProductName</h2>
 </div>
 
 <hr />
 
 <div class="main-details-window">
-
-    <div class="image-form-container">
-        @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,
-                            new { enctype = "multipart/form-data", id = "image-form" }))
-        {
-            <p>Upload a new image:</p>
-            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
-            <input type="hidden" name="id" id="id" value="@Model.Id">
-            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
-            <br>
-            <img id="uploadedPreview" alt="">
-            <br>
-            <div id="form-actions">
-                <button class="btn btn-secondary" type="submit"><span class="glyphicon glyphicon-upload"></span> Upload</button>
-                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
-            </div>
-        }
+    <div class="product-image-container">
+        <div class="card-image" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage));">
+        </div>
     </div>
 
     <div class="product-info-container">
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Product info</h4>
+        <h4><span class="glyphicon glyphicon-info-sign"></span> Product info</h4>
 
         <dl class="dl-horizontal">
             <dt>
@@ -43,12 +27,6 @@
                 @Html.DisplayFor(model => model.ProductName)
             </dd>
             <dt>
-                Store name
-            </dt>
-            <dd>
-                <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = Model.Store.Id })">@Html.DisplayFor(model => model.Store.StoreName)</a>
-            </dd>
-            <dt>
                 Company name
             </dt>
             <dd>
@@ -56,7 +34,7 @@
             </dd>
         </dl>
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Price</h4>
+        <h4><span class="glyphicon glyphicon-usd"></span> Price</h4>
 
         <dl class="dl-horizontal">
             <dt>
@@ -83,7 +61,7 @@
 
         <dl class="dl-horizontal">
             <dt>
-                Date
+                Discount date
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.DiscountDateBegin) - @Html.DisplayFor(model => model.DiscountDateEnd)
@@ -114,7 +92,13 @@
 
         </dl>
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Other</h4>
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Store</h4>
+        <a href="@Url.Action("StoreDetails", "User", new { id = Model.Store.Id })">
+            <div id="store-info" style="margin: 20px 0 20px 100px">
+                <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Store.StoreImage)"></div>
+                <h2 style="font-size: 20px">@Model.Store.StoreName</h2>
+            </div>
+        </a>
 
     </div>
 </div>

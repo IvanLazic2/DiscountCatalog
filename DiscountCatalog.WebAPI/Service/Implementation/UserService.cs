@@ -218,29 +218,38 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         public IPagingList<ProductREST> GetAllProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            try
             {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved();
+                using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+                {
+                    IEnumerable<ProductEntity> products = uow.Products.GetAllApproved();
 
-                products = FilterStoreAdmin(products);
-                products = FilterDate(products, dateFilter, includeUpcoming);
-                products = FilterPrice(products, priceFilter);
+                    products = FilterStoreAdmin(products);
+                    products = FilterDate(products, dateFilter, includeUpcoming);
+                    products = FilterPrice(products, priceFilter);
 
-                IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
+                    IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
 
-                mapped = Search(mapped, searchString);
-                mapped = Order(mapped, sortOrder);
+                    mapped = Search(mapped, searchString);
+                    mapped = Order(mapped, sortOrder);
 
-                //mapped.ToList().ForEach(p => p.ProductImage = ImageProcessor.CreateThumbnail(p.ProductImage));
-                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
-                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
+                    //mapped.ToList().ForEach(p => p.ProductImage = ImageProcessor.CreateThumbnail(p.ProductImage));
+                    mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
+                    mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
 
-                IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
+                    IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
 
-                IPagingList<ProductREST> result = new PagingList<ProductREST>(subset, subset.GetMetaData());
+                    IPagingList<ProductREST> result = new PagingList<ProductREST>(subset, subset.GetMetaData());
 
-                return result;
+                    return result;
+                }
             }
+            catch (Exception exc)
+            {
+
+                throw;
+            }
+
         }
 
         #endregion
@@ -255,9 +264,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 ProductEntity product = uow.Products.GetApproved(productId);
 
+                product.Store.StoreImage = ImageProcessor.CreateThumbnail(product.Store.StoreImage);
+
                 var mapped = mapper.Map<ProductREST>(product);
 
-                mapped.ProductImage = ImageProcessor.CreateThumbnail(product.ProductImage);
+                //mapped.ProductImage = ImageProcessor.CreateThumbnail(product.ProductImage);
 
                 return mapped;
             }
@@ -270,7 +281,8 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 StoreEntity store = uow.Stores.GetApproved(storeId);
 
                 store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
-                store.Managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
+                store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(store.Administrator.Identity.UserImage);
+                store.Managers.Clear();
 
                 store = FilterManagers(store, false);
                 store = FilterStoreAdmin(store);
@@ -287,8 +299,7 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             {
                 StoreAdminEntity storeAdmin = uow.StoreAdmins.GetByIdentityId(storeAdminIdentityId);
 
-                storeAdmin.Managers.Clear();
-                storeAdmin.Stores = FilterManagers(storeAdmin.Stores.ToList(), false);
+                storeAdmin.Stores = FilterManagers(storeAdmin.Stores.ToList(), true);
 
                 storeAdmin.Stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
                 storeAdmin.Identity.UserImage = ImageProcessor.CreateThumbnail(storeAdmin.Identity.UserImage);

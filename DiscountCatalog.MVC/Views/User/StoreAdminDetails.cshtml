@@ -1,7 +1,97 @@
-﻿
+﻿@model DiscountCatalog.MVC.REST.StoreAdmin.StoreAdminREST
+@using PagedList;
 @{
+
     ViewBag.Title = "StoreAdminDetails";
 }
+<div id="user-info">
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetManagerImage", "StoreAdmin", new { id = Model.Id }));"></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.Identity.UserImage)"></div>
+    <h2>@Model.Identity.UserName <span style="font-size: large; vertical-align: middle;"> - retail chain</span></h2>
+</div>
+<hr />
+<div class="main-details-window">
+    
+    <div class="user-info-container">
 
-<h2>StoreAdminDetails</h2>
+        <h4><span class="glyphicon glyphicon-user"></span> Store administrator info</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                Username
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.UserName)
+            </dd>
+            <dt>
+                First name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.FirstName)
+            </dd>
+            <dt>
+                Last name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.LastName)
+            </dd>
+            <dt>
+                Retail chain name
+            </dt>
+            <dd>
+                AAAAA
+            </dd>
+            <dt>
+                Email
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Email)
+            </dd>
+            <dt>
+                Phone number
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.PhoneNumber)
+            </dd>
+        </dl>
+        <h4><span class="glyphicon glyphicon-map-marker"></span> Address</h4>
+        <dl class="dl-horizontal">
+            <dt>
+                Country
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Country)
+            </dd>
+            <dt>
+                City
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.City)
+            </dd>
+            <dt>
+                Postal code
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.PostalCode)
+            </dd>
+            <dt>
+                Street
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Identity.Street)
+            </dd>
+        </dl>
+        <br />
 
+    </div>
+</div>
+<br />
+@{
+    Html.RenderPartial("_StoreList", Model.Stores);
+}
+<hr />
+<p>
+    <a href="@Url.Action("GetAllProducts", "User")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+</p>
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")

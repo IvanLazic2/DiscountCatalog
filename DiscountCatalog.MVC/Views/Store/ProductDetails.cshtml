@@ -5,13 +5,17 @@
 
 <div id="product-info">
     @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
-    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>
+    @*<div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>*@
     <h2 style="display: inline">@Model.ProductName</h2>
 </div>
 
 <hr />
 
 <div class="main-details-window">
+    <div class="product-image-container">
+        <div class="card-image" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage));">
+        </div>
+    </div>
 
     <div class="image-form-container">
         @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,
@@ -33,7 +37,7 @@
 
     <div class="product-info-container">
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Product info</h4>
+        <h4><span class="glyphicon glyphicon-info-sign"></span> Product info</h4>
 
         <dl class="dl-horizontal">
             <dt>
@@ -56,7 +60,7 @@
             </dd>
         </dl>
 
-        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Price</h4>
+        <h4><span class="glyphicon glyphicon-usd"></span> Price</h4>
 
         <dl class="dl-horizontal">
             <dt>

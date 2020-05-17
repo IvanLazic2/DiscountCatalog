@@ -153,7 +153,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public StoreEntity GetApproved(string storeId)
         {
             return DbContext.Stores
-                .Include(s => s.Administrator)
+                .Include(s => s.Administrator.Identity)
                 .Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .FirstOrDefault(s => s.Id == storeId && s.Approved && !s.Deleted);
@@ -162,7 +162,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         public StoreEntity GetApproved(string storeAdminIdentityId, string storeId)
         {
             return DbContext.Stores
-                .Include(s => s.Administrator)
+                .Include(s => s.Administrator.Identity)
                 .Include(s => s.Managers.Select(m => m.Identity))
                 .Include(s => s.Products)
                 .FirstOrDefault(s => s.Id == storeId && s.Administrator.Identity.Id == storeAdminIdentityId && s.Approved && !s.Deleted);
