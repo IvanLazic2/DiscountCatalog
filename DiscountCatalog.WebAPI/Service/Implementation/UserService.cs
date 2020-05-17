@@ -1,6 +1,5 @@
 ﻿using AbatementHelper.WebAPI.Mapping;
 using AutoMapper;
-using DiscountCatalog.Common.Models;
 using DiscountCatalog.WebAPI.Extensions;
 using DiscountCatalog.WebAPI.Models;
 using DiscountCatalog.WebAPI.Models.Entities;
@@ -9,17 +8,18 @@ using DiscountCatalog.WebAPI.Paging.Implementation;
 using DiscountCatalog.WebAPI.Processors;
 using DiscountCatalog.WebAPI.Repositories;
 using DiscountCatalog.WebAPI.REST.Product;
+using DiscountCatalog.WebAPI.REST.Store;
+using DiscountCatalog.WebAPI.REST.StoreAdmin;
 using DiscountCatalog.WebAPI.Service.Contractor;
 using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace DiscountCatalog.WebAPI.Service.Implementation
 {
-    public class ProductService : IService<ProductREST>, IProductService
+    public class UserService : IService<ProductREST>, IUserService
     {
         #region Properties
 
@@ -27,9 +27,9 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #endregion
 
-        #region Constructors
+        #region Constructor
 
-        public ProductService()
+        public UserService()
         {
             mapper = AutoMapping.Initialise();
         }
@@ -72,8 +72,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
             return products.ToList();
         }
-
-
 
         #endregion
 
@@ -137,40 +135,92 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             return product;
         }
 
-        #endregion
-
-        //CREATE
-
-        #region Create
-
-        public Result Create(ProductRESTPost product)
+        public IList<StoreEntity> FilterManagers(IList<StoreEntity> stores, bool clear)
         {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
+            if (clear)
             {
-                ProductEntity productEntity = mapper.Map<ProductEntity>(product);
-
-                productEntity.Approved = true;
-                productEntity.Deleted = false;
-
-                Result result = uow.Products.Create(product.StoreId, productEntity);
-
-                uow.Complete();
-
-                return result;
+                foreach (var store in stores)
+                {
+                    if (store.Managers != null)
+                    {
+                        store.Managers.Clear();
+                    }
+                }
             }
+            else
+            {
+                foreach (var store in stores)
+                {
+                    List<ManagerEntity> managers = store.Managers.ToList();
+                    managers.RemoveAll(m => m.Identity.Deleted || !m.Identity.Approved);
+                    store.Managers = managers;
+                }
+            }
+
+            return stores;
+        }
+
+        public StoreEntity FilterManagers(StoreEntity store, bool clear)
+        {
+            if (clear)
+            {
+                if (store.Managers != null)
+                {
+                    store.Managers.Clear();
+                }
+            }
+            else
+            {
+                List<ManagerEntity> managers = store.Managers.ToList();
+                managers.RemoveAll(m => m.Identity.Deleted || !m.Identity.Approved);
+                store.Managers = managers;
+            }
+
+            return store;
+        }
+
+        public IList<StoreEntity> FilterStoreAdmin(IList<StoreEntity> stores)
+        {
+            foreach (var store in stores)
+            {
+                if (store.Administrator.Stores != null)
+                {
+                    store.Administrator.Stores.Clear();
+                }
+                if (store.Administrator.Managers != null)
+                {
+                    store.Administrator.Managers.Clear();
+                }
+            }
+
+            return stores;
+        }
+
+        public StoreEntity FilterStoreAdmin(StoreEntity store)
+        {
+            if (store.Administrator.Stores != null)
+            {
+                store.Administrator.Stores.Clear();
+            }
+            if (store.Administrator.Managers != null)
+            {
+                store.Administrator.Managers.Clear();
+            }
+
+            return store;
         }
 
         #endregion
 
-        //GET ALL
+        //GETALL
 
         #region GetAll
 
-        public IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
+        public IPagingList<ProductREST> GetAllProducts(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
+                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved();
 
                 products = FilterStoreAdmin(products);
                 products = FilterDate(products, dateFilter, includeUpcoming);
@@ -193,69 +243,17 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllDeleted(storeId);
-
-                products = FilterStoreAdmin(products);
-                products = FilterDate(products, dateFilter, includeUpcoming);
-                products = FilterPrice(products, priceFilter);
-
-                IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
-
-                mapped = Search(mapped, searchString);
-                mapped = Order(mapped, sortOrder);
-
-                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
-                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
-
-                IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
-
-                IPagingList<ProductREST> result = new PagingList<ProductREST>(subset, subset.GetMetaData());
-
-                return result;
-            }
-        }
-
-        public IPagingList<ProductREST> GetAllExpired(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllExpired(storeId);
-
-                products = FilterStoreAdmin(products);
-                products = FilterDate(products, dateFilter, includeUpcoming);
-                products = FilterPrice(products, priceFilter);
-
-                IList<ProductREST> mapped = mapper.Map<IList<ProductREST>>(products);
-
-                mapped = Search(mapped, searchString);
-                mapped = Order(mapped, sortOrder);
-
-                mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
-                mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
-
-                IPagedList<ProductREST> subset = mapped.ToPagedList(pageIndex, pageSize);
-
-                IPagingList<ProductREST> result = new PagingList<ProductREST>(subset, subset.GetMetaData());
-
-                return result;
-            }
-        }
-
         #endregion
 
         //GET
 
         #region Get
 
-        public ProductREST Get(string storeId, string productId)
+        public ProductREST GetProduct(string productId)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                ProductEntity product = uow.Products.GetApproved(storeId, productId);
+                ProductEntity product = uow.Products.GetApproved(productId);
 
                 var mapped = mapper.Map<ProductREST>(product);
 
@@ -265,106 +263,39 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public ProductREST GetExpired(string storeId, string productId)
+        public StoreREST GetStore(string storeId)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                ProductEntity product = uow.Products.GetLoaded(storeId, productId);
-                ProductREST mapped = null;
+                StoreEntity store = uow.Stores.GetApproved(storeId);
 
-                if (!product.Deleted && product.Approved)
-                {
-                    mapped = mapper.Map<ProductREST>(product);
+                store.StoreImage = ImageProcessor.CreateThumbnail(store.StoreImage);
+                store.Managers.ToList().ForEach(m => m.Identity.UserImage = ImageProcessor.CreateThumbnail(m.Identity.UserImage));
 
-                    mapped.ProductImage = ImageProcessor.CreateThumbnail(product.ProductImage);
-                }
+                store = FilterManagers(store, false);
+                store = FilterStoreAdmin(store);
+
+                var mapped = mapper.Map<StoreREST>(store);
 
                 return mapped;
             }
         }
 
-        #endregion
-
-        //UPDATE
-
-        #region Update
-
-        public async Task<Result> UpdateAsync(string storeId, ProductRESTPut product)
+        public StoreAdminREST GetStoreAdmin(string storeAdminIdentityId)
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                Result result = await uow.Products.UpdateAsync(storeId, product);
+                StoreAdminEntity storeAdmin = uow.StoreAdmins.GetByIdentityId(storeAdminIdentityId);
 
-                if (result.Success)
-                {
-                    uow.Complete();
-                }
-                else
-                {
-                    uow.Dispose();
-                }
+                storeAdmin.Managers.Clear();
+                storeAdmin.Stores = FilterManagers(storeAdmin.Stores.ToList(), false);
 
-                return result;
-            }
-        }
+                storeAdmin.Stores.ToList().ForEach(s => s.StoreImage = ImageProcessor.CreateThumbnail(s.StoreImage));
+                storeAdmin.Identity.UserImage = ImageProcessor.CreateThumbnail(storeAdmin.Identity.UserImage);
 
-        #endregion
+                var mapped = mapper.Map<StoreAdminREST>(storeAdmin);
 
-        //DELETE/RESTORE
-
-        #region Delete/Restore
-
-        public Result Delete(string storeId, string productId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.Products.MarkAsDeleted(storeId, productId);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        public Result Restore(string storeId, string productId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.Products.MarkAsRestored(storeId, productId);
-
-                uow.Complete();
-
-                return result;
-            }
-        }
-
-        #endregion
-
-        //GET/POST IMAGE
-
-        #region Get/Post Image
-
-        public byte[] GetImage(string productId)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                byte[] image = uow.Products.GetProductImage(productId);
-
-                //return ImageProcessor.CreateThumbnail(image);
-
-                return image;
-            }
-        }
-
-        public Result PostProductImage(string storeId, string productId, byte[] image)
-        {
-            using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
-            {
-                Result result = uow.Products.PostProductImage(productId, image);
-
-                uow.Complete();
-
-                return result;
+                return mapped;
             }
         }
 
@@ -374,11 +305,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
 
         #region Price
 
-        public decimal GetMinPrice(string storeId)
+        public decimal GetMinPrice()
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
+                var products = uow.Products.GetAllApproved();
 
                 decimal? min = products.Select(p => p.NewPrice).Min();
 
@@ -391,11 +322,11 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
             }
         }
 
-        public decimal GetMaxPrice(string storeId)
+        public decimal GetMaxPrice()
         {
             using (var uow = new UnitOfWork(new ApplicationUserDbContext()))
             {
-                IEnumerable<ProductEntity> products = uow.Products.GetAllApproved(storeId);
+                var products = uow.Products.GetAllApproved();
 
                 decimal? max = products.Select(p => p.NewPrice).Max();
 
@@ -411,7 +342,5 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
         #endregion
 
         #endregion
-
-
     }
 }

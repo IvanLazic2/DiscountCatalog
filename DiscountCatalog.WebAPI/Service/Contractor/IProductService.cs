@@ -17,7 +17,13 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
 
         ProductREST Get(string storeId, string productId);
 
+        //ProductREST Get(string productId);/**/
+
+        ProductREST GetExpired(string storeId, string productId);
+
         IPagingList<ProductREST> GetAll(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);
+
+        //IPagingList<ProductREST> GetAll(string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);/**/
 
         IPagingList<ProductREST> GetAllDeleted(string storeId, string sortOrder, string searchString, int pageIndex, int pageSize, string priceFilter, string dateFilter, bool includeUpcoming);
 
@@ -36,6 +42,10 @@ namespace DiscountCatalog.WebAPI.Service.Contractor
         decimal GetMinPrice(string storeId);
 
         decimal GetMaxPrice(string storeId);
+
+        //decimal GetMinPrice(IEnumerable<ProductEntity> products);
+
+        //decimal GetMaxPrice(IEnumerable<ProductEntity> products);
 
         IEnumerable<ProductEntity> FilterPrice(IEnumerable<ProductEntity> products, string priceFilter);
 

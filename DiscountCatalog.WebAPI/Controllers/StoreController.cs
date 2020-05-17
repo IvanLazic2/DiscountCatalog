@@ -93,6 +93,15 @@ namespace DiscountCatalog.WebAPI.Controllers
             return Ok(product);
         }
 
+        [HttpGet]
+        [Route("GetExpiredProduct/{storeId}")]
+        public IHttpActionResult GetExpiredProduct(string storeId, string productId)
+        {
+            ProductREST product = productService.GetExpired(storeId, productId);
+
+            return Ok(product);
+        }
+
         [HttpPut]
         [Route("EditProduct/{storeId}")]
         public async Task<IHttpActionResult> EditProduct(string storeId, ProductRESTPut model)

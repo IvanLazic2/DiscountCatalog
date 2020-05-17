@@ -1,4 +1,5 @@
-﻿using DiscountCatalog.WebAPI.Models.Entities;
+﻿using DiscountCatalog.WebAPI.Extentions;
+using DiscountCatalog.WebAPI.Models.Entities;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,11 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
 
             RuleFor(p => p.DiscountDateEnd)
                 .GreaterThan(p => p.DiscountDateBegin);
+
+            RuleFor(p => DateTime.Parse(p.DiscountDateEnd))
+                .GreaterThan(DateTime.Now)
+                .OverridePropertyName("DiscountDateEnd")
+                .WithMessage("Discount date end should not be later than todays date.");
 
             RuleFor(p => DateTime.Parse(p.DiscountDateEnd))
                 .GreaterThan(p => p.DateCreated)

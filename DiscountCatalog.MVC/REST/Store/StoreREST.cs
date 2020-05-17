@@ -1,4 +1,5 @@
 ﻿using DiscountCatalog.MVC.REST.Manager;
+using DiscountCatalog.MVC.REST.Product;
 using DiscountCatalog.MVC.REST.StoreAdmin;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,7 @@ namespace DiscountCatalog.MVC.REST.Store
         public bool Approved { get; set; }
         public bool Deleted { get; set; }
         public byte[] StoreImage { get; set; }
+
+        public IEnumerable<ProductREST> Products { get; set; }
     }
 }

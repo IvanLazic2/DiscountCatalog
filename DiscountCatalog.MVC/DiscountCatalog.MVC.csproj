@@ -198,6 +198,7 @@
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Cookies\Contractor\ICookieHandler.cs" />
     <Compile Include="Cookies\CookieValidators\StoreCookieValidator.cs" />
     <Compile Include="Cookies\Implementation\CookieHandler.cs" />
@@ -224,8 +225,10 @@
     <Compile Include="Models\Redirect\Route.cs" />
     <Compile Include="Models\SelectedStore.cs" />
     <Compile Include="Processors\ManagerProcessor.cs" />
+    <Compile Include="Processors\StoreAdminProcessor.cs" />
     <Compile Include="Processors\StoreProcessor.cs" />
     <Compile Include="Repositories\MVCRepositories\ProductRepository.cs" />
+    <Compile Include="Repositories\MVCRepositories\UserRepository.cs" />
     <Compile Include="Repositories\MVCRepository.cs" />
     <Compile Include="REST\Account\AccountREST.cs" />
     <Compile Include="REST\Account\AccountRESTPost.cs" />
@@ -244,6 +247,7 @@
     <Compile Include="REST\Store\StoreRESTPut.cs" />
     <Compile Include="Validators\AbstractValidators\AccountValidator.cs" />
     <Compile Include="Validators\AbstractValidators\ProductValidator.cs" />
+    <Compile Include="Validators\AbstractValidators\StoreAdminValidator.cs" />
     <Compile Include="Validators\AbstractValidators\StoreValidator.cs" />
     <Compile Include="Validators\GlobalValidator.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
@@ -571,20 +575,17 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\ProductManager\ProductSaved.cshtml" />
     <Content Include="Views\ProductManager\RegisterProduct.cshtml" />
-    <Content Include="Views\User\AccountTypeSelection.cshtml" />
     <Content Include="Views\Shared\_HeaderNavBar.cshtml" />
     <Content Include="Views\Shared\_Admin.cshtml" />
     <Content Include="Views\Shared\_StoreAdmin.cshtml" />
     <Content Include="Views\Shared\_User.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Shared\_Store.cshtml" />
-    <Content Include="Views\User\Registration.cshtml" />
     <Content Include="Views\Admin\EditUser.cshtml" />
     <Content Include="Views\Admin\UserDetails.cshtml" />
     <Content Include="Views\Admin\DeleteUser.cshtml" />
     <Content Include="Views\Account\Details.cshtml" />
     <Content Include="Views\Account\Edit.cshtml" />
-    <Content Include="Views\User\Delete.cshtml" />
     <Content Include="Views\StoreAdmin\CreateStore.cshtml" />
     <Content Include="Views\StoreAdmin\Index.cshtml" />
     <Content Include="Views\Admin\GetAllUsers.cshtml" />
@@ -594,8 +595,6 @@
     <Content Include="Views\StoreAdmin\DeleteStore.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllDeletedStores.cshtml" />
     <Content Include="Views\Store\Index.cshtml" />
-    <Content Include="Views\User\Login - Copy.cshtml" />
-    <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\StoreAdmin\CreateManager.cshtml" />
     <Content Include="Views\StoreAdmin\GetAllManagers.cshtml" />
     <Content Include="Views\StoreAdmin\ManagerDetails.cshtml" />
@@ -655,6 +654,10 @@
     <Content Include="Views\StoreAdmin\_ManagerList.cshtml" />
     <Content Include="Views\StoreAdmin\GetStoreManagers.cshtml" />
     <Content Include="Views\Store\GetAllExpiredProducts.cshtml" />
+    <Content Include="Views\User\GetAllProducts.cshtml" />
+    <Content Include="Views\User\ProductDetails.cshtml" />
+    <Content Include="Views\User\StoreAdminDetails.cshtml" />
+    <Content Include="Views\User\StoreDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

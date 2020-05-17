@@ -83,6 +83,19 @@ namespace DiscountCatalog.MVC.Repositories
             return result;
         }
 
+        public async Task<ProductREST> GetExpiredProduct(string id)
+        {
+            AddTokenToHeader();
+
+            string storeId = HttpContext.Current.Request.Cookies["StoreID"].Value;
+
+            var request = await apiClient.GetAsync($"api/Store/GetExpiredProduct/{storeId}?productId={id}");
+
+            var result = await request.Content.ReadAsAsync<ProductREST>();
+
+            return result;
+        }
+
         public async Task<Result> EditProduct(ProductRESTPut product)
         {
             AddTokenToHeader();

@@ -10,7 +10,12 @@ namespace DiscountCatalog.MVC.Cookies.Implementation
     {
         public string Get(string key, HttpContext context)
         {
-            return context.Request.Cookies[key].Value;
+            if (context.Request.Cookies[key] != null)
+            {
+                return context.Request.Cookies[key].Value;
+            }
+
+            return null;
         }
 
         public void Set(string key, string value, bool httpOnly, HttpContext context)

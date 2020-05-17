@@ -25,7 +25,8 @@ namespace DiscountCatalog.MVC
         private readonly List<string> _allowedControllers = new List<string>
         {
             "Home",
-            "Error"
+            "Error",
+            "User"
         };
         private readonly List<string> _allowedActions = new List<string>
         {

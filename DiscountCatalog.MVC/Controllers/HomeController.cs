@@ -19,7 +19,9 @@ namespace DiscountCatalog.MVC.Controllers
         {
             //TempData["Role"] = 
 
-            return View();
+            //return View();
+
+            return RedirectToAction("GetAllProducts", "User");
         }
 
         //[Route("GetAllProducts")]

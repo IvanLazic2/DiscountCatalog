@@ -77,6 +77,11 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 SuccessMessage = "Product created."
             };
 
+            if (product.ProductImage == null || !(product.ProductImage.Length > 0))
+            {
+                product.ProductImage = ImageProcessor.SetDefault("Product");
+            }
+
             UnitOfWork uow = new UnitOfWork(DbContext);
 
             product.Store = uow.Stores.GetApproved(storeId);
@@ -265,7 +270,7 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 SuccessMessage = "Info updated."
             };
 
-            ProductEntity dbProduct = GetApproved(storeId, product.Id);
+            ProductEntity dbProduct = GetLoaded(storeId, product.Id);
 
             if (dbProduct != null)
             {
@@ -281,6 +286,17 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 dbProduct.MeasuringUnit = product.MeasuringUnit;
                 dbProduct.Description = product.Description;
                 dbProduct.Note = product.Note;
+                if (product.ProductImage.Length > 0)
+                {
+                    if (ImageProcessor.IsValid(product.ProductImage))
+                    {
+                        dbProduct.ProductImage = product.ProductImage;
+                    }
+                    else
+                    {
+                        modelState.Add("Image is not valid.");
+                    }
+                }
 
                 dbProduct.DateUpdated = DateTime.Now;
 
@@ -451,11 +467,13 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
                 SuccessMessage = "Product set as active."
             };
 
-            ProductEntity product = GetApproved(productId);
+            ProductEntity product = Get(productId);
 
             if (product != null)
             {
                 product.Expired = false;
+
+                DbContext.SaveChanges();
             }
             else
             {

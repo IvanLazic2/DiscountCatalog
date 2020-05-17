@@ -1,0 +1,192 @@
+﻿@model PagedList.IPagedList<DiscountCatalog.MVC.REST.Product.ProductREST>
+@using PagedList.Mvc
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/IndividualPageStyles/GetAll/GetAll_products.css" rel="stylesheet" />
+
+@{
+    ViewBag.Title = "GetAllProducts";
+}
+
+<h2>All products on discount</h2>
+
+<hr />
+
+<div class="search-container">
+    @using (Html.BeginForm("GetAllProducts", "User", new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }, FormMethod.Get, new { @class = "form-inline", id = "filter-form" }))
+    {
+        <table id="filter-table">
+            <tr>
+                <td class="table-label data-cell">
+                    <label for="SearchString">Search:</label>
+                </td>
+                <td class="data-cell">
+                    @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "search-box" })
+                    <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </td>
+                <td class="data-cell"></td>
+            </tr>
+            <tr>
+                <td class="table-label data-cell">
+                    <label for="DateFilter">Date:</label>
+                </td>
+                <td class="data-cell">
+                    <div class='input-group date datepicker'>
+                        @Html.TextBox("DateFilter", ViewBag.CurrentDate as string, new { @class = "form-control" })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        <button class="close" type="button" aria-label="Close" style="padding: 6px 12px"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                </td>
+                <td class="data-cell">
+                    <label for="IncludeUpcoming">Include upcoming</label>
+                    @Html.CheckBox("IncludeUpcoming", false, new { onclick = "this.form.submit()" })
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label data-cell">
+                    <label for="amount">Price:</label>
+                    <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                    <input type="hidden" name="PriceFilter" id="PriceFilter" value=@ViewBag.CurrentPrice />
+                </td>
+                <td colspan="3" class="data-cell">
+                    <div id="slider-range"></div>
+                </td>
+                <td class="data-cell">&nbsp;</td>
+            </tr>
+        </table>
+
+        <br>
+
+        <script>
+            $(document).on("dp.change", ".datepicker", function () {
+
+                if (sessionStorage["date"] !== $("#DateFilter")[0].value) {
+                    sessionStorage["date"] = $("#DateFilter")[0].value;
+                    $("#filter-form").submit();
+                }
+            });
+
+            $(".close").on("click", function () {
+                $("#DateFilter").val('');
+                $("#IncludeUpcoming").val(false);
+                sessionStorage["date"] = '';
+                $("#filter-form").submit();
+            });
+
+        </script>
+
+        <br>
+
+        <script>
+            $(function () {
+                $("#slider-range").slider({
+                    range: true,
+                    min: @ViewBag.Min,
+                    max: @ViewBag.Max,
+                    values: [@ViewBag.From, @ViewBag.To],
+                    slide: function (event, ui) {
+                        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+                    },
+                    change: function (event, ui) {
+
+
+
+                        let array = ui.values;
+                        array = array.join(",");
+
+                        $("#PriceFilter").val(array);
+                        $("#filter-form").submit();
+                    }
+                });
+                $("#amount").val("$" + $("#slider-range").slider("values", 0) +
+                    " - $" + $("#slider-range").slider("values", 1));
+
+
+            });
+        </script>
+    }
+</div>
+
+<div class="container">
+    <table>
+        <tr>
+            Sort by:
+            <th>
+                @Html.ActionLink("Name", "GetAllProducts", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }),
+            </th>
+            <th>
+                @Html.ActionLink("Price", "GetAllProducts", new { sortOrder = ViewBag.PriceSortParm, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate })
+            </th>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="container">
+    <div class="row" id="products">
+        <!-- Category Card -->
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card rounded">
+                    <a href="@Url.Action("ProductDetails", "User", new { id = item.Id })">
+                        <div class="card-image" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.ProductImage));">
+                            <span class="card-notify-year"><big>@Convert.ToInt32(item.DiscountPercentage)%</big></span>
+                        </div>
+                    </a>
+                    <div class="card-image-overlay m-auto">
+
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="p-title m-auto">
+                            <h5>@item.ProductName</h5>
+                        </div>
+                        <br />
+                        <div>
+                            <span class="card-detail-badge" id="old">@item.OldPrice @item.Currency</span>
+                            &nbsp;
+                            <span class="card-detail-badge" id="new">@item.NewPrice @item.Currency</span>
+                        </div>
+                        <br />
+                        <div class="text-center">
+                            <p class="h4">@item.DiscountDateBegin - @item.DiscountDateEnd</p>
+                        </div>
+                        <br />
+                        <div>
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.Administrator.Identity.UserImage)"></div>
+                            <p style="display: inline">@item.Store.Administrator.Identity.UserName</p>
+                            &nbsp;
+                            <div class="avatar-sm" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(item.Store.StoreImage)"></div>
+                            <p style="display: inline">@item.Store.StoreName</p>
+                        </div>
+                        @Html.ActionLink("Details", "ProductDetails", new { id = item.Id }, new { @class = "p-btn" })
+                    </div>
+                    <hr />
+                    <div class="card-footer">
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("GetAllProducts",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, currentPrice = ViewBag.CurrentPrice, currentDate = ViewBag.CurrentDate }))
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/GetAll")
+@Scripts.Render("~/Scripts/IndividualPageScripts/GetAll")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datetimepicker")
+}
+
+

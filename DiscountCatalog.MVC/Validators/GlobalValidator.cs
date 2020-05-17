@@ -2,6 +2,7 @@
 using DiscountCatalog.MVC.REST.Manager;
 using DiscountCatalog.MVC.REST.Product;
 using DiscountCatalog.MVC.REST.Store;
+using DiscountCatalog.MVC.REST.StoreAdmin;
 using DiscountCatalog.MVC.Validators.AbstractValidators;
 using FluentValidation.Results;
 using System;
@@ -66,6 +67,14 @@ namespace DiscountCatalog.MVC.Validators
             }
 
             return false;
+        }
+
+        public static bool IsStoreAdminValid(StoreAdminREST storeAdmin)
+        {
+            StoreAdminValidator validator = new StoreAdminValidator();
+            ValidationResult result = validator.Validate(storeAdmin);
+
+            return result.IsValid;
         }
     }
 }

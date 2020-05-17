@@ -90,6 +90,8 @@ namespace DiscountCatalog.WebAPI.Repositories.EntityRepositories.Implementation
         {
             var identity = DbContext.Users.Find(identityId);
             return DbContext.StoreAdmins
+                .Include(s => s.Stores)
+                .Include(s => s.Managers)
                 .FirstOrDefault(s => s.Identity.Id == identity.Id && s.Identity.Approved && !s.Identity.Deleted);
         }
 

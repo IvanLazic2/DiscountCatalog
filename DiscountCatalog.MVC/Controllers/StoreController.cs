@@ -166,15 +166,18 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("EditProduct/{id}")]
-        public async Task<ActionResult> EditProduct(string id)
+        public async Task<ActionResult> EditProduct(string id, bool expired = false)
         {
             ProductREST product = await storeRepository.GetProduct(id);
 
-            //Response.Cookies.Add(new HttpCookie("ProductID")
-            //{
-            //    Value = result.Product.Id,
-            //    HttpOnly = true
-            //});
+            if (expired)
+            {
+                product = await storeRepository.GetExpiredProduct(id);
+            }
+            else
+            {
+                product = await storeRepository.GetProduct(id);
+            }
 
             return View(product);
         }
@@ -200,15 +203,19 @@ namespace DiscountCatalog.MVC.Controllers
 
         [HttpGet]
         [Route("ProductDetails/{id}")]
-        public async Task<ActionResult> ProductDetails(string id)
+        public async Task<ActionResult> ProductDetails(string id, bool expired = false)
         {
-            ProductREST product = await storeRepository.GetProduct(id);
+            ProductREST product = null;
 
-            //Response.Cookies.Add(new HttpCookie("ProductID")
-            //{
-            //    Value = result.Product.Id,
-            //    HttpOnly = true
-            //});
+            if (expired)
+            {
+                product = await storeRepository.GetExpiredProduct(id);
+            }
+            else
+            {
+                product = await storeRepository.GetProduct(id);
+            }
+
 
             return View(product);
         }
@@ -289,7 +296,7 @@ namespace DiscountCatalog.MVC.Controllers
                                                        string priceFilter,
                                                        string currentDate,
                                                        string dateFilter,
-                                                       bool includeUpcoming = false) 
+                                                       bool includeUpcoming = false)
         {
             ViewBag.Min = Convert.ToInt32(await productRepository.GetMinPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));
             ViewBag.Max = Convert.ToInt32(await productRepository.GetMaxPrice(cookieHandler.Get("StoreID", System.Web.HttpContext.Current)));

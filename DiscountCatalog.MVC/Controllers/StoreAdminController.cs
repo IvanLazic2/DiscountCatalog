@@ -497,7 +497,7 @@ namespace DiscountCatalog.MVC.Controllers
             if (GlobalValidator.IsStoreValid(store))
             {
                 store.Managers = StoreProcessor.SearchManagers(store, searchString);
-                store.Managers = StoreProcessor.OrderStores(store, sortOrder);
+                store.Managers = StoreProcessor.OrderManagers(store, sortOrder);
 
                 store.Managers = store.Managers.ToPagedList(pageIndex, pageSize);
 

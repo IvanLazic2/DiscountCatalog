@@ -1,0 +1,131 @@
+﻿@model DiscountCatalog.MVC.REST.Product.ProductREST
+@{
+    ViewBag.Title = "ProductDetails";
+}
+
+<div id="product-info">
+    @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>
+    <h2 style="display: inline">@Model.ProductName</h2>
+</div>
+
+<hr />
+
+<div class="main-details-window">
+
+    <div class="image-form-container">
+        @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,
+                            new { enctype = "multipart/form-data", id = "image-form" }))
+        {
+            <p>Upload a new image:</p>
+            <label class="btn btn-primary" id="browse-button" for="default-file-browse"><span class="glyphicon glyphicon-folder-open"></span> Browse...</label>
+            <input type="hidden" name="id" id="id" value="@Model.Id">
+            <input id="default-file-browse" type="file" name="file" onchange="PreviewImage();" />
+            <br>
+            <img id="uploadedPreview" alt="">
+            <br>
+            <div id="form-actions">
+                <button class="btn btn-secondary" type="submit"><span class="glyphicon glyphicon-upload"></span> Upload</button>
+                <button class="btn btn-danger" id="cancel" type="button" onclick="Clear();"><span class="glyphicon glyphicon-remove"></span> Cancel </button>
+            </div>
+        }
+    </div>
+
+    <div class="product-info-container">
+
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Product info</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Product name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ProductName)
+            </dd>
+            <dt>
+                Store name
+            </dt>
+            <dd>
+                <a href="@Url.Action("StoreDetails", "StoreAdmin", new { id = Model.Store.Id })">@Html.DisplayFor(model => model.Store.StoreName)</a>
+            </dd>
+            <dt>
+                Company name
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CompanyName)
+            </dd>
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Price</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Old price
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.OldPrice) @Html.DisplayFor(model => model.Currency)
+            </dd>
+            <dt>
+                New Price
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.NewPrice) @Html.DisplayFor(model => model.Currency)
+            </dd>
+            <dt>
+                Discount percentage
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DiscountPercentage)%
+            </dd>
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-calendar"></span> Date</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                Date
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.DiscountDateBegin) - @Html.DisplayFor(model => model.DiscountDateEnd)
+            </dd>
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-book"></span> Other</h4>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Quantity) @Html.DisplayFor(model => model.MeasuringUnit)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Note)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Note)
+            </dd>
+
+        </dl>
+
+        <h4><span class="glyphicon glyphicon-shopping-cart"></span> Other</h4>
+
+    </div>
+</div>
+
+<hr />
+
+<p>
+    <a href="@Url.Action("GetAllProducts", "User")" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to list</a>
+</p>
+
+@Styles.Render("~/Content/IndividualPageStyles/Common")
+@Styles.Render("~/Content/IndividualPageStyles/Details")
+@Scripts.Render("~/Scripts/IndividualPageScripts/Details")
+

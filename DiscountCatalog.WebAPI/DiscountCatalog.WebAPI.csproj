@@ -236,6 +236,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="BackendServices\Refresher.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\StoreAdminController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Mapping\AutoMapping.cs" />
@@ -325,6 +327,7 @@
     <Compile Include="Repositories\EntityRepositories\Implementation\ManagerRepository.cs" />
     <Compile Include="Service\Contractor\IManagerStoreService.cs" />
     <Compile Include="Service\Contractor\IStoreManagerService.cs" />
+    <Compile Include="Service\Contractor\IUserService.cs" />
     <Compile Include="Service\Implementation\ManagerStoreService.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\ProductRepository.cs" />
     <Compile Include="Repositories\EntityRepositories\Implementation\RoleRepository.cs" />
@@ -362,6 +365,7 @@
     <Compile Include="Service\Implementation\ProductService.cs" />
     <Compile Include="Service\Implementation\StoreManagerService.cs" />
     <Compile Include="Service\Implementation\StoreService.cs" />
+    <Compile Include="Service\Implementation\UserService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Validation\Validators\ManagerStoreValidator.cs" />
     <Compile Include="Validation\Validators\ManagerValidator.cs" />
@@ -448,6 +452,7 @@
     <Folder Include="Views\Product\" />
     <Folder Include="Views\StoreAdmin\" />
     <Folder Include="Views\Store\" />
+    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
