@@ -22,6 +22,7 @@ using AbatementHelper.MVC.Mapping;
 using DiscountCatalog.MVC.Repositories.MVCRepositories;
 using DiscountCatalog.MVC.Cookies.Contractor;
 using DiscountCatalog.MVC.Cookies.Implementation;
+using DiscountCatalog.MVC.Validators;
 
 namespace DiscountCatalog.MVC.Controllers
 {
@@ -144,6 +145,8 @@ namespace DiscountCatalog.MVC.Controllers
         [Route("CreateProduct")]
         public async Task<ActionResult> CreateProduct(ProductRESTPost product)
         {
+            product.ProductImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeRepository.CreateProduct(product);
 
             if (result == null)
@@ -179,13 +182,20 @@ namespace DiscountCatalog.MVC.Controllers
                 product = await storeRepository.GetProduct(id);
             }
 
-            return View(product);
+            if (GlobalValidator.IsProductValid(product))
+            {
+                return View(product);
+            }
+
+            return RedirectToAction("GetAllProducts").Error("Something went wrong, please try again.");
         }
 
         [HttpPost]
         [Route("EditProduct")]
         public async Task<ActionResult> EditProduct(ProductRESTPut product)
         {
+            product.ProductImage = ImageProcessor.ToValidByteArray(HttpContext.Request.Files[0]);
+
             Result result = await storeRepository.EditProduct(product);
 
             if (!result.Success)
@@ -216,8 +226,12 @@ namespace DiscountCatalog.MVC.Controllers
                 product = await storeRepository.GetProduct(id);
             }
 
+            if (GlobalValidator.IsProductValid(product))
+            {
+                return View(product);
+            }
 
-            return View(product);
+            return RedirectToAction("GetAllProducts").Error("Something went wrong, please try again.");
         }
 
         [Route("PostProductImage/{id}")]

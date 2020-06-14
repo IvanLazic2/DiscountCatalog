@@ -1,3 +1,12 @@
-﻿<li>@Html.ActionLink("Manager Panel", "Index", "Manager")</li>
-<li>@Html.ActionLink("Store Panel", "Index", "Store")</li>
-
+﻿@{
+    if (HttpContext.Current.Request.Cookies["StoreID"] != null &&
+        HttpContext.Current.Request.Cookies["StoreName"] != null)
+    {
+        if (!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies["StoreID"].Value) &&
+            !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies["StoreName"].Value))
+        {
+            <li>@Html.ActionLink($"{HttpContext.Current.Request.Cookies["StoreName"].Value} Panel", "Index", "Store")</li>
+        }
+    }
+}
+<li>@Html.ActionLink("Manager Panel", "Index", "Manager")</li>

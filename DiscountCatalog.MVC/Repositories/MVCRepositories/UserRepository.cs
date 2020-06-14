@@ -76,7 +76,7 @@ namespace DiscountCatalog.MVC.Repositories.MVCRepositories
 
             var result = await request.Content.ReadAsAsync<decimal>();
 
-            return result;
+            return Math.Floor(result);
         }
 
         public async Task<decimal> GetMaxPrice()

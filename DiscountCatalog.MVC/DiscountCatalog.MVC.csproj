@@ -296,6 +296,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images.css" />
+    <Content Include="Content\Images\storeAdmin-icon.png" />
+    <Content Include="Content\Images\user-icon.png" />
     <Content Include="Content\IndividualPageStyles\Common.css" />
     <Content Include="Content\IndividualPageStyles\Create\Create_main.css" />
     <Content Include="Content\IndividualPageStyles\Delete\Delete_main.css" />

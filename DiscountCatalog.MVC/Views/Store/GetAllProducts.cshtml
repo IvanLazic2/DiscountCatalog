@@ -7,7 +7,10 @@
     ViewBag.Title = "GetAllProducts";
 }
 
-<h2>All products</h2>
+<div id="store-info">
+    <div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = HttpContext.Current.Request.Cookies["StoreID"].Value })); "></div>
+    <h2>@HttpContext.Current.Request.Cookies["StoreName"].Value - All products</h2>
+</div>
 
 <hr />
 

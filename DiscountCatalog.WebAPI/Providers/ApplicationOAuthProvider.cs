@@ -54,7 +54,6 @@ namespace DiscountCatalog.WebAPI.Providers
                 context.Validated(userTicket);
                 context.Request.Context.Authentication.SignIn(cookiesIdentityUser);
             }
-            
         }
 
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)

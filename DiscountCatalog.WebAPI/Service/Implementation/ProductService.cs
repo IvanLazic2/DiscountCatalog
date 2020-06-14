@@ -181,7 +181,6 @@ namespace DiscountCatalog.WebAPI.Service.Implementation
                 mapped = Search(mapped, searchString);
                 mapped = Order(mapped, sortOrder);
 
-                //mapped.ToList().ForEach(p => p.ProductImage = ImageProcessor.CreateThumbnail(p.ProductImage));
                 mapped.ToList().ForEach(p => p.Store.StoreImage = ImageProcessor.CreateThumbnail(p.Store.StoreImage));
                 mapped.ToList().ForEach(p => p.Store.Administrator.Identity.UserImage = ImageProcessor.CreateThumbnail(p.Store.Administrator.Identity.UserImage));
 

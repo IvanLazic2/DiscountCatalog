@@ -272,6 +272,10 @@
     <Compile Include="Migrations\202004162054415_init.Designer.cs">
       <DependentUpon>202004162054415_init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005181152043_initial.cs" />
+    <Compile Include="Migrations\202005181152043_initial.Designer.cs">
+      <DependentUpon>202005181152043_initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModelState\EntityModelState.cs" />
     <Compile Include="Models\BindingModels\AuthenticationBindingModel.cs" />
     <Compile Include="Models\BindingModels\ManagerBindingModel.cs" />
@@ -386,6 +390,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\DefaultImages\Manager-Dark.png" />
     <Content Include="Content\DefaultImages\Manager-Light.png" />
+    <Content Include="Content\DefaultImages\Product-Dark.png" />
     <Content Include="Content\DefaultImages\Store-Dark.png" />
     <Content Include="Content\DefaultImages\Store-Light.png" />
     <Content Include="Content\DefaultImages\StoreAdmin-Dark.png" />
@@ -501,6 +506,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202004162054415_init.resx">
       <DependentUpon>202004162054415_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005181152043_initial.resx">
+      <DependentUpon>202005181152043_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

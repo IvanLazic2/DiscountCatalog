@@ -5,17 +5,17 @@
 
 <div id="product-info">
     @*<div class="avatar" style="background-image: url(@Url.Action("GetStoreImage", "StoreAdmin", new { id = Model.Id })); "></div>*@
-    @*<div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>*@
+    <div class="avatar" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage)"></div>
     <h2 style="display: inline">@Model.ProductName</h2>
 </div>
 
 <hr />
 
 <div class="main-details-window">
-    <div class="product-image-container">
+    @*<div class="product-image-container">
         <div class="card-image" style="background-image: url(data:image/gif;base64,@Convert.ToBase64String(Model.ProductImage));">
         </div>
-    </div>
+    </div>*@
 
     <div class="image-form-container">
         @using (Html.BeginForm("PostProductImage", "Store", FormMethod.Post,

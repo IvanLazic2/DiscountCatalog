@@ -14,7 +14,7 @@ namespace DiscountCatalog.WebAPI.Validation.Validators
             RuleFor(u => u.Roles)
                 .NotEmpty()
                 .OverridePropertyName("Role")
-                .WithMessage("Please add user to role.");
+                .WithMessage("Please add a user to role.");
                 
             RuleForEach(u => u.Roles)
                 .NotNull()

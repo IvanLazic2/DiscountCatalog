@@ -55,6 +55,8 @@ namespace DiscountCatalog.WebAPI.Controllers
             {
                 return Content(HttpStatusCode.BadRequest, result);
             }
+
+
         }
 
         [HttpGet]

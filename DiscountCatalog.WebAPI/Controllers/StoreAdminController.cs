@@ -240,9 +240,18 @@ namespace DiscountCatalog.WebAPI.Controllers
         [Route("GetAllStores/{storeAdminIdentityId}")]
         public IHttpActionResult GetAllStores(string storeAdminIdentityId, string sortOrder, string searchString, int pageIndex, int pageSize)
         {
-            IPagingList<StoreREST> list = storeService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
+            try
+            {
+                IPagingList<StoreREST> list = storeService.GetAll(storeAdminIdentityId, sortOrder, searchString, pageIndex, pageSize);
 
-            return Ok(list);
+                return Ok(list);
+            }
+            catch (Exception exc)
+            {
+
+                throw;
+            }
+
         }
 
         [HttpGet]
@@ -258,9 +267,18 @@ namespace DiscountCatalog.WebAPI.Controllers
         [Route("GetStore/{storeAdminIdentityId}")]
         public IHttpActionResult GetStore(string storeAdminIdentityId, string storeId)
         {
-            StoreREST store = storeService.Get(storeAdminIdentityId, storeId);
+            try
+            {
+                StoreREST store = storeService.Get(storeAdminIdentityId, storeId);
 
-            return Ok(store);
+                return Ok(store);
+            }
+            catch (Exception exc)
+            {
+
+                throw;
+            }
+
         }
 
         [HttpPut]
